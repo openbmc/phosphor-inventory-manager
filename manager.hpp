@@ -6,6 +6,7 @@
 #include <vector>
 #include <sdbusplus/server.hpp>
 #include <xyz/openbmc_project/Inventory/Manager/server.hpp>
+#include "filters.hpp"
 
 namespace phosphor
 {
@@ -54,6 +55,7 @@ struct MakeInterface
 struct Event
 {
     const char *signature;
+    filters::details::Holder filter;
 };
 
 } // namespace details
