@@ -38,9 +38,10 @@ class ParseList(list):
 
 
 class MatchRender(object):
-    def __init__(self, name, signature):
+    def __init__(self, name, signature, fltr):
         self.name = valid_c_name_pattern.sub('_', name).lower()
         self.signature = signature
+        self.fltr = fltr
 
         if self.name in all_names:
             raise RuntimeError('The name "%s" is not unique.' % name)
@@ -58,20 +59,51 @@ class MatchRender(object):
         fd.write('        std::make_tuple(\n')
         for s in sig:
             fd.write('            %s' % s)
-        fd.write('\n')
+        fd.write(',\n')
+        self.fltr(fd)
         fd.write('        ),\n')
         fd.write('    },\n')
+
+
+class FilterRender(object):
+    namespace = 'filters'
+    default = 'none'
+
+    def __init__(self, fltr):
+        self.args = None
+        if fltr is None:
+            self.name = self.default
+        else:
+            self.name = fltr.get('name')
+            self.args = fltr.get('args')
+
+    def __call__(self, fd):
+        def fmt(x):
+            if x.get('type') is None:
+                return '"%s"' % x['value']
+            return str(x['value'])
+
+        fd.write('            %s::%s' % (self.namespace, self.name))
+        if self.args:
+            fd.write('(')
+            buf = ','.join(([fmt(x) for x in self.args]))
+            fd.write(buf)
+            fd.write(')')
+
+        fd.write('\n')
 
 
 class MatchEventParse(object):
     def __init__(self, match):
         self.name = match['name']
         self.signature = match['signature']
+        self.fltr = match.get('filter')
 
     def __call__(self):
         return MatchRender(
             self.name,
-            self.signature)
+            self.signature,
+            FilterRender(self.fltr))
 
 
 class EventsParse(object):
