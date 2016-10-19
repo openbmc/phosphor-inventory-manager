@@ -10,5 +10,7 @@ events:
           type: signal
           interface: org.freedesktop.DBus.Properties
           member: PropertiesChanged
+      action:
+          name: noop
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
