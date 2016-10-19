@@ -6,6 +6,7 @@
 #include <vector>
 #include <sdbusplus/server.hpp>
 #include <xyz/openbmc_project/Inventory/Manager/server.hpp>
+#include "filters.hpp"
 
 namespace phosphor
 {
@@ -61,6 +62,7 @@ struct Make
 struct Event
 {
     const char *signature;
+    filters::details::Wrapper filter;
 };
 
 } // namespace details
