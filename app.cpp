@@ -13,11 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "config.h"
+#include "manager.hpp"
+#include <sdbusplus/bus.hpp>
 #include <cstdlib>
+#include <iostream>
+#include <exception>
 
 int main(int argc, char *argv[])
 {
-    // TOOD
+    auto manager = [](){
+        try {
+            return phosphor::inventory::manager::Manager(
+                    sdbusplus::bus::new_system(),
+                    BUSNAME,
+                    INVENTORY_ROOT,
+                    IFACE);
+        }
+        catch (std::exception &e) {
+            std::cerr << e.what() << std::endl;
+            exit(EXIT_FAILURE);
+        }
+    }();
+
+    manager.run();
 
     exit(EXIT_SUCCESS);
 }
