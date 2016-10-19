@@ -140,6 +140,11 @@ void Manager::notify(std::string path, Object object)
 void Manager::signal(sdbusplus::message::message &msg, auto &args)
 {
     // TODO - unstub
+    auto &filter = args.filter;
+
+    if(filter(msg)) {
+
+    }
 }
 
 #include "generated.hpp"
