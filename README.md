@@ -20,8 +20,22 @@ Supported event tags are:
 
 * name - A globally unique event name.
 * type - The event type.  Supported types are: *match*.
+* action - The response to the event.
 
 Subsequent tags are defined by the event type.
+
+----
+**action**
+Supported action tags are:
+
+* name - The action name.
+* args - An optional list of arguments to pass to the action.
+* value - The argument value.
+* type - The argument type (defaults to string if unspecified).
+
+The available actions provided by PIM are:
+
+* noop - A non-action.
 
 ----
 **match**
