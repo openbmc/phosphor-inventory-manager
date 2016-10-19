@@ -55,11 +55,11 @@ class MatchRender(object):
 
         fd.write('    {\n')
         fd.write('        "%s",\n' % self.name)
-        fd.write('        {\n')
+        fd.write('        std::make_tuple(\n')
         for s in sig:
             fd.write('            %s' % s)
-        fd.write(',\n')
-        fd.write('        },\n')
+        fd.write('\n')
+        fd.write('        ),\n')
         fd.write('    },\n')
 
 

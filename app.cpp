@@ -13,13 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "config.h"
+#include "manager.hpp"
+#include <sdbusplus/bus.hpp>
 #include <cstdlib>
+#include <iostream>
+#include <exception>
 
 int main(int argc, char *argv[])
 {
-    // TOOD
-
-    exit(EXIT_SUCCESS);
+    try {
+        auto manager = phosphor::inventory::manager::Manager(
+                sdbusplus::bus::new_system(),
+                BUSNAME,
+                INVENTORY_ROOT,
+                IFACE);
+        manager.run();
+        exit(EXIT_SUCCESS);
+    }
+    catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
+    }
+    exit(EXIT_FAILURE);
 }
 
 // vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
