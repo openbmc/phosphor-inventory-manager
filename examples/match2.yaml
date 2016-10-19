@@ -12,5 +12,7 @@ events:
           path: /xyz/openbmc_project/testing
           interface: org.freedesktop.DBus.Properties
           member: PropertiesChanged
+      filter:
+          name: none
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
