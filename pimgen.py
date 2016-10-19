@@ -38,10 +38,11 @@ class ParseList(list):
 
 
 class MatchRender(object):
-    def __init__(self, name, signature, fltr):
+    def __init__(self, name, signature, fltr, action):
         self.name = valid_c_name_pattern.sub('_', name).lower()
         self.signature = signature
         self.fltr = fltr
+        self.action = action
 
         if self.name in all_names:
             raise RuntimeError('The name "%s" is not unique.' % name)
@@ -61,6 +62,7 @@ class MatchRender(object):
             fd.write('            %s' % s)
         fd.write(',\n')
         self.fltr(fd)
+        self.action(fd)
         fd.write('        },\n')
         fd.write('    },\n')
 
@@ -93,17 +95,27 @@ class FilterRender(object):
         fd.write('},\n')
 
 
+class ActionRender(FilterRender):
+    namespace = 'actions'
+    default = 'noop'
+
+    def __init__(self, action):
+        FilterRender.__init__(self, action)
+
+
 class MatchEventParse(object):
     def __init__(self, match):
         self.name = match['name']
         self.signature = match['signature']
         self.fltr = match.get('filter')
+        self.action = match.get('action')
 
     def __call__(self):
         return MatchRender(
             self.name,
             self.signature,
-            FilterRender(self.fltr))
+            FilterRender(self.fltr),
+            ActionRender(self.action))
 
 
 class EventsParse(object):

@@ -7,6 +7,7 @@
 #include <sdbusplus/server.hpp>
 #include <xyz/openbmc_project/Inventory/Manager/server.hpp>
 #include "filters.hpp"
+#include "actions.hpp"
 
 namespace phosphor
 {
@@ -63,6 +64,7 @@ struct Event
 {
     const char *signature;
     filters::details::Wrapper filter;
+    actions::details::Wrapper action;
 };
 
 } // namespace details
