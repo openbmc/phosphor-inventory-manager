@@ -1,0 +1,16 @@
+description: >
+    An example inventory match rule.
+
+events:
+    - name: Example Match(2)
+      description: >
+          Matches any PropertiesChanged signal emitted
+          by /xyz/openbmc_project/testing.
+      type: match
+      signature:
+          type: signal
+          path: /xyz/openbmc_project/testing
+          interface: org.freedesktop.DBus.Properties
+          member: PropertiesChanged
+
+# vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
