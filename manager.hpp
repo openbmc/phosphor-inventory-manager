@@ -6,6 +6,7 @@
 #include <vector>
 #include <sdbusplus/server.hpp>
 #include <xyz/openbmc_project/Inventory/Manager/server.hpp>
+#include "filters.hpp"
 
 namespace phosphor
 {
@@ -121,7 +122,7 @@ class Manager final :
     /** @brief sd_bus signal callback. */
     void signal(sdbusplus::message::message &, auto &);
 
-    using Event = std::tuple<const char *>;
+    using Event = std::tuple<const char *, filters::details::Wrapper>;
     using SigArgs = std::vector<
         std::unique_ptr<
             std::tuple<
