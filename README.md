@@ -28,6 +28,20 @@ Subsequent tags are defined by the event type.
 Supported match tags are:
 
 * signature - A DBus match specification.
+* filter - A filter to apply when a match occurs.
+
+----
+**filter**
+Supported filter tags are:
+
+* name - The name of the filter.
+* args - An optional list of arguments to pass to the filter.
+* value - The argument value.
+* type - The argument type (defaults to string if unspecified).
+
+The available filters provided by PIM are:
+
+* none - A non-filter.
 
 ----
 
