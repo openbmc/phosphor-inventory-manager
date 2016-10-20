@@ -91,6 +91,21 @@ struct Wrapper
 
 inline void noop(Manager &mgr) noexcept { }
 
+struct DestroyObject
+{
+    DestroyObject() = delete;
+    ~DestroyObject() = default;
+    DestroyObject(const DestroyObject&) = delete;
+    DestroyObject& operator=(const DestroyObject&) = delete;
+    DestroyObject(DestroyObject&&) = default;
+    DestroyObject& operator=(DestroyObject&&) = delete;
+    explicit DestroyObject(const char *path) : _path(path) {}
+    void operator()(Manager &) const;
+
+    private:
+    const char *_path;
+};
+
 } // namespace actions
 } // namespace manager
 } // namespace inventory
