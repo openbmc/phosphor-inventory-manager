@@ -36,6 +36,7 @@ Supported action tags are:
 The available actions provided by PIM are:
 
 * noop - A non-action.
+* destroyObject - Destroy the specified DBus object.
 
 ----
 **match**
