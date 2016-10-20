@@ -141,8 +141,8 @@ void Manager::signal(sdbusplus::message::message &msg, auto &args)
 {
     auto &filter = args.filter;
 
-    if(filter(msg)) {
-        args.action();
+    if(filter(msg, *this)) {
+        args.action(*this);
     }
 }
 

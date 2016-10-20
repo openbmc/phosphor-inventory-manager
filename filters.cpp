@@ -28,7 +28,8 @@ namespace filters
 namespace details
 {
 
-bool PropertyChangedTo::operator()(sdbusplus::message::message &_msg) const
+bool PropertyChangedTo::operator()(
+        sdbusplus::message::message &_msg, Manager &) const
 {
     const char *property;
     const char *iface;
