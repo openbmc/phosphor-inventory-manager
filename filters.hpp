@@ -10,6 +10,8 @@ namespace inventory
 {
 namespace manager
 {
+
+class Manager;
 namespace filters
 {
 namespace details
@@ -32,10 +34,10 @@ struct Base
     Base(Base&&) = delete;
     Base& operator=(Base&&) = delete;
 
-    virtual bool operator()(sdbusplus::message::message &) const = 0;
-    virtual bool operator()(sdbusplus::message::message &msg)
+    virtual bool operator()(sdbusplus::message::message &, Manager &) const = 0;
+    virtual bool operator()(sdbusplus::message::message &msg, Manager &mgr)
     {
-        return const_cast<const Base &>(*this)(msg);
+        return const_cast<const Base &>(*this)(msg, mgr);
     }
 };
 
@@ -59,14 +61,16 @@ struct Holder final : public Base
     Holder& operator=(Holder&&) = delete;
     explicit Holder(T &&func) : _func(std::forward<T>(func)) { }
 
-    virtual bool operator()(sdbusplus::message::message &msg) const override
+    virtual bool operator()(
+            sdbusplus::message::message &msg, Manager &mgr) const override
     {
-        return _func(msg);
+        return _func(msg, mgr);
     }
 
-    virtual bool operator()(sdbusplus::message::message &msg) override
+    virtual bool operator()(
+            sdbusplus::message::message &msg, Manager &mgr) override
     {
-        return _func(msg);
+        return _func(msg, mgr);
     }
 
     private:
@@ -93,13 +97,13 @@ struct Wrapper
     Wrapper(Wrapper&&) = default;
     Wrapper& operator=(Wrapper&&) = delete;
 
-    bool operator()(sdbusplus::message::message &msg)
+    bool operator()(sdbusplus::message::message &msg, Manager &mgr)
     {
-        return (*_ptr)(msg);
+        return (*_ptr)(msg, mgr);
     }
-    bool operator()(sdbusplus::message::message &msg) const
+    bool operator()(sdbusplus::message::message &msg, Manager &mgr) const
     {
-        return (*_ptr)(msg);
+        return (*_ptr)(msg, mgr);
     }
 
     private:
@@ -124,8 +128,9 @@ struct Base
     Base(const char *iface, const char *property) :
         _iface(iface), _property(property) {}
 
-    virtual bool checkValue(sdbusplus::message::message &_msg) const = 0;
-    bool operator()(sdbusplus::message::message &_msg) const;
+    virtual bool checkValue(
+            sdbusplus::message::message &_msg) const = 0;
+    bool operator()(sdbusplus::message::message &_msg, Manager &) const;
 
     private:
     const char *_iface;
@@ -166,7 +171,7 @@ struct PropertyChanged final : public Base
 } // namespace details
 
 /** @brief The default filter.  */
-inline bool none(sdbusplus::message::message &) noexcept
+inline bool none(sdbusplus::message::message &, Manager &) noexcept
 {
     return true;
 }
