@@ -116,6 +116,9 @@ class Manager final :
     /** @brief sd_bus signal callback. */
     void signal(sdbusplus::message::message &, auto &);
 
+    /** @brief Drop an object from DBus. */
+    void destroyObject(const char *);
+
     using Event = std::tuple<
         const char *,
         filters::details::Wrapper,
