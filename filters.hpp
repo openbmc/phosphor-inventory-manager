@@ -21,6 +21,65 @@ inline bool none(sdbusplus::message::message &) noexcept
 namespace details
 {
 
+struct PropertyChangedTo
+{
+    PropertyChangedTo() = delete;
+    virtual ~PropertyChangedTo() = default;
+    PropertyChangedTo(const PropertyChangedTo&) = default;
+    PropertyChangedTo & operator=(const PropertyChangedTo&) = delete;
+    PropertyChangedTo(PropertyChangedTo&&) = default;
+    PropertyChangedTo& operator=(PropertyChangedTo&&) = delete;
+
+    PropertyChangedTo(const char *iface, const char *property) :
+        _iface(iface), _property(property) {}
+
+    virtual bool checkValue(sdbusplus::message::message &_msg) const = 0;
+    bool operator()(sdbusplus::message::message &_msg) const;
+
+    private:
+    const char *_iface;
+    const char *_property;
+};
+
+template <typename T>
+struct _PropertyChangedTo final : public PropertyChangedTo
+{
+    _PropertyChangedTo() = delete;
+    ~_PropertyChangedTo() = default;
+    _PropertyChangedTo(const _PropertyChangedTo&) = default;
+    _PropertyChangedTo & operator=(const _PropertyChangedTo&) = delete;
+    _PropertyChangedTo(_PropertyChangedTo&&) = default;
+    _PropertyChangedTo& operator=(_PropertyChangedTo&&) = delete;
+    _PropertyChangedTo(const char *iface, const char *property, T val) :
+        PropertyChangedTo(iface, property),
+        _val(val) {}
+
+    bool checkValue(sdbusplus::message::message &msg) const override
+    {
+        sdbusplus::message::variant<T> value;
+        msg.read(value);
+
+        return value == _val;
+    }
+
+    private:
+    T _val;
+};
+
+} // namespace details
+
+template <typename T>
+details::_PropertyChangedTo<T> propertyChangedTo(
+        const char *iface,
+        const char *property,
+        T val)
+{
+    return details::_PropertyChangedTo<T>(iface, property, val);
+}
+
+namespace details
+{
+
 struct WrapperBase
 {
     WrapperBase() = default;
