@@ -30,7 +30,7 @@ namespace details
 namespace property_changed
 {
 
-bool Base::operator()(sdbusplus::message::message &_msg) const
+bool Base::operator()(sdbusplus::message::message &_msg, Manager &) const
 {
     const char *property;
     const char *iface;
