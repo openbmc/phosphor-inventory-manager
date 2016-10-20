@@ -16,6 +16,7 @@ namespace details
 {
 namespace holder
 {
+
 struct Base
 {
     Base() = default;
@@ -85,11 +86,69 @@ struct Wrapper
     std::shared_ptr<holder::Base> _ptr;
 };
 
+namespace property_changed
+{
+
+struct Base
+{
+    Base() = delete;
+    virtual ~Base() = default;
+    Base(const Base&) = default;
+    Base & operator=(const Base&) = delete;
+    Base(Base&&) = default;
+    Base& operator=(Base&&) = delete;
+
+    Base(const char *iface, const char *property) :
+        _iface(iface), _property(property) {}
+
+    virtual bool checkValue(sdbusplus::message::message &_msg) const = 0;
+    bool operator()(sdbusplus::message::message &_msg) const;
+
+    private:
+    const char *_iface;
+    const char *_property;
+};
+
+template <typename T>
+struct PropertyChanged final : public Base
+{
+    PropertyChanged() = delete;
+    ~PropertyChanged() = default;
+    PropertyChanged(const PropertyChanged&) = default;
+    PropertyChanged & operator=(const PropertyChanged&) = delete;
+    PropertyChanged(PropertyChanged&&) = default;
+    PropertyChanged& operator=(PropertyChanged&&) = delete;
+    PropertyChanged(const char *iface, const char *property, T val) :
+        Base(iface, property),
+        _val(val) {}
+
+    bool checkValue(sdbusplus::message::message &msg) const override
+    {
+        sdbusplus::message::variant<T> value;
+        msg.read(value);
+
+        return value == _val;
+    }
+
+    private:
+    T _val;
+};
+
+} // namespace property_changed
 } // namespace details
 
 inline bool none(sdbusplus::message::message &) noexcept
 {
     return true;
+}
+
+template <typename T>
+details::property_changed::PropertyChanged<T> propertyChangedTo(
+        const char *iface,
+        const char *property,
+        T val)
+{
+    return details::property_changed::PropertyChanged<T>(iface, property, val);
 }
 
 } // namespace filters
