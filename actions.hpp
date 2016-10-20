@@ -9,6 +9,8 @@ namespace inventory
 {
 namespace manager
 {
+class Manager;
+
 namespace actions
 {
 namespace details
@@ -25,10 +27,10 @@ struct Base
     Base(Base&&) = delete;
     Base& operator=(Base&&) = delete;
 
-    virtual void operator()() const = 0;
-    virtual void operator()()
+    virtual void operator()(Manager &mgr) const = 0;
+    virtual void operator()(Manager &mgr)
     {
-        const_cast<const Base &>(*this)();
+        const_cast<const Base &>(*this)(mgr);
     }
 };
 
@@ -43,14 +45,14 @@ struct Holder final : public Base
     Holder& operator=(Holder&&) = delete;
     explicit Holder(T &&func) : _func(std::forward<T>(func)) {}
 
-    virtual void operator()() const override
+    virtual void operator()(Manager &mgr) const override
     {
-        _func();
+        _func(mgr);
     }
 
-    virtual void operator()() override
+    virtual void operator()(Manager &mgr) override
     {
-        _func();
+        _func(mgr);
     }
 
     private:
@@ -72,13 +74,13 @@ struct Wrapper
     Wrapper(Wrapper&&) = delete;
     Wrapper& operator=(Wrapper&&) = delete;
 
-    void operator()()
+    void operator()(Manager &mgr)
     {
-        (*_ptr)();
+        (*_ptr)(mgr);
     }
-    void operator()() const
+    void operator()(Manager &mgr) const
     {
-        (*_ptr)();
+        (*_ptr)(mgr);
     }
 
     private:
@@ -87,7 +89,7 @@ struct Wrapper
 
 } // namespace details
 
-inline void noop() noexcept { }
+inline void noop(Manager &mgr) noexcept { }
 
 } // namespace actions
 } // namespace manager
