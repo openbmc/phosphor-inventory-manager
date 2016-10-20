@@ -13,6 +13,10 @@ events:
           interface: org.freedesktop.DBus.Properties
           member: PropertiesChanged
       filter:
-          name: none
+          name: propertyChangedTo
+          args:
+            - value: xyz.openbmc_project.Testing
+            - value: TestProperty
+            - value: teststring
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
