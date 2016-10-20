@@ -89,6 +89,7 @@ class Manager final :
     void shutdown() noexcept;
     void notify(std::string path, Object) override;
     void signal(sdbusplus::message::message &, auto &);
+    void destroyObject(const char *);
 
     using SigArgs = std::vector<
         std::unique_ptr<
