@@ -155,8 +155,8 @@ void Manager::signal(sdbusplus::message::message &msg, auto &args)
     auto &filter = std::get<1>(args);
     auto &action = std::get<2>(args);
 
-    if(filter(msg)) {
-        action();
+    if(filter(msg, *this)) {
+        action(*this);
     }
 }
 
