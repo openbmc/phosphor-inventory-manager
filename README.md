@@ -56,6 +56,8 @@ Supported filter tags are:
 The available filters provided by PIM are:
 
 * none - A non-filter.
+* propertyChangedTo - Only match events when the specified property has
+the specified value.
 
 ----
 
