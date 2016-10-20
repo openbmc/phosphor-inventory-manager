@@ -113,6 +113,11 @@ struct Wrapper
 /** @brief The default action.  */
 inline void noop(Manager &mgr) noexcept { }
 
+/** @brief Destroy an object action.  */
+inline auto destroyObject(const char *path)
+{
+    return [path](auto &m){m.destroyObject(path);};
+}
 } // namespace actions
 } // namespace manager
 } // namespace inventory

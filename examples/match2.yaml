@@ -18,5 +18,7 @@ events:
             - value: xyz.openbmc_project.Testing
             - value: TestProperty
             - value: teststring
+      action:
+          name: destroyObject("Example")
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

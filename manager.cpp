@@ -160,6 +160,12 @@ void Manager::signal(sdbusplus::message::message &msg, auto &args)
     }
 }
 
+void Manager::destroyObject(const char *path)
+{
+    std::string p{path};
+    _refs.erase(_root + p);
+}
+
 #include "generated.hpp"
 
 } // namespace manager
