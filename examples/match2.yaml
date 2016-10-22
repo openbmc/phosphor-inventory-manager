@@ -13,7 +13,7 @@ events:
           interface: org.freedesktop.DBus.Properties
           member: PropertiesChanged
       filter:
-          name: propertyChangedTo
+          type: propertyChangedTo
           args:
             - value: xyz.openbmc_project.Testing
             - value: TestProperty
