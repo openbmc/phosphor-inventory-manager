@@ -146,7 +146,7 @@ if __name__ == '__main__':
         'scanner and code generator.')
     parser.add_argument(
         '-o', '--output', dest='output',
-        default='generated.hpp', help='Output file name.')
+        default='generated.cpp', help='Output file name.')
     parser.add_argument(
         '-d', '--dir', dest='inputdir',
         default=os.path.join('example', 'events'),
@@ -164,12 +164,23 @@ if __name__ == '__main__':
 
     head = """// This file was auto generated.  Do not edit.
 
-#pragma once
+#include "manager.hpp"
+
+namespace phosphor
+{
+namespace inventory
+{
+namespace manager
+{
 
 const Manager::Events Manager::_events{
 """
 
     tail = """};
+
+} // namespace manager
+} // namespace inventory
+} // namespace phosphor
 """
 
     r = ParseList([get_parsers(x) for x in yaml_files])()
