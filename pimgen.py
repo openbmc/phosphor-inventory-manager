@@ -149,7 +149,8 @@ if __name__ == '__main__':
         default='generated.hpp', help='Output file name.')
     parser.add_argument(
         '-d', '--dir', dest='inputdir',
-        default='examples', help='Location of files to process.')
+        default=os.path.join('example', 'events'),
+        help='Location of files to process.')
 
     args = parser.parse_args()
 
