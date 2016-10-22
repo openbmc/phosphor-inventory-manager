@@ -78,7 +78,7 @@ class FilterRender(object):
         if fltr is None:
             self.name = self.default
         else:
-            self.name = fltr.get('name')
+            self.name = fltr.get('type')
             self.args = fltr.get('args')
 
     def __call__(self, fd):
