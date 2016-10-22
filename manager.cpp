@@ -167,8 +167,6 @@ void Manager::destroyObject(const char *path)
     _refs.erase(_root + p);
 }
 
-#include "generated.hpp"
-
 } // namespace manager
 } // namespace inventory
 } // namespace phosphor
