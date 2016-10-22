@@ -11,6 +11,6 @@ events:
           interface: org.freedesktop.DBus.Properties
           member: PropertiesChanged
       action:
-          name: noop
+          type: noop
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

@@ -13,12 +13,12 @@ events:
           interface: org.freedesktop.DBus.Properties
           member: PropertiesChanged
       filter:
-          name: propertyChangedTo
+          type: propertyChangedTo
           args:
             - value: xyz.openbmc_project.Testing
             - value: TestProperty
             - value: teststring
       action:
-          name: destroyObject("Example")
+          type: destroyObject("Example")
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

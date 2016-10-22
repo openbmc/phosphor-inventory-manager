@@ -16,6 +16,7 @@ The following top level YAML tags are supported:
 
 ----
 **events**
+
 Supported event tags are:
 
 * name - A globally unique event name.
@@ -26,12 +27,13 @@ Subsequent tags are defined by the event type.
 
 ----
 **action**
+
 Supported action tags are:
 
-* name - The action name.
+* type - The action to perform.
 * args - An optional list of arguments to pass to the action.
-* value - The argument value.
-* type - The argument type (defaults to string if unspecified).
+  * value - The argument value.
+  * type - The argument type (defaults to string if unspecified).
 
 The available actions provided by PIM are:
 
@@ -40,6 +42,7 @@ The available actions provided by PIM are:
 
 ----
 **match**
+
 Supported match tags are:
 
 * signature - A DBus match specification.
@@ -47,12 +50,13 @@ Supported match tags are:
 
 ----
 **filter**
+
 Supported filter tags are:
 
-* name - The name of the filter.
+* type - The filter to use.
 * args - An optional list of arguments to pass to the filter.
-* value - The argument value.
-* type - The argument type (defaults to string if unspecified).
+  * value - The argument value.
+  * type - The argument type (defaults to string if unspecified).
 
 The available filters provided by PIM are:
 
