@@ -30,6 +30,10 @@ if __name__ == '__main__':
         default=os.path.join('example', 'events'),
         help='Location of files to process.')
     parser.add_argument(
+        '-i', '--interfaces', dest='interfaces',
+        default=os.path.join('example', 'interfaces.yaml'),
+        help='Location of interface file.'),
+    parser.add_argument(
         '-t', '--templatedir', dest='template',
         default='generated.mako.cpp',
         help='Location of mako template.')
@@ -47,9 +51,13 @@ if __name__ == '__main__':
                 events.append(parse_event(e))
 
     t = Template(filename=args.template)
+    with open(args.interfaces, 'r') as fd:
+        interfaces = yaml.load(fd.read())
+
     with open(args.output, 'w') as fd:
         fd.write(
             t.render(
+                interfaces=interfaces,
                 events=events))
 
 
