@@ -16,4 +16,4 @@ endif
 phosphor_inventory_LDFLAGS = $(SYSTEMD_LIBS)
 phosphor_inventory_CFLAGS = $(SYSTEMD_CFLAGS)
 
-SUBDIRS = test
+SUBDIRS = . test
