@@ -9,14 +9,14 @@ events:
       type: match
       signature:
           type: signal
-          path: /xyz/openbmc_project/testing
+          path: /xyz/openbmc_project/Inventory/example
           interface: org.freedesktop.DBus.Properties
           member: PropertiesChanged
       filter:
           type: propertyChangedTo
           args:
-            - value: xyz.openbmc_project.Testing
-            - value: TestProperty
+            - value: xyz.openbmc_project.Example.Iface1
+            - value: ExampleProperty1
             - value: teststring
       action:
           type: destroyObject("Example")
