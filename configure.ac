@@ -34,6 +34,9 @@ AS_IF([test "x$IFACE" == "x"], [IFACE="xyz.openbmc_project.Inventory.Manager"])
 AC_DEFINE_UNQUOTED([BUSNAME], ["$BUSNAME"], [The DBus busname to own.])
 AC_DEFINE_UNQUOTED([INVENTORY_ROOT], ["$INVENTORY_ROOT"], [The DBus inventory namespace root.])
 AC_DEFINE_UNQUOTED([IFACE], ["$IFACE"], [The manager DBus interface.])
+AC_ARG_ENABLE([example],
+    AS_HELP_STRING([--enable-example], [Enable example configuration.]))
+AM_CONDITIONAL([EXAMPLE], [test x$enable_example = xyes])
 
 # Create configured output
 AC_CONFIG_FILES([Makefile test/Makefile])
