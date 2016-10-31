@@ -1,6 +1,9 @@
 // This file was auto generated.  Do not edit.
 
 #include "manager.hpp"
+% for i in interfaces:
+#include <${'/'.join(i.split('.') + ['server.hpp'])}>
+% endfor
 
 namespace phosphor
 {
@@ -8,6 +11,16 @@ namespace inventory
 {
 namespace manager
 {
+
+const Manager::Makers Manager::_makers{
+% for i in interfaces:
+    {
+        "${i}",
+        details::interface::holder::Make<
+            sdbusplus::server::${'::'.join(i.split('.'))}>::make,
+    },
+% endfor
+};
 
 const Manager::Events Manager::_events{
 % for e in events:
