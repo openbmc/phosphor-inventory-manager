@@ -136,6 +136,9 @@ class Manager final :
     using InterfaceComposite = std::map<std::string, HolderPtr>;
     using ObjectReferences = std::map<std::string, InterfaceComposite>;
     using Events = std::map<const char *, Event>;
+    using MakerType = HolderPtr(*)(
+            sdbusplus::bus::bus &, const char *);
+    using Makers = std::map<std::string, MakerType>;
 
     /** @brief Provided for testing only. */
     bool _shutdown;
@@ -160,6 +163,9 @@ class Manager final :
 
     /** @brief A container of pimgen generated events and responses.  */
     static const Events _events;
+
+    /** @brief A container of pimgen generated factory methods.  */
+    static const Makers _makers;
 };
 
 } // namespace manager

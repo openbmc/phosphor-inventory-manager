@@ -43,8 +43,8 @@ void runTests(phosphor::inventory::manager::Manager &mgr)
         using inner = std::map<std::string, var>;
         using outer = std::map<std::string, inner>;
 
-        inner i = {{"test.property", "a"}};
-        outer o = {{"test.iface", i}};
+        inner i = {{"ExampleProperty1", "test"}};
+        outer o = {{"xyz.openbmc_project.Example.Iface1", i}};
 
         m.append(o);
         auto reply = b.call(m);
