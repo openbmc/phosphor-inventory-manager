@@ -101,17 +101,9 @@ void Manager::run() noexcept
 void Manager::notify(std::string path, Object object)
 {
     try {
-        using MakerType = HolderPtr(*)(
-                sdbusplus::bus::bus &, const char *);
-        using Makers = std::map<std::string, MakerType>;
-
         if(object.cbegin() == object.cend())
             throw std::runtime_error(
                     "No interfaces in " + path);
-
-        static const Makers makers{
-            // TODO - Add mappings here.
-        };
 
         path.insert(0, _root);
 
@@ -126,9 +118,9 @@ void Manager::notify(std::string path, Object object)
         InterfaceComposite ref;
 
         for (auto &x: object) {
-            auto maker = makers.find(x.first.c_str());
+            auto maker = _makers.find(x.first.c_str());
 
-            if(maker == makers.end())
+            if(maker == _makers.end())
                 throw std::runtime_error(
                         "Unimplemented interface: " + x.first);
 
