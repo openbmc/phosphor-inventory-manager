@@ -1,4 +1,5 @@
-check_PROGRAMS = phosphor-inventory-test
+check_PROGRAMS =
+noinst_PROGRAMS = phosphor-inventory-test
 
 phosphor_inventory_test_SOURCES = \
 	test.cpp
