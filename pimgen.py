@@ -27,12 +27,8 @@ if __name__ == '__main__':
         default='generated.cpp', help='Output file name.')
     parser.add_argument(
         '-d', '--dir', dest='inputdir',
-        default=os.path.join('example', 'events'),
+        default='example',
         help='Location of files to process.')
-    parser.add_argument(
-        '-i', '--interfaces', dest='interfaces',
-        default=os.path.join('example', 'interfaces.yaml'),
-        help='Location of interface file.'),
     parser.add_argument(
         '-t', '--template', dest='template',
         default='generated.mako.cpp',
@@ -40,18 +36,19 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    events_dir = os.path.join(args.inputdir, 'events')
     yaml_files = filter(
         lambda x: x.endswith('.yaml'),
-        os.listdir(args.inputdir))
+        os.listdir(events_dir))
 
     events = []
     for x in yaml_files:
-        with open(os.path.join(args.inputdir, x), 'r') as fd:
+        with open(os.path.join(events_dir, x), 'r') as fd:
             for e in yaml.load(fd.read()).get('events', {}):
                 events.append(parse_event(e))
 
     t = Template(filename=args.template)
-    with open(args.interfaces, 'r') as fd:
+    with open(os.path.join(args.inputdir, 'interfaces.yaml'), 'r') as fd:
         interfaces = yaml.load(fd.read())
 
     with open(args.output, 'w') as fd:
