@@ -34,7 +34,7 @@ if __name__ == '__main__':
         default=os.path.join('example', 'interfaces.yaml'),
         help='Location of interface file.'),
     parser.add_argument(
-        '-t', '--templatedir', dest='template',
+        '-t', '--template', dest='template',
         default='generated.mako.cpp',
         help='Location of mako template.')
 
