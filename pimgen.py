@@ -19,6 +19,8 @@ def parse_event(e):
     return e
 
 if __name__ == '__main__':
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+
     parser = argparse.ArgumentParser(
         description='Phosphor Inventory Manager (PIM) YAML '
         'scanner and code generator.')
@@ -29,10 +31,6 @@ if __name__ == '__main__':
         '-d', '--dir', dest='inputdir',
         default='example',
         help='Location of files to process.')
-    parser.add_argument(
-        '-t', '--template', dest='template',
-        default='generated.mako.cpp',
-        help='Location of mako template.')
 
     args = parser.parse_args()
 
@@ -47,7 +45,8 @@ if __name__ == '__main__':
             for e in yaml.load(fd.read()).get('events', {}):
                 events.append(parse_event(e))
 
-    t = Template(filename=args.template)
+    template = os.path.join(script_dir, 'generated.mako.cpp')
+    t = Template(filename=template)
     with open(os.path.join(args.inputdir, 'interfaces.yaml'), 'r') as fd:
         interfaces = yaml.load(fd.read())
 
