@@ -29,7 +29,7 @@ if __name__ == '__main__':
         default='generated.cpp', help='Output file name.')
     parser.add_argument(
         '-d', '--dir', dest='inputdir',
-        default='example',
+        default=os.path.join(script_dir, 'example'),
         help='Location of files to process.')
 
     args = parser.parse_args()
