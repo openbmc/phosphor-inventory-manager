@@ -1,6 +1,7 @@
 # Initialization
 AC_PREREQ([2.69])
 AC_INIT([phosphor-inventory-manager], [1.0], [https://github.com/openbmc/phosphor-inventory-manager/issues])
+AC_LANG([C++])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([subdir-objects -Wall -Werror foreign dist-xz])
 AM_SILENT_RULES([yes])
@@ -14,13 +15,13 @@ AC_PROG_MAKE_SET
 # Checks for libraries.
 PKG_CHECK_MODULES([SYSTEMD], [libsystemd >= 221])
 
-# Checks for header files.
-AC_CHECK_HEADER(systemd/sd-bus.h, ,[AC_MSG_ERROR([Could not find systemd/sd-bus.h...systemd developement package required])])
-AC_CHECK_HEADER(sdbusplus/server.hpp, ,[AC_MSG_ERROR([Could not find sdbusplus/server.hpp...sdbusplus developement package required])])
-
 # Checks for typedefs, structures, and compiler characteristics.
 AX_CXX_COMPILE_STDCXX_14([noext])
 AX_APPEND_COMPILE_FLAGS([-fpic -Wall -Werror], [CXXFLAGS])
+
+# Checks for header files.
+AC_CHECK_HEADER(systemd/sd-bus.h, ,[AC_MSG_ERROR([Could not find systemd/sd-bus.h...systemd developement package required])])
+AC_CHECK_HEADER(sdbusplus/server.hpp, ,[AC_MSG_ERROR([Could not find sdbusplus/server.hpp...sdbusplus developement package required])])
 
 # Checks for library functions.
 LT_INIT # Removes 'unrecognized options: --with-libtool-sysroot'
