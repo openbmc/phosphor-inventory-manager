@@ -1,2 +1,5 @@
+# The interfaces file defines which interfaces
+# will be processed by the Notify method.
+
 - xyz.openbmc_project.Example.Iface1
 - xyz.openbmc_project.Example.Iface2
