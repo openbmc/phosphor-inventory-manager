@@ -1,3 +1,9 @@
+EXTRAIFACES_C=@EXTRAIFACES_C@
+EXTRAIFACES_LO=@EXTRAIFACES_LO@
+PIMGEN=$(top_srcdir)/pimgen.py -d @YAML_PATH@ -o $(top_builddir)
+BUILT_SOURCES=generated.cpp
+CLEANFILES=$(BUILT_SOURCES) $(EXTRAIFACES_C) libextra.la
+
 sbin_PROGRAMS = phosphor-inventory
 
 phosphor_inventory_SOURCES = app.cpp
@@ -8,14 +14,21 @@ libmanager_la_SOURCES = \
 	xyz.openbmc_project.Inventory.Manager.cpp \
 	generated.cpp \
 	manager.cpp
+libmanager_la_LIBADD = libextra.la
 
-if EXAMPLE
-noinst_LTLIBRARIES += libexample.la
-libexample_la_SOURCES = \
-	xyz.openbmc_project.Example.Iface1.cpp \
-	xyz.openbmc_project.Example.Iface2.cpp
-libmanager_la_LIBADD = libexample.la
-endif
+# Automake does not allow autoconf substituted variables
+# in _SOURCES variables.  Work around this by providing
+# our own target.
+#
+# Typically the recommendation is conditional compilation
+# but here the generated source files are completely
+# arbitrary and not known making that approach difficult.
+libextra.la: $(EXTRAIFACES_LO)
+	$(AM_V_CXXLD)$(CXXLINK) $(EXTRAIFACES_LO)
+
+$(EXTRAIFACES_C) generated.cpp:
+	$(PIMGEN) generate-cpp
+
 phosphor_inventory_LDFLAGS = $(SYSTEMD_LIBS)
 phosphor_inventory_CFLAGS = $(SYSTEMD_CFLAGS)
 
