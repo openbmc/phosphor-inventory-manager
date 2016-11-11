@@ -6,31 +6,7 @@ import yaml
 import subprocess
 
 
-class SDBUSPlus(object):
-    def __init__(self, path):
-        self.path = path
-
-    def __call__(self, *a, **kw):
-        args = [
-            os.path.join(self.path,  'sdbus++'),
-            '-t',
-            os.path.join(self.path, 'templates')
-        ]
-
-        subprocess.call(args + list(a), **kw)
-
-
 if __name__ == '__main__':
-    sdbusplus = None
-    for p in os.environ.get('PATH', "").split(os.pathsep):
-        if os.path.exists(os.path.join(p, 'sdbus++')):
-            sdbusplus = SDBUSPlus(p)
-            break
-
-    if sdbusplus is None:
-        sys.stderr.write('Cannot find sdbus++\n')
-        sys.exit(1)
-
     genfiles = {
         'server-cpp': lambda x: '%s.cpp' % x,
         'server-header': lambda x: os.path.join(
@@ -48,12 +24,13 @@ if __name__ == '__main__':
                 os.makedirs(parent)
 
             with open(dest, 'w') as fd:
-                sdbusplus(
+                subprocess.call([
+                    'sdbus++',
                     '-r',
                     os.path.join('example', 'interfaces'),
                     'interface',
                     process,
-                    i,
+                    i],
                     stdout=fd)
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
