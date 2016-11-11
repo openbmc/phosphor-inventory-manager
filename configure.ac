@@ -11,6 +11,10 @@ AC_PROG_CXX
 AM_PROG_AR
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
+AC_PROG_AWK
+AM_PATH_PYTHON([2.7],
+    [AC_SUBST([PYTHON], [echo "$PYTHON"])],
+    [AC_MSG_ERROR([Could not find python-2.7 installed...python-2.7 is required])])
 
 # Checks for libraries.
 PKG_CHECK_MODULES([SYSTEMD], [libsystemd >= 221])
@@ -50,15 +54,20 @@ AS_IF([test "x$enable_oe_sdk" == "xyes"],
 AC_ARG_VAR(BUSNAME, [The DBus busname to own.])
 AC_ARG_VAR(INVENTORY_ROOT, [The DBus inventory namespace root.])
 AC_ARG_VAR(IFACE, [The manager DBus interface.])
+AC_ARG_VAR(YAML_PATH, [The path to the yaml config files.])
 AS_IF([test "x$BUSNAME" == "x"], [BUSNAME="xyz.openbmc_project.Inventory.Manager"])
 AS_IF([test "x$INVENTORY_ROOT" == "x"], [INVENTORY_ROOT="/xyz/openbmc_project/Inventory"])
 AS_IF([test "x$IFACE" == "x"], [IFACE="xyz.openbmc_project.Inventory.Manager"])
+AS_IF([test "x$YAML_PATH" == "x"], [YAML_PATH="$srcdir/example"])
 AC_DEFINE_UNQUOTED([BUSNAME], ["$BUSNAME"], [The DBus busname to own.])
 AC_DEFINE_UNQUOTED([INVENTORY_ROOT], ["$INVENTORY_ROOT"], [The DBus inventory namespace root.])
 AC_DEFINE_UNQUOTED([IFACE], ["$IFACE"], [The manager DBus interface.])
-AC_ARG_ENABLE([example],
-    AS_HELP_STRING([--enable-example], [Enable example configuration.]))
-AM_CONDITIONAL([EXAMPLE], [test x$enable_example = xyes])
+PIMGEN="$PYTHON $srcdir/pimgen.py -d $YAML_PATH"
+EXTRAIFACES_LO="`$PIMGEN list-interfaces|awk '{ for(i=1;i<=NF;i++){printf $i".lo ";}}'`"
+EXTRAIFACES_C="`$PIMGEN list-interfaces|awk '{ for(i=1;i<=NF;i++){printf $i".cpp ";}}'`"
+AC_SUBST(EXTRAIFACES_LO)
+AC_SUBST(EXTRAIFACES_C)
+AC_SUBST(PIMGEN)
 
 # Create configured output
 AC_CONFIG_FILES([Makefile test/Makefile])
