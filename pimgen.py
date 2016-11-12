@@ -104,6 +104,7 @@ def generate_cpp(args):
 
 if __name__ == '__main__':
     script_dir = os.path.dirname(os.path.realpath(__file__))
+    valid_commands = {'generate-cpp': 'generate_cpp'}
 
     parser = argparse.ArgumentParser(
         description='Phosphor Inventory Manager (PIM) YAML '
@@ -115,9 +116,14 @@ if __name__ == '__main__':
         '-d', '--dir', dest='inputdir',
         default=os.path.join(script_dir, 'example'),
         help='Location of files to process.')
+    parser.add_argument(
+        'command', metavar='COMMAND', type=str,
+        choices=valid_commands.keys(),
+        help='Command to run.')
 
     args = parser.parse_args()
-    generate_cpp(args)
+    function = getattr(sys.modules[__name__], valid_commands[args.command])
+    function(args)
 
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
