@@ -49,8 +49,17 @@ if __name__ == '__main__':
 
     template = os.path.join(script_dir, 'generated.mako.cpp')
     t = Template(filename=template)
-    with open(os.path.join(args.inputdir, 'interfaces.yaml'), 'r') as fd:
-        interfaces = yaml.load(fd.read())
+
+    interfaces_dir = os.path.join(args.inputdir, 'interfaces.d')
+    yaml_files = filter(
+        lambda x: x.endswith('.yaml'),
+        os.listdir(interfaces_dir))
+
+    interfaces = []
+    for x in yaml_files:
+        with open(os.path.join(interfaces_dir, x), 'r') as fd:
+            for i in yaml.load(fd.read()):
+                interfaces.append(i)
 
     with open(os.path.join(args.outputdir, 'generated.cpp'), 'w') as fd:
         fd.write(
