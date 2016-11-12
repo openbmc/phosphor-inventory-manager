@@ -25,8 +25,8 @@ if __name__ == '__main__':
         description='Phosphor Inventory Manager (PIM) YAML '
         'scanner and code generator.')
     parser.add_argument(
-        '-o', '--output', dest='output',
-        default='generated.cpp', help='Output file name.')
+        '-o', '--output-dir', dest='outputdir',
+        default='.', help='Output directory.')
     parser.add_argument(
         '-d', '--dir', dest='inputdir',
         default=os.path.join(script_dir, 'example'),
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     with open(os.path.join(args.inputdir, 'interfaces.yaml'), 'r') as fd:
         interfaces = yaml.load(fd.read())
 
-    with open(args.output, 'w') as fd:
+    with open(os.path.join(args.outputdir, 'generated.cpp'), 'w') as fd:
         fd.write(
             t.render(
                 interfaces=interfaces,
