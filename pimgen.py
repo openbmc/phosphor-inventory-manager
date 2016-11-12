@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    events_dir = os.path.join(args.inputdir, 'events')
+    events_dir = os.path.join(args.inputdir, 'events.d')
     yaml_files = filter(
         lambda x: x.endswith('.yaml'),
         os.listdir(events_dir))
