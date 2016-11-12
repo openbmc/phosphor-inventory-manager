@@ -59,7 +59,7 @@ if __name__ == '__main__':
                 events=events))
 
     yaml_files = []
-    extra_ifaces_dir = os.path.join(args.inputdir, 'interfaces')
+    extra_ifaces_dir = os.path.join(args.inputdir, 'extra_interfaces.d')
     if os.path.exists(extra_ifaces_dir):
         for directory, _, files in os.walk(extra_ifaces_dir):
             if not files:
