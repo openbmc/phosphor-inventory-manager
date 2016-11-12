@@ -1,4 +1,4 @@
-# The interfaces file defines which interfaces
+# An interface file defines which interfaces
 # will be processed by the Notify method.
 
 - xyz.openbmc_project.Example.Iface1
