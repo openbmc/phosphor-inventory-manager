@@ -20,22 +20,7 @@ def parse_event(e):
     return e
 
 
-if __name__ == '__main__':
-    script_dir = os.path.dirname(os.path.realpath(__file__))
-
-    parser = argparse.ArgumentParser(
-        description='Phosphor Inventory Manager (PIM) YAML '
-        'scanner and code generator.')
-    parser.add_argument(
-        '-o', '--output-dir', dest='outputdir',
-        default='.', help='Output directory.')
-    parser.add_argument(
-        '-d', '--dir', dest='inputdir',
-        default=os.path.join(script_dir, 'example'),
-        help='Location of files to process.')
-
-    args = parser.parse_args()
-
+def generate_cpp(args):
     events_dir = os.path.join(args.inputdir, 'events.d')
     yaml_files = filter(
         lambda x: x.endswith('.yaml'),
@@ -106,5 +91,24 @@ if __name__ == '__main__':
                     process,
                     iface],
                     stdout=fd)
+
+
+if __name__ == '__main__':
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+
+    parser = argparse.ArgumentParser(
+        description='Phosphor Inventory Manager (PIM) YAML '
+        'scanner and code generator.')
+    parser.add_argument(
+        '-o', '--output-dir', dest='outputdir',
+        default='.', help='Output directory.')
+    parser.add_argument(
+        '-d', '--dir', dest='inputdir',
+        default=os.path.join(script_dir, 'example'),
+        help='Location of files to process.')
+
+    args = parser.parse_args()
+    generate_cpp(args)
+
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
