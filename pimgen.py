@@ -36,9 +36,9 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    # Aggregate all the event YAML in the events directory
+    # Aggregate all the event YAML in the events.d directory
     # into a single list of events.
-    events_dir = os.path.join(args.inputdir, 'events')
+    events_dir = os.path.join(args.inputdir, 'events.d')
     yaml_files = filter(
         lambda x: x.endswith('.yaml'),
         os.listdir(events_dir))
