@@ -20,6 +20,25 @@ def parse_event(e):
     return e
 
 
+def get_interfaces(args):
+    interfaces_dir = os.path.join(args.inputdir, 'interfaces.d')
+    yaml_files = filter(
+        lambda x: x.endswith('.yaml'),
+        os.listdir(interfaces_dir))
+
+    interfaces = []
+    for x in yaml_files:
+        with open(os.path.join(interfaces_dir, x), 'r') as fd:
+            for i in yaml.load(fd.read()):
+                interfaces.append(i)
+
+    return interfaces
+
+
+def list_interfaces(args):
+    print ' '.join(get_interfaces(args))
+
+
 def generate_cpp(args):
     # Aggregate all the event YAML in the events.d directory
     # into a single list of events.
@@ -39,16 +58,7 @@ def generate_cpp(args):
     template = os.path.join(script_dir, 'generated.mako.cpp')
     t = Template(filename=template)
 
-    interfaces_dir = os.path.join(args.inputdir, 'interfaces.d')
-    yaml_files = filter(
-        lambda x: x.endswith('.yaml'),
-        os.listdir(interfaces_dir))
-
-    interfaces = []
-    for x in yaml_files:
-        with open(os.path.join(interfaces_dir, x), 'r') as fd:
-            for i in yaml.load(fd.read()):
-                interfaces.append(i)
+    interfaces = get_interfaces(args)
 
     # Render the template with the provided events and interfaces.
     template = os.path.join(script_dir, 'generated.mako.cpp')
@@ -104,7 +114,9 @@ def generate_cpp(args):
 
 if __name__ == '__main__':
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    valid_commands = {'generate-cpp': 'generate_cpp'}
+    valid_commands = {
+        'generate-cpp': 'generate_cpp',
+        'list-interfaces': 'list_interfaces'}
 
     parser = argparse.ArgumentParser(
         description='Phosphor Inventory Manager (PIM) YAML '
