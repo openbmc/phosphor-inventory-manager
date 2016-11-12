@@ -65,7 +65,7 @@ if __name__ == '__main__':
     # Invoke sdbus++ to generate any extra interface bindings for
     # extra interfaces that aren't defined externally.
     yaml_files = []
-    extra_ifaces_dir = os.path.join(args.inputdir, 'interfaces')
+    extra_ifaces_dir = os.path.join(args.inputdir, 'extra_interfaces.d')
     if os.path.exists(extra_ifaces_dir):
         for directory, _, files in os.walk(extra_ifaces_dir):
             if not files:
