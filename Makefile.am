@@ -1,12 +1,14 @@
 EXTRAIFACES_C=@EXTRAIFACES_C@
 EXTRAIFACES_LO=@EXTRAIFACES_LO@
 BUILT_SOURCES=generated.cpp
+
 CLEANFILES=$(BUILT_SOURCES) $(EXTRAIFACES_C) libextra.la
 
 sbin_PROGRAMS = phosphor-inventory
-
 phosphor_inventory_SOURCES = app.cpp
 phosphor_inventory_LDADD = libmanager.la
+phosphor_inventory_LDFLAGS = $(SYSTEMD_LIBS)
+phosphor_inventory_CFLAGS = $(SYSTEMD_CFLAGS)
 
 noinst_LTLIBRARIES = libmanager.la
 libmanager_la_SOURCES = \
@@ -27,8 +29,5 @@ libextra.la: $(EXTRAIFACES_LO)
 
 $(EXTRAIFACES_C) generated.cpp:
 	$(AM_V_GEN)@PIMGEN@ -o $(top_builddir) generate-cpp
-
-phosphor_inventory_LDFLAGS = $(SYSTEMD_LIBS)
-phosphor_inventory_CFLAGS = $(SYSTEMD_CFLAGS)
 
 SUBDIRS = . test
