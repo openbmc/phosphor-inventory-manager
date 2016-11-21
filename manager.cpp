@@ -54,7 +54,7 @@ Manager::Manager(
         const char *busname,
         const char *root,
         const char *iface) :
-    sdbusplus::server::xyz::openbmc_project::Inventory::Manager(bus, root),
+    details::ServerObject<details::ManagerIface>(bus, root),
     _shutdown(false),
     _root(root),
     _bus(std::move(bus)),

@@ -24,7 +24,8 @@ const Manager::Makers Manager::_makers{
     {
         "${i}",
         details::interface::holder::Holder<
-            sdbusplus::${interface_type(i)}>::make,
+            details::ServerObject<
+                sdbusplus::${interface_type(i)}>>::make,
     },
 % endfor
 };

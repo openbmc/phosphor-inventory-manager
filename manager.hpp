@@ -78,6 +78,13 @@ struct Holder final : public Base
 
 } // namespace holder
 } // namespace interface
+
+template <typename T>
+using ServerObject = typename sdbusplus::server::object::object<T>;
+
+using ManagerIface =
+    sdbusplus::server::xyz::openbmc_project::Inventory::Manager;
+
 } // namespace details
 
 /** @class Manager
@@ -87,7 +94,7 @@ struct Holder final : public Base
  *  DBus API.
  */
 class Manager final :
-    public sdbusplus::server::xyz::openbmc_project::Inventory::Manager
+    public details::ServerObject<details::ManagerIface>
 {
     public:
     Manager() = delete;
