@@ -2,7 +2,7 @@ description: >
     Example interface for PIM.
 properties:
     - name: ExampleProperty2
-      type: std::string
+      type: string
       description: >
           An example property.
 

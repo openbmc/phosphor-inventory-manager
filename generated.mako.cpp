@@ -1,7 +1,12 @@
 ## This file is a template.  The comment below is emitted
 ## into the rendered file; feel free to edit this file.
 // This file was auto generated.  Do not edit.
-
+<%
+    def interface_type(interface):
+        lst = interface.split('.')
+        lst.insert(-1, 'server')
+        return '::'.join(lst)
+%>
 #include "manager.hpp"
 % for i in interfaces:
 #include <${'/'.join(i.split('.') + ['server.hpp'])}>
@@ -19,7 +24,7 @@ const Manager::Makers Manager::_makers{
     {
         "${i}",
         details::interface::holder::Holder<
-            sdbusplus::server::${'::'.join(i.split('.'))}>::make,
+            sdbusplus::${interface_type(i)}>::make,
     },
 % endfor
 };
