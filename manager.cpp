@@ -23,6 +23,10 @@ namespace inventory
 {
 namespace manager
 {
+
+const Manager::Events Manager::_events;
+const Manager::Makers Manager::_makers;
+
 namespace details
 {
 
