@@ -89,18 +89,19 @@ class Manager final :
     void notify(std::string path, Object) override;
 
     /** @brief sd_bus signal callback. */
-    void signal(sdbusplus::message::message &, auto &);
+    void signal(sdbusplus::message::message&, auto&, auto&);
 
     /** @brief Drop an object from DBus. */
     void destroyObject(const char *);
 
     using EventInfo = std::tuple<
-        details::EventBasePtr,
+        std::vector<details::EventBasePtr>,
         std::vector<details::ActionBasePtr>>;
     using SigArgs = std::vector<
         std::unique_ptr<
             std::tuple<
                 Manager *,
+                const details::DbusSignal *,
                 const EventInfo *>>>;
     using SigArg = SigArgs::value_type::element_type;
 
