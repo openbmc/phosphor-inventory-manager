@@ -145,10 +145,11 @@ void Manager::notify(std::string path, Object object)
 void Manager::signal(sdbusplus::message::message &msg, auto &args)
 {
     auto &filter = *std::get<1>(args);
-    auto &action = *std::get<2>(args);
+    auto &actions = std::get<2>(args);
 
     if(filter(msg, *this)) {
-        action(*this);
+        for (auto &action: actions)
+            (*action)(*this);
     }
 }
 
