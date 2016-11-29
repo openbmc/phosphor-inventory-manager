@@ -94,22 +94,21 @@ class Manager final :
     /** @brief Drop an object from DBus. */
     void destroyObject(const char *);
 
-    using Event = std::tuple<
-        const char *,
-        details::FilterBasePtr,
+    using EventInfo = std::tuple<
+        details::EventBasePtr,
         std::vector<details::ActionBasePtr>>;
     using SigArgs = std::vector<
         std::unique_ptr<
             std::tuple<
                 Manager *,
-                const Event *>>>;
+                const EventInfo *>>>;
     using SigArg = SigArgs::value_type::element_type;
 
     private:
     using HolderPtr = std::unique_ptr<details::holder::Base>;
     using InterfaceComposite = std::map<std::string, HolderPtr>;
     using ObjectReferences = std::map<std::string, InterfaceComposite>;
-    using Events = std::vector<Event>;
+    using Events = std::vector<EventInfo>;
     using MakerType = HolderPtr(*)(
             sdbusplus::bus::bus &, const char *);
     using Makers = std::map<std::string, MakerType>;
