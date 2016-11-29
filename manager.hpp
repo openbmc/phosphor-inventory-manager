@@ -78,6 +78,9 @@ class Manager final :
     using Object = std::map<
         std::string, std::map<
             std::string, sdbusplus::message::variant<std::string>>>;
+    using EventInfo = std::tuple<
+        std::vector<details::EventBasePtr>,
+        std::vector<details::ActionBasePtr>>;
 
     /** @brief Start processing DBus messages. */
     void run() noexcept;
@@ -89,18 +92,18 @@ class Manager final :
     void notify(std::string path, Object) override;
 
     /** @brief sd_bus signal callback. */
-    void signal(sdbusplus::message::message &, auto &);
+    void signal(sdbusplus::message::message&,
+            const details::DbusSignal &event,
+            const EventInfo &info);
 
     /** @brief Drop an object from DBus. */
     void destroyObject(const char *);
 
-    using EventInfo = std::tuple<
-        details::EventBasePtr,
-        std::vector<details::ActionBasePtr>>;
     using SigArgs = std::vector<
         std::unique_ptr<
             std::tuple<
                 Manager *,
+                const details::DbusSignal *,
                 const EventInfo *>>>;
     using SigArg = SigArgs::value_type::element_type;
 

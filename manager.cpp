@@ -38,7 +38,11 @@ auto _signal(sd_bus_message *m, void *data, sd_bus_error *e) noexcept
         auto &args = *static_cast<Manager::SigArg*>(data);
         sd_bus_message_ref(m);
         auto &mgr = *std::get<0>(args);
-        mgr.signal(msg, *std::get<1>(args));
+        mgr.signal(
+                msg,
+                static_cast<const details::DbusSignal &>(
+                    *std::get<1>(args)),
+                *std::get<2>(args));
     }
     catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
@@ -60,28 +64,39 @@ Manager::Manager(
     _bus(std::move(bus)),
     _manager(sdbusplus::server::manager::manager(_bus, root))
 {
-    for (auto &x: _events) {
-        auto pEvent = std::get<0>(x);
-        if (pEvent->type !=
-                details::Event::Type::DBUS_SIGNAL)
-            continue;
+    for (auto &group: _events)
+    {
+        for (auto pEvent: std::get<0>(group))
+        {
+            //int foo = pEvent;
+            if (pEvent->type !=
+                    details::Event::Type::DBUS_SIGNAL)
+                continue;
 
-        // Create a callback context for each event.
-        _sigargs.emplace_back(
-                std::make_unique<SigArg>(
-                    std::make_tuple(
-                        this,
-                        &x)));
-        // Register our callback and the context for
-        // each event.
-        auto &dbusEvent = static_cast<details::DbusSignal &>(
-                *pEvent);
-        _matches.emplace_back(
-                sdbusplus::server::match::match(
-                    _bus,
-                    std::get<0>(dbusEvent),
-                    details::_signal,
-                    _sigargs.back().get()));
+            // Create a callback context for this event group.
+            auto dbusEvent = static_cast<details::DbusSignal *>(
+                    pEvent.get());
+
+            // Go ahead and store an iterator pointing at
+            // the event data to avoid lookups later since
+            // additional signal callbacks aren't added
+            // after the manager is constructed.
+            _sigargs.emplace_back(
+                    std::make_unique<SigArg>(
+                        std::make_tuple(
+                            this,
+                            dbusEvent,
+                            &group)));
+
+            // Register our callback and the context for
+            // each signal event.
+            _matches.emplace_back(
+                    sdbusplus::server::match::match(
+                        _bus,
+                        std::get<0>(*dbusEvent),
+                        details::_signal,
+                        _sigargs.back().get()));
+        }
     }
 
     _bus.request_name(busname);
@@ -149,11 +164,13 @@ void Manager::notify(std::string path, Object object)
     }
 }
 
-void Manager::signal(sdbusplus::message::message &msg, auto &args)
+void Manager::signal(
+        sdbusplus::message::message &msg,
+        const details::DbusSignal &event,
+        const EventInfo &info)
 {
-    auto &event = std::get<0>(args);
-    auto &actions = std::get<1>(args);
-    auto &filter = *std::get<1>(static_cast<details::DbusSignal &>(*event));
+    auto &filter = *std::get<1>(event);
+    auto &actions = std::get<1>(info);
 
     if(filter(msg, *this)) {
         for (auto &action: actions)
