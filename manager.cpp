@@ -66,13 +66,13 @@ Manager::Manager(
                 std::make_unique<SigArg>(
                     std::make_tuple(
                         this,
-                        &x.second)));
+                        &x)));
         // Register our callback and the context for
         // each event.
         _matches.emplace_back(
                 sdbusplus::server::match::match(
                     _bus,
-                    std::get<0>(x.second),
+                    std::get<0>(x),
                     details::_signal,
                     _sigargs.back().get()));
     }

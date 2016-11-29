@@ -109,7 +109,7 @@ class Manager final :
     using HolderPtr = std::unique_ptr<details::holder::Base>;
     using InterfaceComposite = std::map<std::string, HolderPtr>;
     using ObjectReferences = std::map<std::string, InterfaceComposite>;
-    using Events = std::map<const char *, Event>;
+    using Events = std::vector<Event>;
     using MakerType = HolderPtr(*)(
             sdbusplus::bus::bus &, const char *);
     using Makers = std::map<std::string, MakerType>;
