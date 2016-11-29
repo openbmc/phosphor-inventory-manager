@@ -3,6 +3,7 @@
 #include <utility>
 #include <memory>
 #include <sdbusplus/message.hpp>
+#include "utils.hpp"
 
 namespace phosphor
 {
@@ -12,104 +13,36 @@ namespace manager
 {
 
 class Manager;
+namespace details
+{
+using FilterBase = holder::CallableBase<
+    bool, sdbusplus::message::message&, Manager&>;
+using FilterBasePtr = std::shared_ptr<FilterBase>;
+template <typename T>
+using Filter = holder::CallableHolder<
+    T, bool, sdbusplus::message::message&, Manager&>;
+
+/** @brief make_filter
+ *
+ *  Adapt a filter function object.
+ *
+ *  @param[in] filter - The filter being adapted.
+ *  @returns - The adapted filter.
+ *
+ *  @tparam T - The type of the filter being adapted.
+ */
+template <typename T>
+auto make_filter(T&& filter)
+{
+    return Filter<T>::template make_shared<Filter<T>>(
+        std::forward<T>(filter));
+}
+} // namespace details
+
 namespace filters
 {
 namespace details
 {
-namespace holder
-{
-
-/** @struct Base
- *  @brief Match event filter functor holder base.
- *
- *  Provides an un-templated holder for filters of any type with the correct
- *  function call signature.
- */
-struct Base
-{
-    Base() = default;
-    virtual ~Base() = default;
-    Base(const Base&) = delete;
-    Base& operator=(const Base&) = delete;
-    Base(Base&&) = default;
-    Base& operator=(Base&&) = default;
-
-    virtual bool operator()(sdbusplus::message::message &, Manager &) const = 0;
-    virtual bool operator()(sdbusplus::message::message &msg, Manager &mgr)
-    {
-        return const_cast<const Base &>(*this)(msg, mgr);
-    }
-};
-
-/** @struct Holder
- *  @brief Match event filter functor holder.
- *
- *  Adapts a functor of any type (with the correct function call
- *  signature) to a non-templated type usable by the manager for
- *  filtering.
- *
- *  @tparam T - The functor type.
- */
-template <typename T>
-struct Holder final : public Base
-{
-    Holder() = delete;
-    ~Holder() = default;
-    Holder(const Holder&) = delete;
-    Holder & operator=(const Holder&) = delete;
-    Holder(Holder&&) = default;
-    Holder& operator=(Holder&&) = default;
-    explicit Holder(T &&func) : _func(std::forward<T>(func)) { }
-
-    virtual bool operator()(
-            sdbusplus::message::message &msg, Manager &mgr) const override
-    {
-        return _func(msg, mgr);
-    }
-
-    virtual bool operator()(
-            sdbusplus::message::message &msg, Manager &mgr) override
-    {
-        return _func(msg, mgr);
-    }
-
-    private:
-    T _func;
-};
-
-} // namespace holder
-
-/** @struct Wrapper
- *  @brief Provides implicit type conversion from filter functors.
- *
- *  Converts filter functors to ptr-to-holder.
- */
-struct Wrapper
-{
-    template <typename T>
-    Wrapper(T &&func) :
-        _ptr(std::shared_ptr<holder::Base>(
-                    new holder::Holder<T>(std::forward<T>(func)))) { }
-
-    ~Wrapper() = default;
-    Wrapper(const Wrapper&) = default;
-    Wrapper& operator=(const Wrapper&) = delete;
-    Wrapper(Wrapper&&) = default;
-    Wrapper& operator=(Wrapper&&) = default;
-
-    bool operator()(sdbusplus::message::message &msg, Manager &mgr)
-    {
-        return (*_ptr)(msg, mgr);
-    }
-    bool operator()(sdbusplus::message::message &msg, Manager &mgr) const
-    {
-        return (*_ptr)(msg, mgr);
-    }
-
-    private:
-    std::shared_ptr<holder::Base> _ptr;
-};
-
 namespace property_condition
 {
 
