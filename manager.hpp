@@ -97,7 +97,7 @@ class Manager final :
     using Event = std::tuple<
         const char *,
         details::FilterBasePtr,
-        details::ActionBasePtr>;
+        std::vector<details::ActionBasePtr>>;
     using SigArgs = std::vector<
         std::unique_ptr<
             std::tuple<
