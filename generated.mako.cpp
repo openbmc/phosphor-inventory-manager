@@ -59,16 +59,17 @@ const Manager::Events Manager::_events{
             details::make_filter(filters::${e['filter']['type']}),
             % endif
             % if e['action'].get('args'):
-            details::make_action(actions::${e['action']['type']}(
+            std::vector<details::ActionBasePtr>({details::make_action(actions::${e['action']['type']}(
                 % for i, a in enumerate(e['action']['args']):
                     % if i + 1 == len(e['action']['args']):
-                "${a['value']}"))
+                "${a['value']}"))})
                     % else:
                 "${a['value']}",
                     % endif
                 % endfor
             % else:
-            details::make_action(actions::${e['action']['type']})
+            std::vector<details::ActionBasePtr>(
+			    {details::make_action(actions::${e['action']['type']})})
             % endif
         ),
     },
