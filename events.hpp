@@ -22,6 +22,54 @@ template <typename T>
 using Filter = holder::CallableHolder<
     T, bool, sdbusplus::message::message &, Manager &>;
 
+/** @struct Event
+ *  @brief Event object interface.
+ */
+struct Event
+{
+    enum class Type
+    {
+        DBUS_SIGNAL,
+    };
+
+    virtual ~Event() = default;
+    Event(const Event&) = default;
+    Event & operator=(const Event&) = delete;
+    Event(Event&&) = default;
+    Event& operator=(Event&&) = default;
+    explicit Event(Type t) : type(t) {}
+
+    Type type;
+};
+
+using EventBasePtr = std::shared_ptr<Event>;
+
+/** @struct DbusSignal
+ *  @brief DBus signal event.
+ *
+ *  DBus signal events are an association of a match signature
+ *  and filtering function object.
+ *
+ *  @param[in] filter - The filter being adapted.
+ *  @returns - The adapted filter.
+ *
+ *  @tparam T - The type of the filter being adapted.
+ */
+struct DbusSignal final :
+    public Event,
+    public std::tuple<const char *, FilterBasePtr>
+{
+    virtual ~DbusSignal() = default;
+    DbusSignal(const DbusSignal&) = default;
+    DbusSignal & operator=(const DbusSignal&) = delete;
+    DbusSignal(DbusSignal&&) = default;
+    DbusSignal& operator=(DbusSignal&&) = default;
+    DbusSignal(const char *sig, FilterBasePtr filter) :
+        Event(Type::DBUS_SIGNAL),
+        std::tuple<const char *, FilterBasePtr>(
+                sig, std::move(filter)) {}
+};
+
 /** @brief make_filter
  *
  *  Adapt a filter function object.
