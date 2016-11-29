@@ -61,6 +61,11 @@ Manager::Manager(
     _manager(sdbusplus::server::manager::manager(_bus, root))
 {
     for (auto &x: _events) {
+        auto pEvent = std::get<0>(x);
+        if (pEvent->type !=
+                details::Event::Type::DBUS_SIGNAL)
+            continue;
+
         // Create a callback context for each event.
         _sigargs.emplace_back(
                 std::make_unique<SigArg>(
@@ -69,10 +74,12 @@ Manager::Manager(
                         &x)));
         // Register our callback and the context for
         // each event.
+        auto &dbusEvent = static_cast<details::DbusSignal &>(
+                *pEvent);
         _matches.emplace_back(
                 sdbusplus::server::match::match(
                     _bus,
-                    std::get<0>(x),
+                    std::get<0>(dbusEvent),
                     details::_signal,
                     _sigargs.back().get()));
     }
@@ -144,8 +151,9 @@ void Manager::notify(std::string path, Object object)
 
 void Manager::signal(sdbusplus::message::message &msg, auto &args)
 {
-    auto &filter = *std::get<1>(args);
-    auto &actions = std::get<2>(args);
+    auto &event = std::get<0>(args);
+    auto &actions = std::get<1>(args);
+    auto &filter = *std::get<1>(static_cast<details::DbusSignal &>(*event));
 
     if(filter(msg, *this)) {
         for (auto &action: actions)
