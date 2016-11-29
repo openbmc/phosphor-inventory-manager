@@ -37,7 +37,6 @@ const Manager::Events Manager::_events{
     % if e.get('description'):
         // ${e['description']}
     % endif
-        "${e['name']}",
         std::make_tuple(
         % for i, s in enumerate(e['signature'].items()):
             % if i + 1 == len(e['signature']):
