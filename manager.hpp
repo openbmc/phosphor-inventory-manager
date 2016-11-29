@@ -17,67 +17,6 @@ namespace manager
 {
 namespace details
 {
-namespace interface
-{
-namespace holder
-{
-
-/** @struct Base
- *  @brief sdbusplus server interface holder base.
- *
- *  Provides a common type for assembling containers of sdbusplus server
- *  interfaces.  Typically a multiple inheritance scheme (sdbusplus::object)
- *  would be used for this; however, for objects created by PIM the interfaces
- *  are not known at build time.
- */
-struct Base
-{
-    Base() = default;
-    virtual ~Base() = default;
-    Base(const Base&) = delete;
-    Base& operator=(const Base&) = delete;
-    Base(Base&&) = default;
-    Base& operator=(Base&&) = default;
-};
-
-/** @struct Holder
- *  @brief sdbusplus server interface holder.
- *
- *  Holds a pointer to an sdbusplus server interface instance.
- *
- *  @tparam T - The sdbusplus server interface type to hold.
- */
-template <typename T>
-struct Holder final : public Base
-{
-    Holder() = delete;
-    ~Holder() = default;
-    Holder(const Holder&) = delete;
-    Holder& operator=(const Holder&) = delete;
-    Holder(Holder&&) = default;
-    Holder& operator=(Holder&&) = default;
-    explicit Holder(auto &&ptr) noexcept : _ptr(std::move(ptr)) {}
-
-    /** @brief sdbusplus server interface holder factory method.
-     *
-     *  @param bus[in] - An sdbusplus bus connection
-     *  @param bus[in] - The path of the object for which
-     *          an interface is to be held.
-     *  @returns A held interface.
-     */
-    static auto make(sdbusplus::bus::bus &bus, const char *path)
-    {
-        return static_cast<std::unique_ptr<Base>>(
-                std::make_unique<Holder<T>>(
-                    std::make_unique<T>(bus, path)));
-    }
-
-    private:
-    std::unique_ptr<T> _ptr;
-};
-
-} // namespace holder
-} // namespace interface
 
 template <typename T>
 using ServerObject = typename sdbusplus::server::object::object<T>;
@@ -85,6 +24,28 @@ using ServerObject = typename sdbusplus::server::object::object<T>;
 using ManagerIface =
     sdbusplus::server::xyz::openbmc_project::Inventory::Manager;
 
+/** @struct MakeInterface
+ *  @brief Adapt an sdbusplus interface proxy.
+ *
+ *  Template instances are builder functions that create
+ *  adapted sdbusplus interface proxy interface objects.
+ *
+ *  @tparam T - The type of the interface being adapted.
+ */
+template <typename T>
+struct MakeInterface
+{
+    static decltype(auto) make(sdbusplus::bus::bus &bus, const char *path)
+    {
+        using HolderType = holder::Holder<std::unique_ptr<T>>;
+        return static_cast<std::unique_ptr<holder::Base>>(
+            HolderType::template make_unique<HolderType>(
+                std::forward<std::unique_ptr<T>>(
+                    std::make_unique<T>(
+                        std::forward<decltype(bus)>(bus),
+                        std::forward<decltype(path)>(path)))));
+    }
+};
 } // namespace details
 
 /** @class Manager
@@ -135,8 +96,8 @@ class Manager final :
 
     using Event = std::tuple<
         const char *,
-        filters::details::Wrapper,
-        actions::details::Wrapper>;
+        details::FilterBasePtr,
+        details::ActionBasePtr>;
     using SigArgs = std::vector<
         std::unique_ptr<
             std::tuple<
@@ -145,8 +106,7 @@ class Manager final :
     using SigArg = SigArgs::value_type::element_type;
 
     private:
-    using Holder = details::interface::holder::Base;
-    using HolderPtr = std::unique_ptr<Holder>;
+    using HolderPtr = std::unique_ptr<details::holder::Base>;
     using InterfaceComposite = std::map<std::string, HolderPtr>;
     using ObjectReferences = std::map<std::string, InterfaceComposite>;
     using Events = std::map<const char *, Event>;

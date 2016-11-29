@@ -8,6 +8,7 @@
         return '::'.join(lst)
 %>
 #include "manager.hpp"
+#include "utils.hpp"
 % for i in interfaces:
 #include <${'/'.join(i.split('.') + ['server.hpp'])}>
 % endfor
@@ -23,7 +24,7 @@ const Manager::Makers Manager::_makers{
 % for i in interfaces:
     {
         "${i}",
-        details::interface::holder::Holder<
+        details::MakeInterface<
             details::ServerObject<
                 sdbusplus::${interface_type(i)}>>::make,
     },
@@ -46,28 +47,28 @@ const Manager::Events Manager::_events{
             % endif
         % endfor
             % if e['filter'].get('args'):
-            filters::${e['filter']['type']}(
+            details::make_filter(filters::${e['filter']['type']}(
                 % for i, a in enumerate(e['filter']['args']):
                     % if i + 1 == len(e['filter']['args']):
-                "${a['value']}"),
+                "${a['value']}")),
                     % else:
                 "${a['value']}",
                     % endif
                 % endfor
             % else:
-            filters::${e['filter']['type']},
+            details::make_filter(filters::${e['filter']['type']}),
             % endif
             % if e['action'].get('args'):
-            actions::${e['action']['type']}(
+            details::make_action(actions::${e['action']['type']}(
                 % for i, a in enumerate(e['action']['args']):
                     % if i + 1 == len(e['action']['args']):
-                "${a['value']}")
+                "${a['value']}"))
                     % else:
                 "${a['value']}",
                     % endif
                 % endfor
             % else:
-            actions::${e['action']['type']}
+            details::make_action(actions::${e['action']['type']})
             % endif
         ),
     },

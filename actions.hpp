@@ -2,6 +2,7 @@
 
 #include <utility>
 #include <memory>
+#include "utils.hpp"
 
 namespace phosphor
 {
@@ -9,106 +10,34 @@ namespace inventory
 {
 namespace manager
 {
+
 class Manager;
+namespace details
+{
+using ActionBase = holder::CallableBase<void, Manager &>;
+using ActionBasePtr = std::shared_ptr<ActionBase>;
+template <typename T>
+using Action = holder::CallableHolder<T, void, Manager &>;
+
+/** @brief make_action
+ *
+ *  Adapt an action function object.
+ *
+ *  @param[in] action - The action being adapted.
+ *  @returns - The adapted action.
+ *
+ *  @tparam T - The type of the action being adapted.
+ */
+template <typename T>
+decltype(auto) make_action(T && action)
+{
+    return Action<T>::template make_shared<Action<T>>(
+        std::forward<decltype(action)>(action));
+}
+} // namespace details
 
 namespace actions
 {
-namespace details
-{
-namespace holder
-{
-
-/** @struct Base
- *  @brief Event action functor holder base.
- *
- *  Provides an un-templated holder for actionsof any type with the correct
- *  function call signature.
- */
-struct Base
-{
-    Base() = default;
-    virtual ~Base() = default;
-    Base(const Base&) = delete;
-    Base& operator=(const Base&) = delete;
-    Base(Base&&) = default;
-    Base& operator=(Base&&) = default;
-
-    virtual void operator()(Manager &mgr) const = 0;
-    virtual void operator()(Manager &mgr)
-    {
-        const_cast<const Base &>(*this)(mgr);
-    }
-};
-
-/** @struct Holder
- *  @brief Event action functor holder.
- *
- *  Adapts a functor of any type (with the correct function call
- *  signature) to a non-templated type usable by the manager for
- *  actions.
- *
- *  @tparam T - The functor type.
- */
-template <typename T>
-struct Holder final : public Base
-{
-    Holder() = delete;
-    ~Holder() = default;
-    Holder(const Holder&) = delete;
-    Holder & operator=(const Holder&) = delete;
-    Holder(Holder&&) = default;
-    Holder& operator=(Holder&&) = default;
-    explicit Holder(T &&func) : _func(std::forward<T>(func)) {}
-
-    virtual void operator()(Manager &mgr) const override
-    {
-        _func(mgr);
-    }
-
-    virtual void operator()(Manager &mgr) override
-    {
-        _func(mgr);
-    }
-
-    private:
-    T _func;
-};
-
-} // namespace holder
-
-/** @struct Wrapper
- *  @brief Provides implicit type conversion from action functors.
- *
- *  Converts action functors to ptr-to-holder.
- */
-struct Wrapper
-{
-    template <typename T>
-    Wrapper(T &&func) :
-        _ptr(static_cast<std::shared_ptr<holder::Base>>(
-                    std::make_shared<holder::Holder<T>>(
-                        std::forward<T>(func)))) { }
-
-    ~Wrapper() = default;
-    Wrapper(const Wrapper&) = default;
-    Wrapper& operator=(const Wrapper&) = delete;
-    Wrapper(Wrapper&&) = default;
-    Wrapper& operator=(Wrapper&&) = default;
-
-    void operator()(Manager &mgr)
-    {
-        (*_ptr)(mgr);
-    }
-    void operator()(Manager &mgr) const
-    {
-        (*_ptr)(mgr);
-    }
-
-    private:
-    std::shared_ptr<holder::Base> _ptr;
-};
-
-} // namespace details
 
 /** @brief The default action.  */
 inline void noop(Manager &mgr) noexcept { }
