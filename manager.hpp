@@ -6,7 +6,7 @@
 #include <vector>
 #include <sdbusplus/server.hpp>
 #include "xyz/openbmc_project/Inventory/Manager/server.hpp"
-#include "filters.hpp"
+#include "events.hpp"
 #include "actions.hpp"
 
 namespace phosphor
