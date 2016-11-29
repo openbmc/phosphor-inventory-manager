@@ -38,7 +38,8 @@ const Manager::Events Manager::_events{
         // ${e['description']}
     % endif
         std::make_tuple(
-	    std::make_shared<details::DbusSignal>(
+            std::vector<details::EventBasePtr>({
+	        std::make_shared<details::DbusSignal>(
         % for i, s in enumerate(e['signature'].items()):
             % if i + 1 == len(e['signature']):
             ${'"{0}=\'{1}\'"'.format(*s)},
@@ -50,13 +51,13 @@ const Manager::Events Manager::_events{
                 details::make_filter(filters::${e['filter']['type']}(
                 % for i, a in enumerate(e['filter']['args']):
                     % if i + 1 == len(e['filter']['args']):
-                "${a['value']}"))),
+                "${a['value']}")))}),
                     % else:
                 "${a['value']}",
                     % endif
                 % endfor
             % else:
-                details::make_filter(filters::${e['filter']['type']})),
+                details::make_filter(filters::${e['filter']['type']}))}),
             % endif
             % if e['action'].get('args'):
             std::vector<details::ActionBasePtr>({details::make_action(actions::${e['action']['type']}(
