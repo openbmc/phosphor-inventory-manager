@@ -175,6 +175,31 @@ void Manager::destroyObject(const char *path)
     _refs.erase(_root + p);
 }
 
+details::holder::Base& Manager::getInterfaceHolder(
+        const char *path, const char *interface)
+{
+    return const_cast<const Manager *>(
+            this)->getInterfaceHolder(path, interface);
+}
+
+details::holder::Base& Manager::getInterfaceHolder(
+        const char *path, const char *interface) const
+{
+    std::string p{path};
+    auto oit = _refs.find(_root + p);
+    if(oit == _refs.end())
+        throw std::runtime_error(
+                _root + p + " was not found");
+
+    auto &obj = oit->second;
+    auto iit = obj.find(interface);
+    if(iit == obj.end())
+        throw std::runtime_error(
+                "interface was not found");
+
+    return *iit->second;
+}
+
 } // namespace manager
 } // namespace inventory
 } // namespace phosphor

@@ -77,6 +77,18 @@ struct Holder : public Base
                 std::forward<Held>(held));
     }
 
+    /** @brief Provides a weak reference to the held interface. */
+    T& get()
+    {
+        return _held;
+    }
+
+    /** @brief Provides a weak reference to the held interface. */
+    const T& get() const
+    {
+        return _held;
+    }
+
     protected:
         T _held;
 };
