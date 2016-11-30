@@ -94,6 +94,30 @@ class Manager final :
     /** @brief Drop an object from DBus. */
     void destroyObject(const char *);
 
+    /** @brief Invoke an sdbusplus server binding method.
+     *
+     *  Invoke the requested method with a reference to the requested
+     *  sdbusplus server binding interface as a parameter.
+     *
+     *  @tparam T - The sdbusplus server binding interface type.
+     *  @tparam U - The type of the sdbusplus server binding member.
+     *  @tparam Args - Argument types of the binding member.
+     *
+     *  @param[in] path - The DBus path on which the method should
+     *      be invoked.
+     *  @param[in] interface - The DBus interface hosting the method.
+     *  @param[in] member - Pointer to sdbusplus server binding member.
+     *  @param[in] args - Arguments to forward to the binding member.
+     */
+    template<typename T, typename U, typename ...Args>
+    decltype(auto) invokeMethod(const char *path, const char *interface,
+            U&& member, Args&&...args)
+    {
+        auto &holder = getInterface<std::unique_ptr<T>>(path, interface);
+        auto &iface = *holder.get();
+        return (iface.*member)(std::forward<Args>(args)...);
+    }
+
     using EventInfo = std::tuple<
         std::vector<details::EventBasePtr>,
         std::vector<details::ActionBasePtr>>;
