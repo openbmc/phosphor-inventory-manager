@@ -7,18 +7,22 @@ events:
           Matches any PropertiesChanged signal emitted
           by /xyz/openbmc_project/testing.
       type: match
-      signature:
-          type: signal
-          path: /xyz/openbmc_project/Inventory/example
-          interface: org.freedesktop.DBus.Properties
-          member: PropertiesChanged
-      filter:
-          type: propertyChangedTo
-          args:
-            - value: xyz.openbmc_project.Example.Iface1
-            - value: ExampleProperty1
-            - value: teststring
-      action:
-          type: destroyObject("Example")
+      signatures:
+          - type: signal
+            path: /xyz/openbmc_project/Inventory/example
+            interface: org.freedesktop.DBus.Properties
+            member: PropertiesChanged
+      filters:
+          - name: propertyChangedTo
+            args:
+              interface: xyz.openbmc_project.Example.Iface1
+              property: ExampleProperty1
+              value:
+                  type: string
+                  value: testString
+      actions:
+          - name: destroyObject
+            args:
+                path: Example
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
