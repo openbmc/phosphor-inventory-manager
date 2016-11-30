@@ -49,14 +49,20 @@ class Argument(sdbusplus.property.Property):
 
     def __init__(self, **kw):
         self.value = kw.pop('value')
+        self.cast = kw.pop('cast', None)
         super(Argument, self).__init__(**kw)
 
     def cppArg(self):
         '''Transform string types to c++ string constants.'''
-        if self.typeName == 'string':
-            return '"%s"' % self.value
 
-        return self.value
+        a = self.value
+        if self.typeName == 'string':
+            a = '"%s"' % a
+
+        if self.cast:
+            a = 'static_cast<%s>(%s)' % (self.cast, a)
+
+        return a
 
 
 class MethodCall(NamedElement, Renderer):
@@ -64,6 +70,7 @@ class MethodCall(NamedElement, Renderer):
 
     def __init__(self, **kw):
         self.namespace = kw.pop('namespace', [])
+        self.template = kw.pop('template', '')
         self.pointer = kw.pop('pointer', False)
         self.args = \
             [Argument(**x) for x in kw.pop('args', [])]
@@ -72,7 +79,12 @@ class MethodCall(NamedElement, Renderer):
     def bare_method(self):
         '''Provide the method name and encompassing
         namespace without any arguments.'''
-        return '::'.join(self.namespace + [self.name])
+
+        m = '::'.join(self.namespace + [self.name])
+        if self.template:
+            m += '<%s>' % self.template
+
+        return m
 
 
 class Filter(MethodCall):
@@ -111,6 +123,30 @@ class DestroyObject(Action):
         super(DestroyObject, self).__init__(**kw)
 
 
+class SetProperty(Action):
+    '''Render a setProperty action.'''
+
+    def __init__(self, **kw):
+        mapped = kw.pop('args')
+        member = Interface(mapped['interface']).namespace()
+        member = '&%s' % '::'.join(
+            member.split('::') + [NamedElement(
+                name=mapped['property']).camelCase])
+
+        memberType = Argument(**mapped['value']).cppTypeName
+
+        kw['template'] = Interface(mapped['interface']).namespace()
+        kw['args'] = [
+            {'value': mapped['path'], 'type':'string'},
+            {'value': mapped['interface'], 'type':'string'},
+            {'value': member, 'cast': '{0} ({1}::*)({0})'.format(
+                memberType,
+                Interface(mapped['interface']).namespace())},
+            mapped['value'],
+        ]
+        super(SetProperty, self).__init__(**kw)
+
+
 class NoopAction(Action):
     '''Render a noop action.'''
 
@@ -146,6 +182,7 @@ class Event(NamedElement, Renderer):
     action_map = {
         'noop': NoopAction,
         'destroyObject': DestroyObject,
+        'setProperty': SetProperty,
     }
 
     def __init__(self, **kw):
