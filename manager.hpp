@@ -114,6 +114,45 @@ class Manager final :
             sdbusplus::bus::bus &, const char *);
     using Makers = std::map<std::string, MakerType>;
 
+    /** @brief Provides weak references to interface holders.
+     *
+     *  @param[in] path - The DBus path for which the interface
+     *      holder instance should be provided.
+     *  @param[in] interface - The DBus interface for which the
+     *      holder instance should be provided.
+     *
+     *  @returns A weak reference to the holder instance.
+     */
+    details::holder::Base& getInterfaceHolder(
+            const char *, const char *) const;
+    details::holder::Base& getInterfaceHolder(
+            const char *, const char *);
+
+    /** @brief Provides weak references to interface holder.
+     *
+     *  @tparam T - The sdbusplus server binding interface type.
+     *
+     *  @param[in] path - The DBus path for which the interface
+     *      should be provided.
+     *  @param[in] interface - The DBus interface to obtain.
+     *
+     *  @returns A weak reference to the interface.
+     */
+    template<typename T>
+    decltype(auto) getInterface(const char *path, const char *interface)
+    {
+        auto &holder = getInterfaceHolder(path, interface);
+        return static_cast<
+            details::holder::Holder<T> &>(holder);
+    }
+    template<typename T>
+    decltype(auto) getInterface(const char *path, const char *interface) const
+    {
+        auto &holder = getInterfaceHolder(path, interface);
+        return static_cast<
+            const details::holder::Holder<T> &>(holder);
+    }
+
     /** @brief Provided for testing only. */
     bool _shutdown;
 
