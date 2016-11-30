@@ -6,11 +6,11 @@ events:
       description: >
           Matches any PropertiesChanged signal.
       type: match
-      signature:
-          type: signal
-          interface: org.freedesktop.DBus.Properties
-          member: PropertiesChanged
-      action:
-          type: noop
+      signatures:
+          - type: signal
+            interface: org.freedesktop.DBus.Properties
+            member: PropertiesChanged
+      actions:
+          - name: noop
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
