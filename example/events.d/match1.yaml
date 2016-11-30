@@ -11,6 +11,13 @@ events:
             interface: org.freedesktop.DBus.Properties
             member: PropertiesChanged
       actions:
-          - name: noop
+          - name: setProperty
+            args:
+              interface: xyz.openbmc_project.Example.Iface1
+              property: ExampleProperty1
+              path: /test
+              value:
+                type: string
+                value: test
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
