@@ -4,20 +4,31 @@ description: >
 events:
     - name: Example Match(1)
       description: >
-          Matches any PropertiesChanged signal.
+          Sets the value of ExampleProperty1 on /changeme
+          when the value of ExampleProperty2 on
+          /testing/inventory/trigger2 changes to yyyxxx.
       type: match
       signatures:
           - type: signal
             interface: org.freedesktop.DBus.Properties
+            path: /testing/inventory/trigger2
             member: PropertiesChanged
+      filters:
+          - name: propertyChangedTo
+            args:
+              interface: xyz.openbmc_project.Example.Iface2
+              property: ExampleProperty2
+              value:
+                  type: string
+                  value: yyyxxx
       actions:
           - name: setProperty
             args:
               interface: xyz.openbmc_project.Example.Iface1
               property: ExampleProperty1
-              path: /test
+              path: /changeme
               value:
                 type: string
-                value: test
+                value: changed
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
