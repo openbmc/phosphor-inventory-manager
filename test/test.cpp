@@ -261,6 +261,54 @@ void runTests(phosphor::inventory::manager::Manager &mgr)
         }
     }
 
+    // Validate the set property action.
+    {
+        ObjectPath relChangeMe{"/changeme"};
+        ObjectPath relTriggerTwo{"/trigger2"};
+        ObjectPath changeMe{root + relChangeMe};
+        ObjectPath triggerTwo{root + relTriggerTwo};
+
+        // Create an object to be updated by the set property action.
+        {
+            auto m = notify();
+            m.append(relChangeMe);
+            m.append(obj);
+            b.call(m);
+        }
+
+        // Create the triggering object.
+        {
+            auto m = notify();
+            m.append(relTriggerTwo);
+            m.append(obj);
+            b.call(m);
+        }
+
+        // Trigger and validate the change.
+        {
+            SignalQueue queue(
+                    "path='" + changeMe + "',member='PropertiesChanged'");
+            auto m = set(triggerTwo);
+            m.append("xyz.openbmc_project.Example.Iface2");
+            m.append("ExampleProperty2");
+            m.append(sdbusplus::message::variant<std::string>("yyyxxx"));
+            b.call(m);
+
+            std::string sigInterface;
+            std::map<
+                std::string,
+                sdbusplus::message::variant<std::string>> sigProperties;
+            {
+                std::vector<std::string> interfaces;
+                auto sig{queue.pop()};
+                sig.read(sigInterface);
+                assert(sigInterface == "xyz.openbmc_project.Example.Iface1");
+                sig.read(sigProperties);
+                assert(sigProperties["ExampleProperty1"] == "changed");
+            }
+        }
+    }
+
     mgr.shutdown();
     std::cout << "Success!" << std::endl;
 }
