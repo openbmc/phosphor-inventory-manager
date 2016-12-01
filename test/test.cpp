@@ -100,6 +100,25 @@ auto hasProperties(const Object<T...> &l, const Object<T...> &r)
     return result.empty();
 }
 
+/**@brief Check an object for one or more interfaces. */
+template <typename ...T>
+auto hasInterfaces(const std::vector<std::string> &l, const Object<T...> &r)
+{
+    std::vector<std::string> stripped, interfaces;
+    std::transform(
+            r.cbegin(),
+            r.cend(),
+            std::back_inserter(stripped),
+            [](auto &p){ return p.first; });
+    std::set_difference(
+            stripped.cbegin(),
+            stripped.cend(),
+            l.cbegin(),
+            l.cend(),
+            std::back_inserter(interfaces));
+    return interfaces.empty();
+}
+
 void runTests(phosphor::inventory::manager::Manager &mgr)
 {
     const std::string root{ROOT};
@@ -111,6 +130,14 @@ void runTests(phosphor::inventory::manager::Manager &mgr)
                 ROOT,
                 INTERFACE,
                 "Notify");
+    };
+    auto set = [&](const std::string &path)
+    {
+        return b.new_method_call(
+                SERVICE,
+                path.c_str(),
+                "org.freedesktop.DBus.Properties",
+                "Set");
     };
 
     Object<std::string> obj{
@@ -147,6 +174,91 @@ void runTests(phosphor::inventory::manager::Manager &mgr)
         assert(hasProperties(signalObject, obj));
         auto moreSignals{queue.pop()};
         assert(!moreSignals);
+    }
+
+    // Make sure DBus signals are handled.
+    {
+        ObjectPath relDeleteMeOne{"/deleteme1"};
+        ObjectPath relDeleteMeTwo{"/deleteme2"};
+        ObjectPath relTriggerOne{"/trigger1"};
+        ObjectPath deleteMeOne{root + relDeleteMeOne};
+        ObjectPath deleteMeTwo{root + relDeleteMeTwo};
+        ObjectPath triggerOne{root + relTriggerOne};
+
+        // Create some objects to be deleted by an action.
+        {
+            auto m = notify();
+            m.append(relDeleteMeOne);
+            m.append(obj);
+            b.call(m);
+        }
+        {
+            auto m = notify();
+            m.append(relDeleteMeTwo);
+            m.append(obj);
+            b.call(m);
+        }
+
+        // Create the triggering object.
+        {
+            auto m = notify();
+            m.append(relTriggerOne);
+            m.append(obj);
+            b.call(m);
+        }
+
+        // Set a property that should not trigger due to a filter.
+        {
+            SignalQueue queue(
+                    "path='" + root + "',member='InterfacesRemoved'");
+            auto m = set(triggerOne);
+            m.append("xyz.openbmc_project.Example.Iface2");
+            m.append("ExampleProperty2");
+            m.append(sdbusplus::message::variant<std::string>("abc123"));
+            b.call(m);
+            auto sig{queue.pop()};
+            assert(!sig);
+        }
+
+        // Set a property that should trigger.
+        {
+            SignalQueue queue(
+                    "path='" + root + "',member='InterfacesRemoved'");
+
+            auto m = set(triggerOne);
+            m.append("xyz.openbmc_project.Example.Iface2");
+            m.append("ExampleProperty2");
+            m.append(sdbusplus::message::variant<std::string>("xxxyyy"));
+            b.call(m);
+
+            ObjectPath sigpath;
+            std::vector<std::string> interfaces;
+            {
+                std::vector<std::string> interfaces;
+                auto sig{queue.pop()};
+                assert(sig);
+                sig.read(sigpath);
+                assert(sigpath == deleteMeOne);
+                sig.read(interfaces);
+                std::sort(interfaces.begin(), interfaces.end());
+                assert(hasInterfaces(interfaces, obj));
+            }
+            {
+                std::vector<std::string> interfaces;
+                auto sig{queue.pop()};
+                assert(sig);
+                sig.read(sigpath);
+                assert(sigpath == deleteMeTwo);
+                sig.read(interfaces);
+                std::sort(interfaces.begin(), interfaces.end());
+                assert(hasInterfaces(interfaces, obj));
+            }
+            {
+                // Make sure there were only two signals.
+                auto sig{queue.pop()};
+                assert(!sig);
+            }
+        }
     }
 
     mgr.shutdown();
