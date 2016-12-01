@@ -4,25 +4,30 @@ description: >
 events:
     - name: Example Match(2)
       description: >
-          Matches any PropertiesChanged signal emitted
-          by /xyz/openbmc_project/testing.
+          Destroys the /deleteme1 and /deleteme2 objects
+          When the value of ExampleProperty2 on
+          /testing/inventory/trigger changes to xxxyyy.
       type: match
       signatures:
           - type: signal
-            path: /xyz/openbmc_project/Inventory/example
+            path: /testing/inventory/trigger1
             interface: org.freedesktop.DBus.Properties
             member: PropertiesChanged
       filters:
           - name: propertyChangedTo
             args:
-              interface: xyz.openbmc_project.Example.Iface1
-              property: ExampleProperty1
+              interface: xyz.openbmc_project.Example.Iface2
+              property: ExampleProperty2
               value:
                   type: string
-                  value: testString
+                  value: xxxyyy
       actions:
           - name: destroyObject
             args:
-                path: Example
+                path: /deleteme1
+          - name: destroyObject
+            args:
+                path: /deleteme2
+
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
