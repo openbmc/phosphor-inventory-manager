@@ -135,7 +135,7 @@ struct PropertyCondition
         if(it == properties.cend())
             return false;
 
-        return _condition(it->second);
+        return _condition(it->second.template get<T>());
     }
 
     private:
@@ -160,7 +160,10 @@ auto propertyChangedTo(
         const char *property,
         T val)
 {
-    auto condition = [val = std::move(val)](auto arg){return arg == val;};
+    auto condition = [val = std::move(val)](const std::string &arg)
+    {
+        return arg == val;
+    };
     using U = decltype(condition);
     return details::property_condition::PropertyCondition<T, U>(
             iface, property, std::move(condition));
