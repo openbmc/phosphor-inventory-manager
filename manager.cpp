@@ -82,19 +82,17 @@ Manager::Manager(
             // after the manager is constructed.
             _sigargs.emplace_back(
                     std::make_unique<SigArg>(
-                        std::make_tuple(
                             this,
                             dbusEvent,
-                            &group)));
+                            &group));
 
             // Register our callback and the context for
             // each signal event.
             _matches.emplace_back(
-                    sdbusplus::server::match::match(
                         _bus,
                         std::get<0>(*dbusEvent),
                         details::_signal,
-                        _sigargs.back().get()));
+                        _sigargs.back().get());
         }
     }
 
@@ -145,18 +143,15 @@ void Manager::notify(std::string path, Object object)
                 throw std::runtime_error(
                         "Unimplemented interface: " + x.first);
 
-            ref.emplace(
-                    std::make_pair(
-                        x.first,
-                        (maker->second)(_bus, path.c_str())));
+            ref.emplace(x.first,
+                    (maker->second)(_bus, path.c_str()));
         }
 
         // Hang on to a reference to the object (interfaces)
         // so it stays on the bus, and so we can make calls
         // to it if needed.
         _refs.emplace(
-                std::make_pair(
-                    path, std::move(ref)));
+                path, std::move(ref));
     }
     catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
