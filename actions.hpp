@@ -71,7 +71,7 @@ inline auto destroyObject(const char* path)
  *      to the requested value.
  */
 template <typename T, typename U, typename V>
-decltype(auto) setProperty(
+auto setProperty(
     const char* path, const char* iface,
     U&& member, V&& value)
 {

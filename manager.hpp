@@ -35,7 +35,7 @@ using ManagerIface =
 template <typename T>
 struct MakeInterface
 {
-    static decltype(auto) make(sdbusplus::bus::bus& bus, const char* path)
+    static auto make(sdbusplus::bus::bus& bus, const char* path)
     {
         using HolderType = holder::Holder<std::unique_ptr<T>>;
         return static_cast<std::unique_ptr<holder::Base>>(
