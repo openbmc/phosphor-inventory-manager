@@ -31,20 +31,22 @@ namespace details
  *  Extracts per-signal specific context and forwards the call to the manager
  *  instance.
  */
-auto _signal(sd_bus_message *m, void *data, sd_bus_error *e) noexcept
+auto _signal(sd_bus_message* m, void* data, sd_bus_error* e) noexcept
 {
-    try {
+    try
+    {
         auto msg = sdbusplus::message::message(m);
-        auto &args = *static_cast<Manager::SigArg*>(data);
+        auto& args = *static_cast<Manager::SigArg*>(data);
         sd_bus_message_ref(m);
-        auto &mgr = *std::get<0>(args);
+        auto& mgr = *std::get<0>(args);
         mgr.signal(
-                msg,
-                static_cast<const details::DbusSignal &>(
-                    *std::get<1>(args)),
-                *std::get<2>(args));
+            msg,
+            static_cast<const details::DbusSignal&>(
+                *std::get<1>(args)),
+            *std::get<2>(args));
     }
-    catch (const std::exception &e) {
+    catch (const std::exception& e)
+    {
         std::cerr << e.what() << std::endl;
     }
 
@@ -54,45 +56,47 @@ auto _signal(sd_bus_message *m, void *data, sd_bus_error *e) noexcept
 } // namespace details
 
 Manager::Manager(
-        sdbusplus::bus::bus &&bus,
-        const char *busname,
-        const char *root,
-        const char *iface) :
+    sdbusplus::bus::bus&& bus,
+    const char* busname,
+    const char* root,
+    const char* iface) :
     details::ServerObject<details::ManagerIface>(bus, root),
     _shutdown(false),
     _root(root),
     _bus(std::move(bus)),
     _manager(sdbusplus::server::manager::manager(_bus, root))
 {
-    for (auto &group: _events)
+    for (auto& group : _events)
     {
-        for (auto pEvent: std::get<0>(group))
+        for (auto pEvent : std::get<0>(group))
         {
             if (pEvent->type !=
-                    details::Event::Type::DBUS_SIGNAL)
+                details::Event::Type::DBUS_SIGNAL)
+            {
                 continue;
+            }
 
             // Create a callback context for this event group.
-            auto dbusEvent = static_cast<details::DbusSignal *>(
-                    pEvent.get());
+            auto dbusEvent = static_cast<details::DbusSignal*>(
+                                 pEvent.get());
 
             // Go ahead and store an iterator pointing at
             // the event data to avoid lookups later since
             // additional signal callbacks aren't added
             // after the manager is constructed.
             _sigargs.emplace_back(
-                    std::make_unique<SigArg>(
-                            this,
-                            dbusEvent,
-                            &group));
+                std::make_unique<SigArg>(
+                    this,
+                    dbusEvent,
+                    &group));
 
             // Register our callback and the context for
             // each signal event.
             _matches.emplace_back(
-                        _bus,
-                        std::get<0>(*dbusEvent),
-                        details::_signal,
-                        _sigargs.back().get());
+                _bus,
+                std::get<0>(*dbusEvent),
+                details::_signal,
+                _sigargs.back().get());
         }
     }
 
@@ -106,12 +110,15 @@ void Manager::shutdown() noexcept
 
 void Manager::run() noexcept
 {
-    while(!_shutdown) {
-        try {
+    while (!_shutdown)
+    {
+        try
+        {
             _bus.process_discard();
             _bus.wait(5000000);
         }
-        catch (const std::exception &e) {
+        catch (const std::exception& e)
+        {
             std::cerr << e.what() << std::endl;
         }
     }
@@ -119,86 +126,92 @@ void Manager::run() noexcept
 
 void Manager::notify(std::string path, Object object)
 {
-    try {
-        if(object.cbegin() == object.cend())
+    try
+    {
+        if (object.cbegin() == object.cend())
             throw std::runtime_error(
-                    "No interfaces in " + path);
+                "No interfaces in " + path);
 
         path.insert(0, _root);
 
         auto obj = _refs.find(path);
-        if(obj != _refs.end())
+        if (obj != _refs.end())
             throw std::runtime_error(
-                    obj->first + " already exists");
+                obj->first + " already exists");
 
         // Create an interface holder for each interface
         // provided by the client and group them into
         // a container.
         InterfaceComposite ref;
 
-        for (auto &x: object) {
+        for (auto& x : object)
+        {
             auto maker = _makers.find(x.first.c_str());
 
-            if(maker == _makers.end())
+            if (maker == _makers.end())
                 throw std::runtime_error(
-                        "Unimplemented interface: " + x.first);
+                    "Unimplemented interface: " + x.first);
 
             ref.emplace(x.first,
-                    (maker->second)(_bus, path.c_str()));
+                        (maker->second)(_bus, path.c_str()));
         }
 
         // Hang on to a reference to the object (interfaces)
         // so it stays on the bus, and so we can make calls
         // to it if needed.
         _refs.emplace(
-                path, std::move(ref));
+            path, std::move(ref));
     }
-    catch (const std::exception &e) {
+    catch (const std::exception& e)
+    {
         std::cerr << e.what() << std::endl;
     }
 }
 
 void Manager::signal(
-        sdbusplus::message::message &msg,
-        const details::DbusSignal &event,
-        const EventInfo &info)
+    sdbusplus::message::message& msg,
+    const details::DbusSignal& event,
+    const EventInfo& info)
 {
-    auto &filter = *std::get<1>(event);
-    auto &actions = std::get<1>(info);
+    auto& filter = *std::get<1>(event);
+    auto& actions = std::get<1>(info);
 
-    if(filter(msg, *this)) {
-        for (auto &action: actions)
+    if (filter(msg, *this))
+    {
+        for (auto& action : actions)
+        {
             (*action)(*this);
+        }
     }
 }
 
-void Manager::destroyObject(const char *path)
+void Manager::destroyObject(const char* path)
 {
     std::string p{path};
     _refs.erase(_root + p);
 }
 
 details::holder::Base& Manager::getInterfaceHolder(
-        const char *path, const char *interface)
+    const char* path, const char* interface)
 {
-    return const_cast<const Manager *>(
-            this)->getInterfaceHolder(path, interface);
+    return const_cast<const Manager*>(
+               this)->getInterfaceHolder(path, interface);
 }
 
 details::holder::Base& Manager::getInterfaceHolder(
-        const char *path, const char *interface) const
+    const char* path, const char* interface) const
 {
     std::string p{path};
     auto oit = _refs.find(_root + p);
-    if(oit == _refs.end())
+    if (oit == _refs.end())
         throw std::runtime_error(
-                _root + p + " was not found");
+            _root + p + " was not found");
 
-    auto &obj = oit->second;
+    auto& obj = oit->second;
     auto iit = obj.find(interface);
-    if(iit == obj.end())
+    if (iit == obj.end())
         throw std::runtime_error(
-                "interface was not found");
+            "interface was not found");
 
     return *iit->second;
 }

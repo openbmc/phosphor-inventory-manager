@@ -15,12 +15,12 @@ namespace manager
 class Manager;
 namespace details
 {
-using FilterBase = holder::CallableBase<
-    bool, sdbusplus::message::message&, Manager&>;
+using FilterBase = holder::CallableBase <
+                   bool, sdbusplus::message::message&, Manager& >;
 using FilterBasePtr = std::shared_ptr<FilterBase>;
 template <typename T>
-using Filter = holder::CallableHolder<
-    T, bool, sdbusplus::message::message&, Manager&>;
+using Filter = holder::CallableHolder <
+               T, bool, sdbusplus::message::message&, Manager& >;
 
 /** @struct Event
  *  @brief Event object interface.
@@ -52,11 +52,11 @@ using EventBasePtr = std::shared_ptr<Event>;
  */
 struct DbusSignal final :
     public Event,
-    public std::tuple<const char *, FilterBasePtr>
+    public std::tuple<const char*, FilterBasePtr>
 {
     virtual ~DbusSignal() = default;
     DbusSignal(const DbusSignal&) = default;
-    DbusSignal & operator=(const DbusSignal&) = delete;
+    DbusSignal& operator=(const DbusSignal&) = delete;
     DbusSignal(DbusSignal&&) = default;
     DbusSignal& operator=(DbusSignal&&) = default;
 
@@ -65,10 +65,10 @@ struct DbusSignal final :
      *  @param[in] sig - The DBus match signature.
      *  @param[in] filter - A DBus signal match callback filtering function.
      */
-    DbusSignal(const char *sig, FilterBasePtr filter) :
+    DbusSignal(const char* sig, FilterBasePtr filter) :
         Event(Type::DBUS_SIGNAL),
-        std::tuple<const char *, FilterBasePtr>(
-                sig, std::move(filter)) {}
+        std::tuple<const char*, FilterBasePtr>(
+            sig, std::move(filter)) {}
 };
 
 /** @brief make_filter
@@ -104,52 +104,56 @@ namespace property_condition
 template <typename T, typename U>
 struct PropertyCondition
 {
-    PropertyCondition() = delete;
-    ~PropertyCondition() = default;
-    PropertyCondition(const PropertyCondition&) = default;
-    PropertyCondition & operator=(const PropertyCondition&) = delete;
-    PropertyCondition(PropertyCondition&&) = default;
-    PropertyCondition& operator=(PropertyCondition&&) = default;
-    PropertyCondition(const char *iface, const char *property, U &&condition) :
-        _iface(iface),
-        _property(property),
-        _condition(std::forward<U>(condition)) { }
+        PropertyCondition() = delete;
+        ~PropertyCondition() = default;
+        PropertyCondition(const PropertyCondition&) = default;
+        PropertyCondition& operator=(const PropertyCondition&) = delete;
+        PropertyCondition(PropertyCondition&&) = default;
+        PropertyCondition& operator=(PropertyCondition&&) = default;
+        PropertyCondition(const char* iface, const char* property, U&& condition) :
+            _iface(iface),
+            _property(property),
+            _condition(std::forward<U>(condition)) { }
 
-    /** @brief Test a property value.
-     *
-     * Extract the property from the PropertiesChanged
-     * message and run the condition test.
-     */
-    bool operator()(sdbusplus::message::message &msg, Manager &) const
-    {
-        std::map<
+        /** @brief Test a property value.
+         *
+         * Extract the property from the PropertiesChanged
+         * message and run the condition test.
+         */
+        bool operator()(sdbusplus::message::message& msg, Manager&) const
+        {
+            std::map <
             std::string,
-            sdbusplus::message::variant<T>> properties;
-        const char *iface = nullptr;
+                sdbusplus::message::variant<T >> properties;
+            const char* iface = nullptr;
 
-        msg.read(iface);
-        if(strcmp(iface, _iface))
+            msg.read(iface);
+            if (strcmp(iface, _iface))
+            {
                 return false;
+            }
 
-        msg.read(properties);
-        auto it = properties.find(_property);
-        if(it == properties.cend())
-            return false;
+            msg.read(properties);
+            auto it = properties.find(_property);
+            if (it == properties.cend())
+            {
+                return false;
+            }
 
-        return _condition(it->second.template get<T>());
-    }
+            return _condition(it->second.template get<T>());
+        }
 
     private:
-    const char *_iface;
-    const char *_property;
-    U _condition;
+        const char* _iface;
+        const char* _property;
+        U _condition;
 };
 
 } // namespace property_condition
 } // namespace details
 
 /** @brief The default filter.  */
-inline bool none(sdbusplus::message::message &, Manager &) noexcept
+inline bool none(sdbusplus::message::message&, Manager&) noexcept
 {
     return true;
 }
@@ -157,17 +161,17 @@ inline bool none(sdbusplus::message::message &, Manager &) noexcept
 /** @brief Implicit type deduction for constructing PropertyCondition.  */
 template <typename T>
 auto propertyChangedTo(
-        const char *iface,
-        const char *property,
-        T val)
+    const char* iface,
+    const char* property,
+    T val)
 {
-    auto condition = [val = std::move(val)](const std::string &arg)
+    auto condition = [val = std::move(val)](const std::string & arg)
     {
         return arg == val;
     };
     using U = decltype(condition);
     return details::property_condition::PropertyCondition<T, U>(
-            iface, property, std::move(condition));
+               iface, property, std::move(condition));
 }
 
 } // namespace filters

@@ -40,12 +40,15 @@ namespace actions
 {
 
 /** @brief The default action.  */
-inline void noop(Manager &mgr) noexcept { }
+inline void noop(Manager& mgr) noexcept { }
 
 /** @brief Destroy an object action.  */
-inline auto destroyObject(const char *path)
+inline auto destroyObject(const char* path)
 {
-    return [path](auto &m){m.destroyObject(path);};
+    return [path](auto & m)
+    {
+        m.destroyObject(path);
+    };
 }
 
 /** @brief Set a property action.
@@ -69,15 +72,15 @@ inline auto destroyObject(const char *path)
  */
 template <typename T, typename U, typename V>
 decltype(auto) setProperty(
-        const char *path, const char *iface,
-        U &&member, V &&value)
+    const char* path, const char* iface,
+    U&& member, V&& value)
 {
     // The manager is the only parameter passed to actions.
     // Bind the path, interface, interface member function pointer,
     // and value to a lambda.  When it is called, forward the
     // path, interface and value on to the manager member function.
     return [path, iface, member,
-        value = std::forward<V>(value)](auto &m)
+                  value = std::forward<V>(value)](auto & m)
     {
         m.template invokeMethod<T>(
             path, iface, member, value);

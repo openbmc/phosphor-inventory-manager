@@ -20,18 +20,20 @@
 #include <iostream>
 #include <exception>
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    try {
+    try
+    {
         auto manager = phosphor::inventory::manager::Manager(
-                sdbusplus::bus::new_system(),
-                BUSNAME,
-                INVENTORY_ROOT,
-                IFACE);
+                           sdbusplus::bus::new_system(),
+                           BUSNAME,
+                           INVENTORY_ROOT,
+                           IFACE);
         manager.run();
         exit(EXIT_SUCCESS);
     }
-    catch (const std::exception &e) {
+    catch (const std::exception& e)
+    {
         std::cerr << e.what() << std::endl;
     }
     exit(EXIT_FAILURE);

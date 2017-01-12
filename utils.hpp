@@ -37,57 +37,57 @@ struct Base
 template <typename T>
 struct Holder : public Base
 {
-    Holder() = delete;
-    virtual ~Holder() = default;
-    Holder(const Holder&) = delete;
-    Holder & operator=(const Holder&) = delete;
-    Holder(Holder&&) = default;
-    Holder& operator=(Holder&&) = default;
-    explicit Holder(T&& held) : _held(std::forward<T>(held)) {}
+        Holder() = delete;
+        virtual ~Holder() = default;
+        Holder(const Holder&) = delete;
+        Holder& operator=(const Holder&) = delete;
+        Holder(Holder&&) = default;
+        Holder& operator=(Holder&&) = default;
+        explicit Holder(T&& held) : _held(std::forward<T>(held)) {}
 
-    /** @brief Construct an adapter.
-     *
-     *  @param[in] held - The object to be adapted.
-     *
-     *  @returns - std::unique pointer to the adapted object.
-     *
-     *  @tparam Ret - The type of the pointer to be returned.
-     *  @tparam Held - The type of the object to be adapted.
-     */
-    template <typename Ret, typename Held>
-    static auto make_unique(Held&& held)
-    {
-        return std::make_unique<Ret>(
-                std::forward<Held>(held));
-    }
+        /** @brief Construct an adapter.
+         *
+         *  @param[in] held - The object to be adapted.
+         *
+         *  @returns - std::unique pointer to the adapted object.
+         *
+         *  @tparam Ret - The type of the pointer to be returned.
+         *  @tparam Held - The type of the object to be adapted.
+         */
+        template <typename Ret, typename Held>
+        static auto make_unique(Held&& held)
+        {
+            return std::make_unique<Ret>(
+                       std::forward<Held>(held));
+        }
 
-    /** @brief Construct an adapter.
-     *
-     *  @param[in] held - The object to be adapted.
-     *
-     *  @returns - std::shared pointer to the adapted object.
-     *
-     *  @tparam Ret - The type of the pointer to be returned.
-     *  @tparam Held - The type of the object to be adapted.
-     */
-    template <typename Ret, typename Held>
-    static auto make_shared(Held&& held)
-    {
-        return std::make_shared<Ret>(
-                std::forward<Held>(held));
-    }
+        /** @brief Construct an adapter.
+         *
+         *  @param[in] held - The object to be adapted.
+         *
+         *  @returns - std::shared pointer to the adapted object.
+         *
+         *  @tparam Ret - The type of the pointer to be returned.
+         *  @tparam Held - The type of the object to be adapted.
+         */
+        template <typename Ret, typename Held>
+        static auto make_shared(Held&& held)
+        {
+            return std::make_shared<Ret>(
+                       std::forward<Held>(held));
+        }
 
-    /** @brief Provides a weak reference to the held interface. */
-    T& get()
-    {
-        return _held;
-    }
+        /** @brief Provides a weak reference to the held interface. */
+        T& get()
+        {
+            return _held;
+        }
 
-    /** @brief Provides a weak reference to the held interface. */
-    const T& get() const
-    {
-        return _held;
-    }
+        /** @brief Provides a weak reference to the held interface. */
+        const T& get() const
+        {
+            return _held;
+        }
 
     protected:
         T _held;
@@ -112,11 +112,11 @@ struct CallableBase
     CallableBase(CallableBase&&) = default;
     CallableBase& operator=(CallableBase&&) = default;
 
-    virtual Ret operator()(Args&&...args) const = 0;
-    virtual Ret operator()(Args&&...args)
+    virtual Ret operator()(Args&& ...args) const = 0;
+    virtual Ret operator()(Args&& ...args)
     {
         return const_cast<const CallableBase&>(*this)(
-                std::forward<Args>(args)...);
+                   std::forward<Args>(args)...);
     }
 };
 
@@ -137,17 +137,17 @@ struct CallableHolder final :
     CallableHolder() = delete;
     ~CallableHolder() = default;
     CallableHolder(const CallableHolder&) = delete;
-    CallableHolder & operator=(const CallableHolder&) = delete;
+    CallableHolder& operator=(const CallableHolder&) = delete;
     CallableHolder(CallableHolder&&) = default;
     CallableHolder& operator=(CallableHolder&&) = default;
     explicit CallableHolder(T&& func) : Holder<T>(std::forward<T>(func)) {}
 
-    virtual Ret operator()(Args&&...args) const override
+    virtual Ret operator()(Args&& ...args) const override
     {
         return this->_held(std::forward<Args>(args)...);
     }
 
-    virtual Ret operator()(Args&&...args) override
+    virtual Ret operator()(Args&& ...args) override
     {
         return this->_held(std::forward<Args>(args)...);
     }
