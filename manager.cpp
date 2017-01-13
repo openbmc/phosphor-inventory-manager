@@ -15,7 +15,10 @@
  */
 #include <iostream>
 #include <exception>
+#include <chrono>
 #include "manager.hpp"
+
+using namespace std::literals::chrono_literals;
 
 namespace phosphor
 {
@@ -115,7 +118,7 @@ void Manager::run() noexcept
         try
         {
             _bus.process_discard();
-            _bus.wait(5000000);
+            _bus.wait((5000000us).count());
         }
         catch (const std::exception& e)
         {
