@@ -186,7 +186,7 @@ class Manager final :
         }
 
         /** @brief Provided for testing only. */
-        bool _shutdown;
+        volatile bool _shutdown;
 
         /** @brief Path prefix applied to any relative paths. */
         const char* _root;
