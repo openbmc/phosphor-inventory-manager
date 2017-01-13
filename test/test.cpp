@@ -18,19 +18,11 @@
 #include <cassert>
 #include <iostream>
 #include <algorithm>
+#include <thread>
 
 constexpr auto SERVICE = "phosphor.inventory.test";
 constexpr auto INTERFACE = IFACE;
 constexpr auto ROOT = "/testing/inventory";
-
-auto server_thread(void* data)
-{
-    auto mgr = static_cast<phosphor::inventory::manager::Manager*>(data);
-
-    mgr->run();
-
-    return static_cast<void*>(nullptr);
-}
 
 /** @class SignalQueue
  *  @brief Store DBus signals in a queue.
@@ -323,15 +315,15 @@ int main()
                    sdbusplus::bus::new_default(),
                    SERVICE, ROOT, INTERFACE);
 
-    pthread_t t;
+    auto f = [](auto mgr)
     {
-        pthread_create(&t, nullptr, server_thread, &mgr);
-    }
-
+        mgr->run();
+    };
+    auto t = std::thread(f, &mgr);
     runTests(mgr);
 
     // Wait for server thread to exit.
-    pthread_join(t, nullptr);
+    t.join();
 
     return 0;
 }
