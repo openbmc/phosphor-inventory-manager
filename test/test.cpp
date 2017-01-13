@@ -18,6 +18,7 @@
 #include <cassert>
 #include <iostream>
 #include <algorithm>
+#include <thread>
 
 constexpr auto SERVICE = "phosphor.inventory.test";
 constexpr auto INTERFACE = IFACE;
@@ -323,15 +324,11 @@ int main()
                    sdbusplus::bus::new_default(),
                    SERVICE, ROOT, INTERFACE);
 
-    pthread_t t;
-    {
-        pthread_create(&t, nullptr, server_thread, &mgr);
-    }
-
+    auto t = std::thread(server_thread, &mgr);
     runTests(mgr);
 
     // Wait for server thread to exit.
-    pthread_join(t, nullptr);
+    t.join();
 
     return 0;
 }
