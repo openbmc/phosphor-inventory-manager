@@ -24,11 +24,11 @@ int main(int argc, char* argv[])
 {
     try
     {
-        auto manager = phosphor::inventory::manager::Manager(
-                           sdbusplus::bus::new_system(),
-                           BUSNAME,
-                           INVENTORY_ROOT,
-                           IFACE);
+        phosphor::inventory::manager::Manager manager(
+            sdbusplus::bus::new_system(),
+            BUSNAME,
+            INVENTORY_ROOT,
+            IFACE);
         manager.run();
         exit(EXIT_SUCCESS);
     }

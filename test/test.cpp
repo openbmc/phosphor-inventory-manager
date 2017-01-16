@@ -311,9 +311,9 @@ void runTests(phosphor::inventory::manager::Manager& mgr)
 
 int main()
 {
-    auto mgr = phosphor::inventory::manager::Manager(
-                   sdbusplus::bus::new_default(),
-                   SERVICE, ROOT, INTERFACE);
+    phosphor::inventory::manager::Manager mgr(
+        sdbusplus::bus::new_default(),
+        SERVICE, ROOT, INTERFACE);
 
     auto f = [](auto mgr)
     {
