@@ -35,7 +35,7 @@ using ManagerIface =
 template <typename T>
 struct MakeInterface
 {
-    static auto make(sdbusplus::bus::bus& bus, const char* path)
+    static auto make(sdbusplus::bus::bus& bus, const char* path, bool deferSignals)
     {
         using HolderType = holder::Holder<std::unique_ptr<T>>;
         return static_cast<std::unique_ptr<holder::Base>>(
@@ -43,7 +43,8 @@ struct MakeInterface
                        std::forward<std::unique_ptr<T>>(
                            std::make_unique<T>(
                                std::forward<decltype(bus)>(bus),
-                               std::forward<decltype(path)>(path)))));
+                               std::forward<decltype(path)>(path),
+                               std::forward<decltype(deferSignals)>(deferSignals)))));
     }
 };
 } // namespace details
@@ -140,7 +141,7 @@ class Manager final :
         using ObjectReferences = std::map<std::string, InterfaceComposite>;
         using Events = std::vector<EventInfo>;
         using MakerType = HolderPtr(*)(
-                              sdbusplus::bus::bus&, const char*);
+                              sdbusplus::bus::bus&, const char*, bool);
         using Makers = std::map<std::string, MakerType>;
 
         /** @brief Provides weak references to interface holders.

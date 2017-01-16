@@ -148,8 +148,11 @@ void Manager::notify(sdbusplus::message::object_path path, Object object)
         // a container.
         InterfaceComposite ref;
 
+        auto i = object.size();
         for (auto& x : object)
         {
+            // Defer sending any signals until the last interface.
+            auto deferSignals = --i != 0;
             auto maker = _makers.find(x.first.c_str());
 
             if (maker == _makers.end())
@@ -157,7 +160,7 @@ void Manager::notify(sdbusplus::message::object_path path, Object object)
                     "Unimplemented interface: " + x.first);
 
             ref.emplace(x.first,
-                        (maker->second)(_bus, path.str.c_str()));
+                        (maker->second)(_bus, path.str.c_str(), deferSignals));
         }
 
         if (!ref.empty())
