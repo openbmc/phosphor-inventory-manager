@@ -160,11 +160,14 @@ void Manager::notify(sdbusplus::message::object_path path, Object object)
                         (maker->second)(_bus, path.str.c_str()));
         }
 
-        // Hang on to a reference to the object (interfaces)
-        // so it stays on the bus, and so we can make calls
-        // to it if needed.
-        _refs.emplace(
-            path, std::move(ref));
+        if (!ref.empty())
+        {
+            // Hang on to a reference to the object (interfaces)
+            // so it stays on the bus, and so we can make calls
+            // to it if needed.
+            _refs.emplace(
+                path, std::move(ref));
+        }
     }
     catch (const std::exception& e)
     {
