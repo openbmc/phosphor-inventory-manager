@@ -76,8 +76,6 @@ using Object = std::map <
                std::string,
                sdbusplus::message::variant<T... >>>;
 
-using ObjectPath = std::string;
-
 /**@brief Find a subset of interfaces and properties in an object. */
 template <typename ...T>
 auto hasProperties(const Object<T...>& l, const Object<T...>& r)
@@ -149,8 +147,8 @@ void runTests(phosphor::inventory::manager::Manager& mgr)
 
     // Make sure the notify method works.
     {
-        ObjectPath relPath{"/foo"};
-        ObjectPath path{root + relPath};
+        sdbusplus::message::object_path relPath{"/foo"};
+        std::string path(root + relPath.str);
 
         SignalQueue queue(
             "path='" + root + "',member='InterfacesAdded'");
@@ -162,7 +160,7 @@ void runTests(phosphor::inventory::manager::Manager& mgr)
 
         auto sig{queue.pop()};
         assert(sig);
-        ObjectPath signalPath;
+        sdbusplus::message::object_path signalPath;
         Object<std::string> signalObject;
         sig.read(signalPath);
         assert(path == signalPath);
@@ -174,12 +172,12 @@ void runTests(phosphor::inventory::manager::Manager& mgr)
 
     // Make sure DBus signals are handled.
     {
-        ObjectPath relDeleteMeOne{"/deleteme1"};
-        ObjectPath relDeleteMeTwo{"/deleteme2"};
-        ObjectPath relTriggerOne{"/trigger1"};
-        ObjectPath deleteMeOne{root + relDeleteMeOne};
-        ObjectPath deleteMeTwo{root + relDeleteMeTwo};
-        ObjectPath triggerOne{root + relTriggerOne};
+        sdbusplus::message::object_path relDeleteMeOne{"/deleteme1"};
+        sdbusplus::message::object_path relDeleteMeTwo{"/deleteme2"};
+        sdbusplus::message::object_path relTriggerOne{"/trigger1"};
+        std::string deleteMeOne{root + relDeleteMeOne.str};
+        std::string deleteMeTwo{root + relDeleteMeTwo.str};
+        std::string triggerOne{root + relTriggerOne.str};
 
         // Create some objects to be deleted by an action.
         {
@@ -227,7 +225,7 @@ void runTests(phosphor::inventory::manager::Manager& mgr)
             m.append(sdbusplus::message::variant<std::string>("xxxyyy"));
             b.call(m);
 
-            ObjectPath sigpath;
+            sdbusplus::message::object_path sigpath;
             std::vector<std::string> interfaces;
             {
                 std::vector<std::string> interfaces;
@@ -259,10 +257,10 @@ void runTests(phosphor::inventory::manager::Manager& mgr)
 
     // Validate the set property action.
     {
-        ObjectPath relChangeMe{"/changeme"};
-        ObjectPath relTriggerTwo{"/trigger2"};
-        ObjectPath changeMe{root + relChangeMe};
-        ObjectPath triggerTwo{root + relTriggerTwo};
+        sdbusplus::message::object_path relChangeMe{"/changeme"};
+        sdbusplus::message::object_path relTriggerTwo{"/trigger2"};
+        std::string changeMe{root + relChangeMe.str};
+        std::string triggerTwo{root + relTriggerTwo.str};
 
         // Create an object to be updated by the set property action.
         {

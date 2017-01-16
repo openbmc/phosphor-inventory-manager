@@ -127,15 +127,16 @@ void Manager::run() noexcept
     }
 }
 
-void Manager::notify(std::string path, Object object)
+void Manager::notify(sdbusplus::message::object_path path, Object object)
 {
     try
     {
+
         if (object.cbegin() == object.cend())
             throw std::runtime_error(
-                "No interfaces in " + path);
+                "No interfaces in " + path.str);
 
-        path.insert(0, _root);
+        path.str.insert(0, _root);
 
         auto obj = _refs.find(path);
         if (obj != _refs.end())
@@ -156,7 +157,7 @@ void Manager::notify(std::string path, Object object)
                     "Unimplemented interface: " + x.first);
 
             ref.emplace(x.first,
-                        (maker->second)(_bus, path.c_str()));
+                        (maker->second)(_bus, path.str.c_str()));
         }
 
         // Hang on to a reference to the object (interfaces)

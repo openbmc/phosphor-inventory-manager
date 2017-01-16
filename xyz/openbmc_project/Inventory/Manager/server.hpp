@@ -5,13 +5,13 @@
 
 namespace sdbusplus
 {
-namespace server
-{
 namespace xyz
 {
 namespace openbmc_project
 {
 namespace Inventory
+{
+namespace server
 {
 
 class Manager
@@ -21,15 +21,16 @@ class Manager
          *     Not allowed:
          *         - Default constructor to avoid nullptrs.
          *         - Copy operations due to internal unique_ptr.
+         *         - Move operations due to 'this' being registered as the
+         *           'context' with sdbus.
          *     Allowed:
-         *         - Move operations.
          *         - Destructor.
          */
         Manager() = delete;
         Manager(const Manager&) = delete;
         Manager& operator=(const Manager&) = delete;
-        Manager(Manager&&) = default;
-        Manager& operator=(Manager&&) = default;
+        Manager(Manager&&) = delete;
+        Manager& operator=(Manager&&) = delete;
         virtual ~Manager() = default;
 
         /** @brief Constructor to put object onto bus at a dbus path.
@@ -39,6 +40,7 @@ class Manager
         Manager(bus::bus& bus, const char* path);
 
 
+
         /** @brief Implementation for Notify
          *  Signal the implementing service that an item is ready to have its state managed.
          *
@@ -46,8 +48,9 @@ class Manager
          *  @param[in] object - The fully enumerated item to be managed.
          */
         virtual void notify(
-            std::string path,
-            std::map<std::string, std::map<std::string, sdbusplus::message::variant<std::string>>> object) = 0;
+            sdbusplus::message::object_path path,
+            std::map<std::string, std::map<std::string, sdbusplus::message::variant<int64_t, std::string>>> object) = 0;
+
 
 
 
@@ -61,14 +64,16 @@ class Manager
 
         static constexpr auto _interface = "xyz.openbmc_project.Inventory.Manager";
         static const vtable::vtable_t _vtable[];
-        interface::interface _xyz_openbmc_project_Inventory_Manager_interface;
+        sdbusplus::server::interface::interface
+                _xyz_openbmc_project_Inventory_Manager_interface;
 
 
 };
 
+
+} // namespace server
 } // namespace Inventory
 } // namespace openbmc_project
 } // namespace xyz
-} // namespace server
 } // namespace sdbusplus
 

@@ -1,15 +1,18 @@
+#include <algorithm>
 #include <sdbusplus/server.hpp>
+#include <sdbusplus/exception.hpp>
 #include <xyz/openbmc_project/Inventory/Manager/server.hpp>
 
+
 namespace sdbusplus
-{
-namespace server
 {
 namespace xyz
 {
 namespace openbmc_project
 {
 namespace Inventory
+{
+namespace server
 {
 
 Manager::Manager(bus::bus& bus, const char* path)
@@ -22,22 +25,32 @@ Manager::Manager(bus::bus& bus, const char* path)
 int Manager::_callback_Notify(
         sd_bus_message* msg, void* context, sd_bus_error* error)
 {
-    auto m = message::message(sd_bus_message_ref(msg));
+    using sdbusplus::server::binding::details::convertForMessage;
 
-    std::string path{};
-    std::map<std::string, std::map<std::string, sdbusplus::message::variant<std::string>>> object{};
+    try
+    {
+        auto m = message::message(msg);
 
-    m.read(path, object);
+        sdbusplus::message::object_path path{};
+    std::map<std::string, std::map<std::string, sdbusplus::message::variant<int64_t, std::string>>> object{};
 
-    auto o = static_cast<Manager*>(context);
-    o->notify(path, object);
+        m.read(path, object);
 
-    auto reply = m.new_method_return();
-    // No data to append on reply.
+        auto o = static_cast<Manager*>(context);
+        o->notify(path, object);
 
-    reply.method_return();
+        auto reply = m.new_method_return();
+        // No data to append on reply.
 
-    return 0;
+        reply.method_return();
+    }
+    catch(sdbusplus::internal_exception_t& e)
+    {
+        sd_bus_error_set_const(error, e.name(), e.description());
+        return -EINVAL;
+    }
+
+    return true;
 }
 
 namespace details
@@ -46,9 +59,12 @@ namespace Manager
 {
 static const auto _param_Notify =
         utility::tuple_to_array(message::types::type_id<
-                std::string, std::map<std::string, std::map<std::string, sdbusplus::message::variant<std::string>>>>());
+                sdbusplus::message::object_path, std::map<std::string, std::map<std::string, sdbusplus::message::variant<int64_t, std::string>>>>());
+static const auto _return_Notify =
+        utility::tuple_to_array(std::make_tuple('\0'));
 }
 }
+
 
 
 
@@ -58,14 +74,15 @@ const vtable::vtable_t Manager::_vtable[] = {
     vtable::method("Notify",
                    details::Manager::_param_Notify
                         .data(),
-                   nullptr,
+                   details::Manager::_return_Notify
+                        .data(),
                    _callback_Notify),
     vtable::end()
 };
 
+} // namespace server
 } // namespace Inventory
 } // namespace openbmc_project
 } // namespace xyz
-} // namespace server
 } // namespace sdbusplus
 

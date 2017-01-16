@@ -22,7 +22,7 @@ template <typename T>
 using ServerObject = typename sdbusplus::server::object::object<T>;
 
 using ManagerIface =
-    sdbusplus::server::xyz::openbmc_project::Inventory::Manager;
+    sdbusplus::xyz::openbmc_project::Inventory::server::Manager;
 
 /** @struct MakeInterface
  *  @brief Adapt an sdbusplus interface proxy.
@@ -77,7 +77,7 @@ class Manager final :
 
         using Object = std::map <
                        std::string, std::map <
-                       std::string, sdbusplus::message::variant<std::string >>>;
+                       std::string, sdbusplus::message::variant<int64_t, std::string >>>;
         using EventInfo = std::tuple <
                           std::vector<details::EventBasePtr>,
                           std::vector<details::ActionBasePtr >>;
@@ -89,7 +89,7 @@ class Manager final :
         void shutdown() noexcept;
 
         /** @brief sd_bus Notify method implementation callback. */
-        void notify(std::string path, Object) override;
+        void notify(sdbusplus::message::object_path, Object) override;
 
         /** @brief sd_bus signal callback. */
         void signal(sdbusplus::message::message&,
