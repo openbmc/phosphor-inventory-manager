@@ -42,7 +42,7 @@ auto _signal(sd_bus_message* m, void* data, sd_bus_error* e) noexcept
         auto& args = *static_cast<Manager::SigArg*>(data);
         sd_bus_message_ref(m);
         auto& mgr = *std::get<0>(args);
-        mgr.signal(
+        mgr.handleEvent(
             msg,
             static_cast<const details::DbusSignal&>(
                 *std::get<1>(args)),
@@ -71,7 +71,8 @@ Manager::Manager(
 {
     for (auto& group : _events)
     {
-        for (auto pEvent : std::get<0>(group))
+        for (auto pEvent : std::get<std::vector<details::EventBasePtr>>(
+                 group))
         {
             if (pEvent->type !=
                 details::Event::Type::DBUS_SIGNAL)
@@ -97,7 +98,7 @@ Manager::Manager(
             // each signal event.
             _matches.emplace_back(
                 _bus,
-                std::get<0>(*dbusEvent),
+                dbusEvent->signature,
                 details::_signal,
                 _sigargs.back().get());
         }
@@ -178,15 +179,14 @@ void Manager::notify(sdbusplus::message::object_path path, Object object)
     }
 }
 
-void Manager::signal(
+void Manager::handleEvent(
     sdbusplus::message::message& msg,
-    const details::DbusSignal& event,
+    const details::Event& event,
     const EventInfo& info)
 {
-    auto& filters = std::get<1>(event);
     auto& actions = std::get<1>(info);
 
-    for (auto& f : filters)
+    for (auto& f : event)
     {
         if (!(*f)(_bus, msg, *this))
         {

@@ -24,8 +24,11 @@ using Filter = holder::CallableHolder <
 
 /** @struct Event
  *  @brief Event object interface.
+ *
+ *  The event base is an assocation of an event type
+ *  and an array of filter callbacks.
  */
-struct Event
+struct Event : public std::vector<FilterBasePtr>
 {
     enum class Type
     {
@@ -33,12 +36,22 @@ struct Event
     };
 
     virtual ~Event() = default;
-    Event(const Event&) = default;
-    Event& operator=(const Event&) = default;
+    Event(const Event&) = delete;
+    Event& operator=(const Event&) = delete;
     Event(Event&&) = default;
     Event& operator=(Event&&) = default;
-    explicit Event(Type t) : type(t) {}
 
+    /** @brief Event constructor.
+     *
+     *  @param[in] filters - An array of filter callbacks.
+     *  @param[in] t - The event type.
+     */
+    explicit Event(
+        std::vector<FilterBasePtr> filters, Type t) :
+        std::vector<FilterBasePtr>(std::move(filters)),
+        type(t) {}
+
+    /** @brief event class enumeration. */
     Type type;
 };
 
@@ -50,12 +63,10 @@ using EventBasePtr = std::shared_ptr<Event>;
  *  DBus signal events are an association of a match signature
  *  and filtering function object.
  */
-struct DbusSignal final :
-    public Event,
-    public std::tuple<const char*, std::vector<FilterBasePtr>>
+struct DbusSignal final : public Event
 {
-    virtual ~DbusSignal() = default;
-    DbusSignal(const DbusSignal&) = default;
+    ~DbusSignal() = default;
+    DbusSignal(const DbusSignal&) = delete;
     DbusSignal& operator=(const DbusSignal&) = delete;
     DbusSignal(DbusSignal&&) = default;
     DbusSignal& operator=(DbusSignal&&) = default;
@@ -63,12 +74,14 @@ struct DbusSignal final :
     /** @brief Import from signature and filter constructor.
      *
      *  @param[in] sig - The DBus match signature.
-     *  @param[in] filter - A DBus signal match callback filtering function.
+     *  @param[in] filter - An array of DBus signal
+     *     match callback filtering functions.
      */
-    DbusSignal(const char* sig, const std::vector<FilterBasePtr>& filters) :
-        Event(Type::DBUS_SIGNAL),
-        std::tuple<const char*, std::vector<FilterBasePtr>>(
-                    sig, std::move(filters)) {}
+    DbusSignal(const char* sig, std::vector<FilterBasePtr> filters) :
+        Event(std::move(filters), Type::DBUS_SIGNAL),
+        signature(sig) {}
+
+    const char* signature;
 };
 
 /** @brief make_filter
