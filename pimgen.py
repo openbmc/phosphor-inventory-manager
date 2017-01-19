@@ -341,7 +341,7 @@ if __name__ == '__main__':
     parser.add_argument(
         'command', metavar='COMMAND', type=str,
         choices=valid_commands.keys(),
-        help='Command to run.')
+        help='%s.' % " | ".join(valid_commands.keys()))
 
     args = parser.parse_args()
 
