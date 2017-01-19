@@ -95,22 +95,23 @@ namespace details
 namespace property_condition
 {
 
-/** @struct PropertyCondition
+/** @struct PropertyChangedCondition
  *  @brief Match filter functor that tests a property value.
  *
  *  @tparam T - The type of the property being tested.
  *  @tparam U - The type of the condition checking functor.
  */
 template <typename T, typename U>
-struct PropertyCondition
+struct PropertyChangedCondition
 {
-        PropertyCondition() = delete;
-        ~PropertyCondition() = default;
-        PropertyCondition(const PropertyCondition&) = default;
-        PropertyCondition& operator=(const PropertyCondition&) = delete;
-        PropertyCondition(PropertyCondition&&) = default;
-        PropertyCondition& operator=(PropertyCondition&&) = default;
-        PropertyCondition(const char* iface, const char* property, U&& condition) :
+        PropertyChangedCondition() = delete;
+        ~PropertyChangedCondition() = default;
+        PropertyChangedCondition(const PropertyChangedCondition&) = default;
+        PropertyChangedCondition& operator=(const PropertyChangedCondition&) = delete;
+        PropertyChangedCondition(PropertyChangedCondition&&) = default;
+        PropertyChangedCondition& operator=(PropertyChangedCondition&&) = default;
+        PropertyChangedCondition(const char* iface, const char* property,
+                                 U&& condition) :
             _iface(iface),
             _property(property),
             _condition(std::forward<U>(condition)) { }
@@ -153,7 +154,7 @@ struct PropertyCondition
 } // namespace property_condition
 } // namespace details
 
-/** @brief Implicit type deduction for constructing PropertyCondition.  */
+/** @brief Implicit type deduction for constructing PropertyChangedCondition.  */
 template <typename T>
 auto propertyChangedTo(
     const char* iface,
@@ -165,7 +166,7 @@ auto propertyChangedTo(
         return arg == val;
     };
     using U = decltype(condition);
-    return details::property_condition::PropertyCondition<T, U>(
+    return details::property_condition::PropertyChangedCondition<T, U>(
                iface, property, std::move(condition));
 }
 
