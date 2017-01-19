@@ -92,10 +92,10 @@ class Manager final :
         /** @brief sd_bus Notify method implementation callback. */
         void notify(sdbusplus::message::object_path, Object) override;
 
-        /** @brief sd_bus signal callback. */
-        void signal(sdbusplus::message::message&,
-                    const details::DbusSignal& event,
-                    const EventInfo& info);
+        /** @brief Event processing entry point. */
+        void handleEvent(sdbusplus::message::message&,
+                         const details::Event& event,
+                         const EventInfo& info);
 
         /** @brief Drop one or more objects from DBus. */
         void destroyObjects(
