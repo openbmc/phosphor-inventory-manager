@@ -38,6 +38,9 @@ const auto trigger2 = sdbusplus::message::object_path(EXAMPLE_ROOT +
                       "/trigger2"s);
 const auto trigger3 = sdbusplus::message::object_path(EXAMPLE_ROOT +
                       "/trigger3"s);
+const auto trigger4 = sdbusplus::message::object_path(EXAMPLE_ROOT +
+                      "/trigger4"s);
+
 
 const sdbusplus::message::object_path relDeleteMeOne{"/deleteme1"};
 const sdbusplus::message::object_path relDeleteMeTwo{"/deleteme2"};
@@ -73,6 +76,8 @@ struct ExampleService
         ExampleIface1, ExampleIface2 > t2(bus, trigger2.str.c_str());
         sdbusplus::server::object::object <
         ExampleIface1, ExampleIface2 > t3(bus, trigger3.str.c_str());
+        sdbusplus::server::object::object <
+        ExampleIface1, ExampleIface2 > t4(bus, trigger4.str.c_str());
 
         while (!shutdown)
         {
@@ -231,6 +236,79 @@ void runTests()
         assert(hasProperties(signalObject, obj));
         auto moreSignals{queue.pop()};
         assert(!moreSignals);
+    }
+
+    // Validate the propertyIs filter.
+    {
+        // Create an object to be deleted.
+        {
+            auto m = notify();
+            m.append(relDeleteMeThree);
+            m.append(obj);
+            b.call(m);
+        }
+
+        // Validate that the action does not run if the property doesn't match.
+        {
+            SignalQueue queue(
+                "path='" + root + "',member='InterfacesRemoved'");
+            auto m = set(trigger4.str);
+            m.append("xyz.openbmc_project.Example.Iface2");
+            m.append("ExampleProperty2");
+            m.append(sdbusplus::message::variant<std::string>("123"));
+            b.call(m);
+            auto sig{queue.pop()};
+            assert(!sig);
+        }
+
+        // Validate that the action does run if the property matches.
+        {
+            // Set ExampleProperty2 to something else to the 123 filter
+            // matches.
+            SignalQueue queue(
+                "path='" + root + "',member='InterfacesRemoved'");
+            auto m = set(trigger4.str);
+            m.append("xyz.openbmc_project.Example.Iface2");
+            m.append("ExampleProperty2");
+            m.append(sdbusplus::message::variant<std::string>("xyz"));
+            b.call(m);
+            auto sig{queue.pop()};
+            assert(!sig);
+        }
+        {
+            // Set ExampleProperty3 to 99.
+            SignalQueue queue(
+                "path='" + root + "',member='InterfacesRemoved'");
+            auto m = set(trigger4.str);
+            m.append("xyz.openbmc_project.Example.Iface2");
+            m.append("ExampleProperty3");
+            m.append(sdbusplus::message::variant<int64_t>(99));
+            b.call(m);
+            auto sig{queue.pop()};
+            assert(!sig);
+        }
+        {
+            SignalQueue queue(
+                "path='" + root + "',member='InterfacesRemoved'");
+            auto m = set(trigger4.str);
+            m.append("xyz.openbmc_project.Example.Iface2");
+            m.append("ExampleProperty2");
+            m.append(sdbusplus::message::variant<std::string>("123"));
+            b.call(m);
+
+            sdbusplus::message::object_path sigpath;
+            std::vector<std::string> interfaces;
+            {
+                std::vector<std::string> interfaces;
+                auto sig{queue.pop()};
+                assert(sig);
+                sig.read(sigpath);
+                assert(sigpath == deleteMeThree);
+                sig.read(interfaces);
+                std::sort(interfaces.begin(), interfaces.end());
+                assert(hasInterfaces(interfaces, obj));
+            }
+        }
     }
 
     // Make sure DBus signals are handled.

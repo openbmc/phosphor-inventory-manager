@@ -154,6 +154,120 @@ struct PropertyChangedCondition
         U _condition;
 };
 
+/** @struct PropertyConditionBase
+ *  @brief Match filter functor that tests a property value.
+ *
+ *  Base class for PropertyCondition - factored out code that
+ *  doesn't need to be templated.
+ */
+struct PropertyConditionBase
+{
+        PropertyConditionBase() = delete;
+        virtual ~PropertyConditionBase() = default;
+        PropertyConditionBase(const PropertyConditionBase&) = delete;
+        PropertyConditionBase& operator=(const PropertyConditionBase&) = delete;
+        PropertyConditionBase(PropertyConditionBase&&) = default;
+        PropertyConditionBase& operator=(PropertyConditionBase&&) = default;
+
+        /** @brief Constructor
+         *
+         *  The service argument can be nullptr.  If something
+         *  else is provided the function will call the the
+         *  service directly.  If omitted, the function will
+         *  look up the service in the ObjectMapper.
+         *
+         *  @param path - The path of the object containing
+         *     the property to be tested.
+         *  @param iface - The interface hosting the property
+         *     to be tested.
+         *  @param property - The property to be tested.
+         *  @param service - The DBus service hosting the object.
+         */
+        PropertyConditionBase(
+            const char* path,
+            const char* iface,
+            const char* property,
+            const char* service) :
+            _path(path),
+            _iface(iface),
+            _property(property),
+            _service(service) {}
+
+        /** @brief Forward comparison to type specific implementation. */
+        virtual bool eval(sdbusplus::message::message&) const = 0;
+
+        /** @brief Test a property value.
+         *
+         * Make a DBus call and test the value of any property.
+         */
+        bool operator()(
+            sdbusplus::bus::bus&,
+            sdbusplus::message::message&,
+            Manager&) const;
+
+    private:
+        std::string _path;
+        std::string _iface;
+        std::string _property;
+        const char* _service;
+};
+
+/** @struct PropertyCondition
+ *  @brief Match filter functor that tests a property value.
+ *
+ *  @tparam T - The type of the property being tested.
+ *  @tparam U - The type of the condition checking functor.
+ */
+template <typename T, typename U>
+struct PropertyCondition final : public PropertyConditionBase
+{
+        PropertyCondition() = delete;
+        ~PropertyCondition() = default;
+        PropertyCondition(const PropertyCondition&) = delete;
+        PropertyCondition& operator=(const PropertyCondition&) = delete;
+        PropertyCondition(PropertyCondition&&) = default;
+        PropertyCondition& operator=(PropertyCondition&&) = default;
+
+        /** @brief Constructor
+         *
+         *  The service argument can be nullptr.  If something
+         *  else is provided the function will call the the
+         *  service directly.  If omitted, the function will
+         *  look up the service in the ObjectMapper.
+         *
+         *  @param path - The path of the object containing
+         *     the property to be tested.
+         *  @param iface - The interface hosting the property
+         *     to be tested.
+         *  @param property - The property to be tested.
+         *  @param condition - The test to run on the property.
+         *  @param service - The DBus service hosting the object.
+         */
+        PropertyCondition(
+            const char* path,
+            const char* iface,
+            const char* property,
+            U&& condition,
+            const char* service) :
+            PropertyConditionBase(path, iface, property, service),
+            _condition(std::forward<decltype(condition)>(condition)) {}
+
+        /** @brief Test a property value.
+         *
+         * Make a DBus call and test the value of any property.
+         */
+        bool eval(sdbusplus::message::message& msg) const override
+        {
+            sdbusplus::message::variant<T> value;
+            msg.read(value);
+            return _condition(
+                       std::forward<T>(value.template get<T>()));
+        }
+
+    private:
+        U _condition;
+};
+
 } // namespace property_condition
 } // namespace details
 
@@ -171,6 +285,24 @@ auto propertyChangedTo(
     using U = decltype(condition);
     return details::property_condition::PropertyChangedCondition<T, U>(
                iface, property, std::move(condition));
+}
+
+/** @brief Implicit type deduction for constructing PropertyCondition.  */
+template <typename T>
+auto propertyIs(
+    const char* path,
+    const char* iface,
+    const char* property,
+    T&& val,
+    const char* service = nullptr)
+{
+    auto condition = [val = std::forward<T>(val)](T && arg)
+    {
+        return arg == val;
+    };
+    using U = decltype(condition);
+    return details::property_condition::PropertyCondition<T, U>(
+               path, iface, property, std::move(condition), service);
 }
 
 } // namespace filters

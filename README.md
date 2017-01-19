@@ -47,14 +47,37 @@ The available filters provided by PIM are:
 
 * propertyChangedTo - Only match events when the specified property has
 the specified value.
+* propertyIs - Only match events when the specified property has
+the specified value.
 
 ----
 **propertyChangedTo**
+
+The property under test is obtained from an sdbus message
+generated from an org.freedesktop.DBus.Properties.PropertiesChanged
+signal payload.
 
 Supported arguments for the propertyChangedTo filter are:
 * interface - The interface hosting the property to be checked.
 * property - The property to check.
 * value - The value to check.
+
+----
+**propertyIs**
+
+The property under test is obtained by invoking
+org.freedesktop.Properties.Get on the specified interface.
+
+Supported arguments for the propertyIs filter are:
+* path - The object hosting the property to be checked.
+* interface - The interface hosting the property to be checked.
+* property - The property to check.
+* value - The value to check.
+* service - An optional DBus service name.
+
+The service argument is optional.  If provided that service will
+be called explicitly.  If omitted, the service will be obtained
+with an xyz.openbmc_project.ObjectMapper lookup.
 
 ---
 **actions**
