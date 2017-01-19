@@ -140,7 +140,8 @@ struct PropertyCondition
                 return false;
             }
 
-            return _condition(it->second.template get<T>());
+            return _condition(
+                       std::forward<T>(it->second.template get<T>()));
         }
 
     private:
@@ -157,9 +158,9 @@ template <typename T>
 auto propertyChangedTo(
     const char* iface,
     const char* property,
-    T val)
+    T&& val)
 {
-    auto condition = [val = std::move(val)](const std::string & arg)
+    auto condition = [val = std::move(val)](T && arg)
     {
         return arg == val;
     };
