@@ -2,7 +2,7 @@ description: >
     An example inventory match rule.
 
 events:
-    - name: Example Match(2)
+    - name: Example Match
       description: >
           Destroys the /deleteme1 and /deleteme2 objects
           When the value of ExampleProperty2 on
@@ -26,5 +26,27 @@ events:
               - /deleteme1
               - /deleteme2
 
+    - name: Example Match
+      description: >
+          Destroys the /deleteme3 object when the value of
+          ExampleProperty3 on /testing/trigger3
+          changes to 10.
+      type: match
+      signatures:
+          - type: signal
+            path: /testing/trigger3
+            interface: org.freedesktop.DBus.Properties
+            member: PropertiesChanged
+      filters:
+          - name: propertyChangedTo
+            interface: xyz.openbmc_project.Example.Iface2
+            property: ExampleProperty3
+            value:
+              value: 10
+              type: int64
+      actions:
+          - name: destroyObjects
+            paths:
+              - /deleteme3
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

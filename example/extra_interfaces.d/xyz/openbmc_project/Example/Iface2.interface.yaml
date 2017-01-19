@@ -4,6 +4,11 @@ properties:
     - name: ExampleProperty2
       type: string
       description: >
-          An example property.
+          An example string property.
+    - name: ExampleProperty3
+      type: int64
+      description: >
+          An example int64 property.
+
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

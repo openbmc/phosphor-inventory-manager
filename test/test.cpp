@@ -36,6 +36,17 @@ const auto trigger1 = sdbusplus::message::object_path(EXAMPLE_ROOT +
                       "/trigger1"s);
 const auto trigger2 = sdbusplus::message::object_path(EXAMPLE_ROOT +
                       "/trigger2"s);
+const auto trigger3 = sdbusplus::message::object_path(EXAMPLE_ROOT +
+                      "/trigger3"s);
+
+const sdbusplus::message::object_path relDeleteMeOne{"/deleteme1"};
+const sdbusplus::message::object_path relDeleteMeTwo{"/deleteme2"};
+const sdbusplus::message::object_path relDeleteMeThree{"/deleteme3"};
+
+const std::string root{MGR_ROOT};
+const std::string deleteMeOne{root + relDeleteMeOne.str};
+const std::string deleteMeTwo{root + relDeleteMeTwo.str};
+const std::string deleteMeThree{root + relDeleteMeThree.str};
 
 using ExampleIface1 = sdbusplus::xyz::openbmc_project::Example::server::Iface1;
 using ExampleIface2 = sdbusplus::xyz::openbmc_project::Example::server::Iface2;
@@ -60,6 +71,8 @@ struct ExampleService
         ExampleIface1, ExampleIface2 > t1(bus, trigger1.str.c_str());
         sdbusplus::server::object::object <
         ExampleIface1, ExampleIface2 > t2(bus, trigger2.str.c_str());
+        sdbusplus::server::object::object <
+        ExampleIface1, ExampleIface2 > t3(bus, trigger3.str.c_str());
 
         while (!shutdown)
         {
@@ -163,7 +176,6 @@ auto hasInterfaces(const std::vector<std::string>& l, const Object<T...>& r)
 
 void runTests()
 {
-    const std::string root{MGR_ROOT};
     const std::string exampleRoot{EXAMPLE_ROOT};
     auto b = sdbusplus::bus::new_default();
 
@@ -223,11 +235,6 @@ void runTests()
 
     // Make sure DBus signals are handled.
     {
-        sdbusplus::message::object_path relDeleteMeOne{"/deleteme1"};
-        sdbusplus::message::object_path relDeleteMeTwo{"/deleteme2"};
-        std::string deleteMeOne{root + relDeleteMeOne.str};
-        std::string deleteMeTwo{root + relDeleteMeTwo.str};
-
         // Create some objects to be deleted by an action.
         {
             auto m = notify();
@@ -241,8 +248,14 @@ void runTests()
             m.append(obj);
             b.call(m);
         }
+        {
+            auto m = notify();
+            m.append(relDeleteMeThree);
+            m.append(obj);
+            b.call(m);
+        }
 
-        // Set a property that should not trigger due to a filter.
+        // Set some properties that should not trigger due to a filter.
         {
             SignalQueue queue(
                 "path='" + root + "',member='InterfacesRemoved'");
@@ -254,8 +267,19 @@ void runTests()
             auto sig{queue.pop()};
             assert(!sig);
         }
+        {
+            SignalQueue queue(
+                "path='" + root + "',member='InterfacesRemoved'");
+            auto m = set(trigger3.str);
+            m.append("xyz.openbmc_project.Example.Iface2");
+            m.append("ExampleProperty3");
+            m.append(sdbusplus::message::variant<int64_t>(11));
+            b.call(m);
+            auto sig{queue.pop()};
+            assert(!sig);
+        }
 
-        // Set a property that should trigger.
+        // Set some properties that should trigger.
         {
             SignalQueue queue(
                 "path='" + root + "',member='InterfacesRemoved'");
@@ -290,6 +314,34 @@ void runTests()
             }
             {
                 // Make sure there were only two signals.
+                auto sig{queue.pop()};
+                assert(!sig);
+            }
+        }
+        {
+            SignalQueue queue(
+                "path='" + root + "',member='InterfacesRemoved'");
+
+            auto m = set(trigger3.str);
+            m.append("xyz.openbmc_project.Example.Iface2");
+            m.append("ExampleProperty3");
+            m.append(sdbusplus::message::variant<int64_t>(10));
+            b.call(m);
+
+            sdbusplus::message::object_path sigpath;
+            std::vector<std::string> interfaces;
+            {
+                std::vector<std::string> interfaces;
+                auto sig{queue.pop()};
+                assert(sig);
+                sig.read(sigpath);
+                assert(sigpath == deleteMeThree);
+                sig.read(interfaces);
+                std::sort(interfaces.begin(), interfaces.end());
+                assert(hasInterfaces(interfaces, obj));
+            }
+            {
+                // Make sure there was only one signal.
                 auto sig{queue.pop()};
                 assert(!sig);
             }
