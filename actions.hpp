@@ -39,9 +39,6 @@ auto make_action(T&& action)
 namespace actions
 {
 
-/** @brief The default action.  */
-inline void noop(Manager& mgr) noexcept { }
-
 /** @brief Destroy an object action.  */
 inline auto destroyObject(const char* path)
 {

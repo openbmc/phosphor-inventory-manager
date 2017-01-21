@@ -298,22 +298,6 @@ class SetProperty(Action):
         super(SetProperty, self).__init__(**kw)
 
 
-class NoopAction(Action):
-    '''Render a noop action.'''
-
-    def __init__(self, **kw):
-        kw['pointer'] = True
-        super(NoopAction, self).__init__(**kw)
-
-
-class NoopFilter(Filter):
-    '''Render a noop filter.'''
-
-    def __init__(self, **kw):
-        kw['pointer'] = True
-        super(NoopFilter, self).__init__(**kw)
-
-
 class PropertyChanged(Filter):
     '''Render a propertyChanged filter.'''
 
@@ -331,7 +315,6 @@ class Event(NamedElement, Renderer):
     '''Render an inventory manager event.'''
 
     action_map = {
-        'noop': NoopAction,
         'destroyObject': DestroyObject,
         'setProperty': SetProperty,
     }
@@ -340,7 +323,7 @@ class Event(NamedElement, Renderer):
         self.cls = kw.pop('type')
         self.actions = \
             [self.action_map[x['name']](**x)
-                for x in kw.pop('actions', [{'name': 'noop'}])]
+                for x in kw.pop('actions', [])]
         super(Event, self).__init__(**kw)
 
 
@@ -349,7 +332,6 @@ class MatchEvent(Event):
     a filter.'''
 
     filter_map = {
-        'none': NoopFilter,
         'propertyChangedTo': PropertyChanged,
     }
 
@@ -358,7 +340,7 @@ class MatchEvent(Event):
             [DbusSignature(**x) for x in kw.pop('signatures', [])]
         self.filters = \
             [self.filter_map[x['name']](**x)
-                for x in kw.pop('filters', [{'name': 'none'}])]
+                for x in kw.pop('filters')]
         super(MatchEvent, self).__init__(**kw)
 
 

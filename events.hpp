@@ -152,12 +152,6 @@ struct PropertyCondition
 } // namespace property_condition
 } // namespace details
 
-/** @brief The default filter.  */
-inline bool none(sdbusplus::message::message&, Manager&) noexcept
-{
-    return true;
-}
-
 /** @brief Implicit type deduction for constructing PropertyCondition.  */
 template <typename T>
 auto propertyChangedTo(

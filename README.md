@@ -44,7 +44,6 @@ Supported filter tags are:
 
 The available filters provided by PIM are:
 
-* none - A non-filter.
 * propertyChangedTo - Only match events when the specified property has
 the specified value.
 
@@ -66,7 +65,6 @@ Supported action tags are:
 
 The available actions provided by PIM are:
 
-* noop - A non-action.
 * destroyObject - Destroy the specified DBus object.
 * setProperty - Set the specified property on the specified DBus object.
 
