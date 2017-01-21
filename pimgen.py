@@ -26,6 +26,11 @@ from sdbusplus.namedelement import NamedElement
 from sdbusplus.renderer import Renderer
 
 
+def cppTypeName(yaml_type):
+    ''' Convert yaml types to cpp types.'''
+    return sdbusplus.property.Property(type=yaml_type).cppTypeName
+
+
 class Interface(list):
     '''Provide various interface transformations.'''
 
@@ -42,6 +47,72 @@ class Interface(list):
 
     def __str__(self):
         return '.'.join(self)
+
+
+class Indent(object):
+    '''Help templates be depth agnostic.'''
+
+    def __init__(self, depth=0):
+        self.depth = depth
+
+    def __add__(self, depth):
+        return Indent(self.depth + depth)
+
+    def __call__(self, depth):
+        '''Render an indent at the current depth plus depth.'''
+        return 4*' '*(depth + self.depth)
+
+
+class Template(NamedElement):
+    '''Associate a template name with its namespace.'''
+
+    def __init__(self, **kw):
+        self.namespace = kw.pop('namespace')
+        super(Template, self).__init__(**kw)
+
+    def qualified(self):
+        return '::'.join(self.namespace + [self.name])
+
+
+class Quote(object):
+    '''Decorate an argument by quoting it.'''
+
+    def __call__(self, arg):
+        return '"{0}"'.format(arg)
+
+
+class Cast(object):
+    '''Decorate an argument by casting it.'''
+
+    def __init__(self, cast, target):
+        '''cast is the cast type (static, const, etc...).
+           target is the cast target type.'''
+        self.cast = cast
+        self.target = target
+
+    def __call__(self, arg):
+        return '{0}_cast<{1}>({2})'.format(self.cast, self.target, arg)
+
+
+class Literal(object):
+    '''Decorate an argument with a literal operator.'''
+
+    literals = {
+        'string': 's',
+        'int64': 'll',
+        'uint64': 'ull'
+    }
+
+    def __init__(self, type):
+        self.type = type
+
+    def __call__(self, arg):
+        literal = self.literals.get(self.type)
+
+        if literal:
+            return '{0}{1}'.format(arg, literal)
+
+        return arg
 
 
 class Argument(sdbusplus.property.Property):
@@ -63,6 +134,21 @@ class Argument(sdbusplus.property.Property):
             a = 'static_cast<%s>(%s)' % (self.cast, a)
 
         return a
+
+
+class InitializerList(Argument):
+    '''Initializer list arguments.'''
+
+    def __init__(self, **kw):
+        self.values = kw.pop('values')
+        super(InitializerList, self).__init__(**kw)
+
+    def argument(self, loader, indent):
+        return self.render(
+            loader,
+            'argument.mako.cpp',
+            arg=self,
+            indent=indent)
 
 
 class MethodCall(NamedElement, Renderer):
@@ -95,6 +181,32 @@ class MethodCall(NamedElement, Renderer):
 
     def argument(self, loader, indent):
         return self.call(loader, indent)
+
+
+class Vector(MethodCall):
+    '''Convenience type for vectors.'''
+
+    def __init__(self, **kw):
+        kw['name'] = 'vector'
+        kw['namespace'] = ['std']
+        kw['args'] = [InitializerList(values=kw.pop('args'))]
+        super(Vector, self).__init__(**kw)
+
+
+class Wrapper(MethodCall):
+    '''Convenience type for functions that wrap other functions.'''
+
+    def __init__(self, **kw):
+        m = MethodCall(
+            name=kw.pop('name'),
+            namespace=kw.pop('namespace', []),
+            templates=kw.pop('templates', []),
+            args=kw.pop('args', []))
+
+        kw['name'] = kw.pop('wrapper_name')
+        kw['namespace'] = kw.pop('wrapper_namespace', [])
+        kw['args'] = [m]
+        super(Wrapper, self).__init__(**kw)
 
 
 class Filter(MethodCall):
@@ -335,7 +447,8 @@ class Everything(Renderer):
                     loader,
                     'generated.mako.cpp',
                     events=self.events,
-                    interfaces=self.interfaces))
+                    interfaces=self.interfaces,
+                    indent=Indent()))
 
 
 if __name__ == '__main__':
