@@ -115,19 +115,41 @@ class Literal(object):
         return arg
 
 
-class Argument(sdbusplus.property.Property):
-    '''Bridge sdbusplus property typenames to syntatically correct c++.'''
+class Argument(NamedElement, Renderer):
+    '''Define argument type inteface.'''
+
+    def __init__(self, **kw):
+        self.type = kw.pop('type', None)
+        super(Argument, self).__init__(**kw)
+
+    def argument(self, loader, indent):
+        raise NotImplementedError
+
+
+class TrivialArgument(Argument):
+    '''Non-array type arguments.'''
 
     def __init__(self, **kw):
         self.value = kw.pop('value')
+        self.decorators = kw.pop('decorators', [])
+        if kw.get('type', None) == 'string':
+            self.decorators.insert(0, Quote())
+
         self.cast = kw.pop('cast', None)
-        super(Argument, self).__init__(**kw)
+        super(TrivialArgument, self).__init__(**kw)
+
+    def argument(self, loader, indent):
+        a = str(self.value)
+        for d in self.decorators:
+            a = d(a)
+
+        return a
 
     def cppArg(self):
         '''Transform string types to c++ string constants.'''
 
         a = self.value
-        if self.typeName == 'string':
+        if self.type == 'string':
             a = '"%s"' % a
 
         if self.cast:
@@ -151,6 +173,22 @@ class InitializerList(Argument):
             indent=indent)
 
 
+class DbusSignature(Argument):
+    '''DBus signature arguments.'''
+
+    def __init__(self, **kw):
+        self.sig = {x: y for x, y in kw.iteritems()}
+        kw.clear()
+        super(DbusSignature, self).__init__(**kw)
+
+    def argument(self, loader, indent):
+        return self.render(
+            loader,
+            'signature.mako.cpp',
+            signature=self,
+            indent=indent)
+
+
 class MethodCall(NamedElement, Renderer):
     '''Render syntatically correct c++ method calls.'''
 
@@ -159,7 +197,7 @@ class MethodCall(NamedElement, Renderer):
         self.template = kw.pop('template', '')
         self.pointer = kw.pop('pointer', False)
         self.args = \
-            [Argument(**x) for x in kw.pop('args', [])]
+            [TrivialArgument(**x) for x in kw.pop('args', [])]
         super(MethodCall, self).__init__(**kw)
 
     def bare_method(self):
@@ -225,22 +263,6 @@ class Action(MethodCall):
         super(Action, self).__init__(**kw)
 
 
-class DbusSignature(NamedElement, Renderer):
-    '''Represent a dbus signal match signature.'''
-
-    def __init__(self, **kw):
-        self.sig = {x: y for x, y in kw.iteritems()}
-        kw.clear()
-        super(DbusSignature, self).__init__(**kw)
-
-    def argument(self, loader, indent):
-        return self.render(
-            loader,
-            'signature.mako.cpp',
-            signature=self,
-            indent=indent)
-
-
 class DestroyObject(Action):
     '''Render a destroyObject action.'''
 
@@ -262,7 +284,7 @@ class SetProperty(Action):
             member.split('::') + [NamedElement(
                 name=mapped['property']).camelCase])
 
-        memberType = Argument(**mapped['value']).cppTypeName
+        memberType = cppTypeName(mapped['value'].get('type'))
 
         kw['template'] = Interface(mapped['interface']).namespace()
         kw['args'] = [
