@@ -86,6 +86,16 @@ class MethodCall(NamedElement, Renderer):
 
         return m
 
+    def call(self, loader, indent):
+        return self.render(
+            loader,
+            'method.mako.cpp',
+            method=self,
+            indent=indent)
+
+    def argument(self, loader, indent):
+        return self.call(loader, indent)
+
 
 class Filter(MethodCall):
     '''Provide common attributes for any filter.'''
@@ -110,6 +120,13 @@ class DbusSignature(NamedElement, Renderer):
         self.sig = {x: y for x, y in kw.iteritems()}
         kw.clear()
         super(DbusSignature, self).__init__(**kw)
+
+    def argument(self, loader, indent):
+        return self.render(
+            loader,
+            'signature.mako.cpp',
+            signature=self,
+            indent=indent)
 
 
 class DestroyObject(Action):
