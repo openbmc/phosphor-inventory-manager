@@ -15,19 +15,16 @@ events:
             member: PropertiesChanged
       filters:
           - name: propertyChangedTo
-            args:
-              interface: xyz.openbmc_project.Example.Iface2
-              property: ExampleProperty2
-              value:
-                  type: string
-                  value: xxxyyy
+            interface: xyz.openbmc_project.Example.Iface2
+            property: ExampleProperty2
+            value:
+              type: string
+              value: xxxyyy
       actions:
           - name: destroyObject
-            args:
-                path: /deleteme1
+            path: /deleteme1
           - name: destroyObject
-            args:
-                path: /deleteme2
+            path: /deleteme2
 
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

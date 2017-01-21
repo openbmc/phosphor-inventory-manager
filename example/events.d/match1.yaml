@@ -15,20 +15,18 @@ events:
             member: PropertiesChanged
       filters:
           - name: propertyChangedTo
-            args:
-              interface: xyz.openbmc_project.Example.Iface2
-              property: ExampleProperty2
-              value:
-                  type: string
-                  value: yyyxxx
+            interface: xyz.openbmc_project.Example.Iface2
+            property: ExampleProperty2
+            value:
+              type: string
+              value: yyyxxx
       actions:
           - name: setProperty
-            args:
-              interface: xyz.openbmc_project.Example.Iface1
-              property: ExampleProperty1
-              path: /changeme
-              value:
-                type: string
-                value: changed
+            interface: xyz.openbmc_project.Example.Iface1
+            property: ExampleProperty1
+            path: /changeme
+            value:
+              type: string
+              value: changed
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

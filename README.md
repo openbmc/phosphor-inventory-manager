@@ -40,7 +40,8 @@ Supported match tags are:
 Supported filter tags are:
 
 * name - The filter to use.
-* args - An optional list of arguments to pass to the filter.
+
+Subsequent tags are defined by the filter type.
 
 The available filters provided by PIM are:
 
@@ -61,7 +62,8 @@ Supported arguments for the propertyChangedTo filter are:
 Supported action tags are:
 
 * name - The action to perform.
-* args - An optional list of arguments to pass to the action.
+
+Subsequent tags are defined by the action type.
 
 The available actions provided by PIM are:
 

@@ -135,25 +135,12 @@ class TrivialArgument(Argument):
         if kw.get('type', None) == 'string':
             self.decorators.insert(0, Quote())
 
-        self.cast = kw.pop('cast', None)
         super(TrivialArgument, self).__init__(**kw)
 
     def argument(self, loader, indent):
         a = str(self.value)
         for d in self.decorators:
             a = d(a)
-
-        return a
-
-    def cppArg(self):
-        '''Transform string types to c++ string constants.'''
-
-        a = self.value
-        if self.type == 'string':
-            a = '"%s"' % a
-
-        if self.cast:
-            a = 'static_cast<%s>(%s)' % (self.cast, a)
 
         return a
 
@@ -189,26 +176,14 @@ class DbusSignature(Argument):
             indent=indent)
 
 
-class MethodCall(NamedElement, Renderer):
+class MethodCall(Argument):
     '''Render syntatically correct c++ method calls.'''
 
     def __init__(self, **kw):
         self.namespace = kw.pop('namespace', [])
-        self.template = kw.pop('template', '')
-        self.pointer = kw.pop('pointer', False)
-        self.args = \
-            [TrivialArgument(**x) for x in kw.pop('args', [])]
+        self.templates = kw.pop('templates', [])
+        self.args = kw.pop('args', [])
         super(MethodCall, self).__init__(**kw)
-
-    def bare_method(self):
-        '''Provide the method name and encompassing
-        namespace without any arguments.'''
-
-        m = '::'.join(self.namespace + [self.name])
-        if self.template:
-            m += '<%s>' % self.template
-
-        return m
 
     def call(self, loader, indent):
         return self.render(
@@ -247,83 +222,119 @@ class Wrapper(MethodCall):
         super(Wrapper, self).__init__(**kw)
 
 
-class Filter(MethodCall):
-    '''Provide common attributes for any filter.'''
+class Filter(Wrapper):
+    '''Convenience type for filters'''
 
     def __init__(self, **kw):
+        kw['wrapper_name'] = 'make_filter'
+        kw['wrapper_namespace'] = ['details']
         kw['namespace'] = ['filters']
         super(Filter, self).__init__(**kw)
 
 
-class Action(MethodCall):
-    '''Provide common attributes for any action.'''
+class Action(Wrapper):
+    '''Convenience type for actions'''
 
     def __init__(self, **kw):
+        kw['wrapper_name'] = 'make_action'
+        kw['wrapper_namespace'] = ['details']
         kw['namespace'] = ['actions']
         super(Action, self).__init__(**kw)
 
 
 class DestroyObject(Action):
-    '''Render a destroyObject action.'''
+    '''Assemble a destroyObject action.'''
 
     def __init__(self, **kw):
-        mapped = kw.pop('args')
-        kw['args'] = [
-            {'value': mapped['path'], 'type':'string'},
-        ]
+        args = [TrivialArgument(value=kw.pop('path'), type='string')]
+        kw['args'] = args
         super(DestroyObject, self).__init__(**kw)
 
 
 class SetProperty(Action):
-    '''Render a setProperty action.'''
+    '''Assemble a setProperty action.'''
 
     def __init__(self, **kw):
-        mapped = kw.pop('args')
-        member = Interface(mapped['interface']).namespace()
+        args = []
+
+        value = kw.pop('value')
+        prop = kw.pop('property')
+        iface = kw.pop('interface')
+        iface = Interface(iface)
+        namespace = iface.namespace().split('::')[:-1]
+        name = iface[-1]
+        t = Template(namespace=namespace, name=iface[-1])
+
         member = '&%s' % '::'.join(
-            member.split('::') + [NamedElement(
-                name=mapped['property']).camelCase])
+            namespace + [name, NamedElement(name=prop).camelCase])
+        member_type = cppTypeName(value['type'])
+        member_cast = '{0} ({1}::*)({0})'.format(member_type, t.qualified())
 
-        memberType = cppTypeName(mapped['value'].get('type'))
+        args.append(TrivialArgument(value=kw.pop('path'), type='string'))
+        args.append(TrivialArgument(value=str(iface), type='string'))
+        args.append(TrivialArgument(
+            value=member, decorators=[Cast('static', member_cast)]))
+        args.append(TrivialArgument(**value))
 
-        kw['template'] = Interface(mapped['interface']).namespace()
-        kw['args'] = [
-            {'value': mapped['path'], 'type':'string'},
-            {'value': mapped['interface'], 'type':'string'},
-            {'value': member, 'cast': '{0} ({1}::*)({0})'.format(
-                memberType,
-                Interface(mapped['interface']).namespace())},
-            mapped['value'],
-        ]
+        kw['templates'] = [Template(name=name, namespace=namespace)]
+        kw['args'] = args
         super(SetProperty, self).__init__(**kw)
 
 
 class PropertyChanged(Filter):
-    '''Render a propertyChanged filter.'''
+    '''Assemble a propertyChanged filter.'''
 
     def __init__(self, **kw):
-        mapped = kw.pop('args')
-        kw['args'] = [
-            {'value': mapped['interface'], 'type':'string'},
-            {'value': mapped['property'], 'type':'string'},
-            mapped['value']
-        ]
+        args = []
+        args.append(TrivialArgument(value=kw.pop('interface'), type='string'))
+        args.append(TrivialArgument(value=kw.pop('property'), type='string'))
+        args.append(TrivialArgument(
+            decorators=[
+                Literal(kw['value'].get('type', None))], **kw.pop('value')))
+        kw['args'] = args
         super(PropertyChanged, self).__init__(**kw)
 
 
-class Event(NamedElement, Renderer):
-    '''Render an inventory manager event.'''
+class Event(MethodCall):
+    '''Assemble an inventory manager event.'''
 
     action_map = {
         'destroyObject': DestroyObject,
         'setProperty': SetProperty,
     }
 
+    filter_map = {
+        'propertyChangedTo': PropertyChanged,
+    }
+
     def __init__(self, **kw):
-        self.cls = kw.pop('type')
-        self.actions = \
-            [self.action_map[x['name']](**x)
-                for x in kw.pop('actions', [])]
+        self.summary = kw.pop('name')
+
+        filters = [
+            self.filter_map[x['name']](**x) for x in kw.pop('filters', [])]
+
+        event = MethodCall(
+            name='make_shared',
+            namespace=['std'],
+            templates=[Template(
+                name=kw.pop('event'),
+                namespace=kw.pop('event_namespace', []))],
+            args=kw.pop('event_args', []) + [filters[0]])
+
+        events = Vector(
+            templates=[Template(name='EventBasePtr', namespace=['details'])],
+            args=[event])
+
+        action_type = Template(name='ActionBasePtr', namespace=['details'])
+        action_args = [
+            self.action_map[x['name']](**x) for x in kw.pop('actions', [])]
+        actions = Vector(
+            templates=[action_type],
+            args=action_args)
+
+        kw['name'] = 'make_tuple'
+        kw['namespace'] = ['std']
+        kw['args'] = [events, actions]
         super(Event, self).__init__(**kw)
 
 
@@ -331,16 +342,12 @@ class MatchEvent(Event):
     '''Associate one or more dbus signal match signatures with
     a filter.'''
 
-    filter_map = {
-        'propertyChangedTo': PropertyChanged,
-    }
-
     def __init__(self, **kw):
-        self.signatures = \
-            [DbusSignature(**x) for x in kw.pop('signatures', [])]
-        self.filters = \
-            [self.filter_map[x['name']](**x)
-                for x in kw.pop('filters')]
+        kw['event'] = 'DbusSignal'
+        kw['event_namespace'] = ['details']
+        kw['event_args'] = [
+            DbusSignature(**x) for x in kw.pop('signatures', [])]
+
         super(MatchEvent, self).__init__(**kw)
 
 
