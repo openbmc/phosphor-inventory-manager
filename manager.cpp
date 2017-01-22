@@ -148,7 +148,50 @@ void Manager::notify(std::map<sdbusplus::message::object_path, Object> objs)
 {
     try
     {
-        createObjects(objs);
+        // Create objects that don't exist.
+        // Update objects that already exist.
+
+        std::string absPath;
+        for (auto& o : objs)
+        {
+            auto& relPath = o.first.str;
+            auto& ifaces = o.second;
+
+            absPath.assign(_root);
+            absPath.append(1, '/');
+            absPath.append(relPath);
+
+            auto refpair = _refs.find(absPath);
+            if (refpair == _refs.end())
+            {
+                // This object doesn't exist.
+                createObjects({o});
+                continue;
+            }
+
+            // This object already exists.
+            auto it = refpair->second.begin();
+            for (auto& i : ifaces)
+            {
+                auto& storedName = it->first;
+                auto& name = i.first;
+                if (name != storedName)
+                {
+                    // huh?  got junk...
+                }
+
+                auto pMake = _makers.find(name.c_str());
+                if (pMake == _makers.end())
+                {
+                    // huh?  we are broken...
+                }
+
+                auto& assigner = std::get<AssignerType>(pMake->second);
+                auto& props = i.second;
+                assigner(props, *it->second);
+                ++it;
+            }
+        }
     }
     catch (const std::exception& e)
     {
