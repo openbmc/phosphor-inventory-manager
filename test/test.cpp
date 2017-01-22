@@ -40,7 +40,8 @@ const auto trigger3 = sdbusplus::message::object_path(EXAMPLE_ROOT +
                       "/trigger3"s);
 const auto trigger4 = sdbusplus::message::object_path(EXAMPLE_ROOT +
                       "/trigger4"s);
-
+const auto trigger5 = sdbusplus::message::object_path(EXAMPLE_ROOT +
+                      "/trigger5"s);
 
 const sdbusplus::message::object_path relDeleteMeOne{"/deleteme1"};
 const sdbusplus::message::object_path relDeleteMeTwo{"/deleteme2"};
@@ -78,6 +79,8 @@ struct ExampleService
         ExampleIface1, ExampleIface2 > t3(bus, trigger3.str.c_str());
         sdbusplus::server::object::object <
         ExampleIface1, ExampleIface2 > t4(bus, trigger4.str.c_str());
+        sdbusplus::server::object::object <
+        ExampleIface1, ExampleIface2 > t5(bus, trigger5.str.c_str());
 
         while (!shutdown)
         {
@@ -454,6 +457,46 @@ void runTests()
                 sig.read(sigProperties);
                 assert(sigProperties["ExampleProperty1"] == "changed");
             }
+        }
+    }
+
+    // Validate the create object action.
+    {
+        sdbusplus::message::object_path relCreateMe1{"/createme1"};
+        sdbusplus::message::object_path relCreateMe2{"/createme2"};
+        std::string createMe1{root + relCreateMe1.str};
+        std::string createMe2{root + relCreateMe2.str};
+
+        // Trigger the action.
+        {
+            sdbusplus::message::object_path signalPath;
+            Object signalObject;
+
+            SignalQueue queue(
+                "path='" + root + "',member='InterfacesAdded'");
+
+            auto m = set(trigger5.str);
+            m.append("xyz.openbmc_project.Example.Iface2");
+            m.append("ExampleProperty2");
+            m.append(sdbusplus::message::variant<std::string>("abc123"));
+            b.call(m);
+            {
+                auto sig{queue.pop()};
+                assert(sig);
+                sig.read(signalPath);
+                assert(createMe1 == signalPath.str);
+                sig.read(signalObject);
+            }
+            {
+                auto sig{queue.pop()};
+                assert(sig);
+                sig.read(signalPath);
+                assert(createMe2 == signalPath.str);
+                sig.read(signalObject);
+            }
+
+            auto moreSignals{queue.pop()};
+            assert(!moreSignals);
         }
     }
 }
