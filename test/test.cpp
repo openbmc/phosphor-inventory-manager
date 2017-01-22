@@ -209,6 +209,24 @@ void runTests()
         },
     };
 
+    // Validate startup events occurred.
+    {
+        sdbusplus::message::object_path relCreateMe3{"/createme3"};
+        std::string createMe3{root + relCreateMe3.str};
+
+        auto get = b.new_method_call(
+                       MGR_SERVICE,
+                       createMe3.c_str(),
+                       "org.freedesktop.DBus.Properties",
+                       "GetAll");
+        get.append("xyz.openbmc_project.Example.Iface1");
+        auto resp = b.call(get);
+
+        Object::mapped_type properties;
+        assert(!resp.is_method_error());
+        resp.read(properties);
+    }
+
     // Make sure the notify method works.
     {
         sdbusplus::message::object_path relPath{"/foo"};
