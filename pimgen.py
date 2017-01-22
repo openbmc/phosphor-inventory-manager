@@ -314,6 +314,9 @@ class Event(MethodCall):
 
         filters = [
             self.filter_map[x['name']](**x) for x in kw.pop('filters', [])]
+        filters = Vector(
+            templates=[Template(name='FilterBasePtr', namespace=['details'])],
+            args=filters)
 
         event = MethodCall(
             name='make_shared',
@@ -321,7 +324,7 @@ class Event(MethodCall):
             templates=[Template(
                 name=kw.pop('event'),
                 namespace=kw.pop('event_namespace', []))],
-            args=kw.pop('event_args', []) + [filters[0]])
+            args=kw.pop('event_args', []) + [filters])
 
         events = Vector(
             templates=[Template(name='EventBasePtr', namespace=['details'])],
