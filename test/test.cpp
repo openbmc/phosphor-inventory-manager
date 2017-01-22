@@ -91,6 +91,8 @@ struct ExampleService
     sdbusplus::server::manager::manager objmgr;
 };
 
+using Object = phosphor::inventory::manager::Object;
+
 /** @class SignalQueue
  *  @brief Store DBus signals in a queue.
  */
@@ -136,18 +138,10 @@ class SignalQueue
         sdbusplus::message::message _next;
 };
 
-template <typename ...T>
-using Object = std::map <
-               std::string,
-               std::map <
-               std::string,
-               sdbusplus::message::variant<T... >>>;
-
 /**@brief Find a subset of interfaces and properties in an object. */
-template <typename ...T>
-auto hasProperties(const Object<T...>& l, const Object<T...>& r)
+auto hasProperties(const Object& l, const Object& r)
 {
-    Object<T...> result;
+    Object result;
     std::set_difference(
         r.cbegin(),
         r.cend(),
@@ -158,8 +152,7 @@ auto hasProperties(const Object<T...>& l, const Object<T...>& r)
 }
 
 /**@brief Check an object for one or more interfaces. */
-template <typename ...T>
-auto hasInterfaces(const std::vector<std::string>& l, const Object<T...>& r)
+auto hasInterfaces(const std::vector<std::string>& l, const Object& r)
 {
     std::vector<std::string> stripped, interfaces;
     std::transform(
@@ -201,7 +194,7 @@ void runTests()
                    "Set");
     };
 
-    Object<std::string> obj
+    Object obj
     {
         {
             "xyz.openbmc_project.Example.Iface1",
@@ -229,11 +222,11 @@ void runTests()
         auto sig{queue.pop()};
         assert(sig);
         sdbusplus::message::object_path signalPath;
-        Object<std::string> signalObject;
+        Object signalObjectType;
         sig.read(signalPath);
         assert(path == signalPath.str);
-        sig.read(signalObject);
-        assert(hasProperties(signalObject, obj));
+        sig.read(signalObjectType);
+        assert(hasProperties(signalObjectType, obj));
         auto moreSignals{queue.pop()};
         assert(!moreSignals);
     }
