@@ -23,6 +23,27 @@ using ServerObject = T;
 using ManagerIface =
     sdbusplus::xyz::openbmc_project::Inventory::server::Manager;
 
+/** @struct PropertiesVariant
+ *  @brief Wrapper for sdbusplus PropertiesVariant.
+ *
+ *  A wrapper is useful since MakeInterface is instantiated with 'int'
+ *  to deduce the return type of its methods, which does not depend
+ *  on T.
+ *
+ *  @tparam T - The sdbusplus server binding type.
+ */
+template <typename T, typename Enable = void>
+struct PropertiesVariant {};
+
+template <typename T>
+struct PropertiesVariant<T, typename std::enable_if<std::is_object<T>::value>::type>
+{
+    using Type = typename T::PropertiesVariant;
+};
+
+template <typename T>
+using PropertiesVariantType = typename PropertiesVariant<T>::Type;
+
 /** @struct MakeInterface
  *  @brief Adapt an sdbusplus interface proxy.
  *
@@ -31,6 +52,7 @@ using ManagerIface =
  *
  *  @tparam T - The type of the interface being adapted.
  */
+
 template <typename T>
 struct MakeInterface
 {
@@ -39,9 +61,8 @@ struct MakeInterface
         const char* path,
         const Interface& props)
     {
-        using PropertiesVariant = typename T::PropertiesVariant;
         using InterfaceVariant =
-            std::map<std::string, PropertiesVariant>;
+            std::map<std::string, PropertiesVariantType<T>>;
 
         InterfaceVariant v;
 
@@ -49,10 +70,20 @@ struct MakeInterface
         {
             v.emplace(
                 p.first,
-                convertVariant<PropertiesVariant>(p.second));
+                convertVariant<PropertiesVariantType<T>>(p.second));
         }
 
         return any_ns::any(std::make_shared<T>(bus, path, v));
+    }
+
+    static void assign(const Interface& props, any_ns::any& holder)
+    {
+        auto& iface = *any_ns::any_cast<std::shared_ptr<T> &>(holder);
+        for (const auto& p : props)
+        {
+            iface.setPropertyByName(
+                p.first, convertVariant<PropertiesVariantType<T>>(p.second));
+        }
     }
 };
 
@@ -110,6 +141,10 @@ class Manager final :
         void createObjects(
             const std::map<sdbusplus::message::object_path, Object>& objs);
 
+        /** @brief Add or update objects on DBus. */
+        void updateObjects(
+            const std::map<sdbusplus::message::object_path, Object>& objs);
+
         /** @brief Invoke an sdbusplus server binding method.
          *
          *  Invoke the requested method with a reference to the requested
@@ -149,11 +184,13 @@ class Manager final :
         using ObjectReferences = std::map<std::string, InterfaceComposite>;
         using Events = std::vector<EventInfo>;
 
-        // The int instantiation is safe since the signature of these
+        // The int instantiations are safe since the signature of these
         // functions don't change from one instantiation to the next.
         using MakerType = std::add_pointer_t <
                           decltype(MakeInterface<int>::make) >;
-        using Makers = std::map<std::string, std::tuple<MakerType>>;
+        using AssignerType = std::add_pointer_t <
+                             decltype(MakeInterface<int>::assign) >;
+        using Makers = std::map<std::string, std::tuple<MakerType, AssignerType>>;
 
         /** @brief Provides weak references to interface holders.
          *
@@ -194,6 +231,13 @@ class Manager final :
             auto& holder = getInterfaceHolder(path, interface);
             return *any_ns::any_cast<T>(holder);
         }
+
+        /** @brief Add or update interfaces on DBus. */
+        void updateInterfaces(
+            const sdbusplus::message::object_path& path,
+            const Object& interfaces,
+            ObjectReferences::iterator pos,
+            bool emitSignals = true);
 
         /** @brief Provided for testing only. */
         volatile bool _shutdown;
