@@ -132,52 +132,7 @@ void Manager::notify(sdbusplus::message::object_path path, Object object)
 {
     try
     {
-
-        if (object.cbegin() == object.cend())
-            throw std::runtime_error(
-                "No interfaces in " + path.str);
-
-        path.str.insert(0, _root);
-
-        auto obj = _refs.find(path);
-        if (obj != _refs.end())
-            throw std::runtime_error(
-                obj->first + " already exists");
-
-        // Create an interface holder for each interface
-        // provided by the client and group them into
-        // a container.
-        InterfaceComposite ref;
-
-        auto i = object.size();
-        for (auto& x : object)
-        {
-            // Defer sending any signals until the last interface.
-            auto deferSignals = --i != 0;
-            auto pMakers = _makers.find(x.first.c_str());
-
-            if (pMakers == _makers.end())
-                throw std::runtime_error(
-                    "Unimplemented interface: " + x.first);
-
-            auto& maker = std::get<MakerType>(pMakers->second);
-
-            auto& props = x.second;
-            ref.emplace(x.first, maker(
-                            _bus,
-                            path.str.c_str(),
-                            props,
-                            deferSignals));
-        }
-
-        if (!ref.empty())
-        {
-            // Hang on to a reference to the object (interfaces)
-            // so it stays on the bus, and so we can make calls
-            // to it if needed.
-            _refs.emplace(
-                path, std::move(ref));
-        }
+        createObjects({std::make_pair(path, object)});
     }
     catch (const std::exception& e)
     {
@@ -212,6 +167,68 @@ void Manager::destroyObjects(
     {
         std::string p{path};
         _refs.erase(_root + p);
+    }
+}
+
+void Manager::createObjects(
+    const std::map<sdbusplus::message::object_path, Object>& objs)
+{
+    std::string absPath;
+
+    for (auto& o : objs)
+    {
+        auto& relPath = o.first;
+        auto& ifaces = o.second;
+
+        absPath.assign(_root);
+        absPath.append(relPath);
+
+        auto obj = _refs.find(absPath);
+        if (obj != _refs.end())
+        {
+            // This object already exists...skip.
+            continue;
+        }
+
+        // Create an interface holder for each interface
+        // provided by the client and group them into
+        // a container.
+        InterfaceComposite ref;
+
+        auto i = ifaces.size();
+        for (auto& iface : ifaces)
+        {
+            auto& props = iface.second;
+
+            // Defer sending any signals until the last interface.
+            auto deferSignals = --i != 0;
+            auto pMakers = _makers.find(iface.first.c_str());
+
+            if (pMakers == _makers.end())
+            {
+                // This interface is not known.
+                continue;
+            }
+
+            auto& maker = std::get<MakerType>(pMakers->second);
+
+            ref.emplace(
+                iface.first,
+                maker(
+                    _bus,
+                    absPath.c_str(),
+                    props,
+                    deferSignals));
+        }
+
+        if (!ref.empty())
+        {
+            // Hang on to a reference to the object (interfaces)
+            // so it stays on the bus, and so we can make calls
+            // to it if needed.
+            _refs.emplace(
+                absPath, std::move(ref));
+        }
     }
 }
 

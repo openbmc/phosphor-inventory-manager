@@ -3,6 +3,7 @@
 #include <utility>
 #include <memory>
 #include "utils.hpp"
+#include "types.hpp"
 
 namespace phosphor
 {
@@ -45,6 +46,16 @@ inline auto destroyObjects(std::vector<const char*> paths)
     return [paths = std::move(paths)](auto&, auto & m)
     {
         m.destroyObjects(paths);
+    };
+}
+
+/** @brief Create objects action.  */
+inline auto createObjects(
+    std::map<sdbusplus::message::object_path, Object> objs)
+{
+    return [objs = std::move(objs)](auto&, auto & m)
+    {
+        m.createObjects(std::move(objs));
     };
 }
 
