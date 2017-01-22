@@ -242,6 +242,40 @@ class Action(Wrapper):
         super(Action, self).__init__(**kw)
 
 
+class CreateObjects(Action):
+    '''Assemble a createObjects action.'''
+
+    def __init__(self, **kw):
+        objs = []
+
+        for path, interfaces in kw.pop('objs').iteritems():
+            key_o = TrivialArgument(
+                value=path,
+                type='string',
+                decorators=[Literal('string')])
+            value_i = []
+
+            for interface, properties, in interfaces.iteritems():
+                key_i = TrivialArgument(value=interface, type='string')
+                value_p = []
+
+                for prop, value in properties.iteritems():
+                    key_p = TrivialArgument(value=prop, type='string')
+                    value_v = TrivialArgument(
+                        decorators=[Literal(value.get('type', None))],
+                        **value)
+                    value_p.append(InitializerList(values=[key_p, value_v]))
+
+                value_p = InitializerList(values=value_p)
+                value_i.append(InitializerList(values=[key_i, value_p]))
+
+            value_i = InitializerList(values=value_i)
+            objs.append(InitializerList(values=[key_o, value_i]))
+
+        kw['args'] = [InitializerList(values=objs)]
+        super(CreateObjects, self).__init__(**kw)
+
+
 class DestroyObjects(Action):
     '''Assemble a destroyObject action.'''
 
@@ -322,6 +356,7 @@ class Event(MethodCall):
 
     action_map = {
         'destroyObjects': DestroyObjects,
+        'createObjects': CreateObjects,
         'setProperty': SetProperty,
     }
 
