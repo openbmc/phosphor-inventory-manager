@@ -2,7 +2,7 @@ description: >
     An example inventory match rule.
 
 events:
-    - name: Example Match(1)
+    - name: Example Match
       description: >
           Sets the value of ExampleProperty1 on /changeme
           when the value of ExampleProperty2 on
@@ -28,5 +28,50 @@ events:
             value:
               type: string
               value: changed
+
+    - name: Example Match
+      description: >
+          Create /createme1 and /createme2 when the value of
+          ExampleProperty2 on /testing/trigger5 changes to abc123.
+      type: match
+      signatures:
+          - type: signal
+            interface: org.freedesktop.DBus.Properties
+            path: /testing/trigger5
+            member: PropertiesChanged
+      filters:
+          - name: propertyChangedTo
+            interface: xyz.openbmc_project.Example.Iface2
+            property: ExampleProperty2
+            value:
+              type: string
+              value: abc123
+      actions:
+          - name: createObjects
+            objs:
+              /createme1:
+                xyz.openbmc_project.Example.Iface1:
+                  ExampleProperty1:
+                    value: foo
+                    type: string
+                xyz.openbmc_project.Example.Iface2:
+                  ExampleProperty2:
+                    value: bar
+                    type: string
+                  ExampleProperty3:
+                    value: 999
+                    type: int64
+              /createme2:
+                xyz.openbmc_project.Example.Iface1:
+                  ExampleProperty1:
+                    value: bar
+                    type: string
+                xyz.openbmc_project.Example.Iface2:
+                  ExampleProperty2:
+                    value: foo
+                    type: string
+                  ExampleProperty3:
+                    value: 888
+                    type: int64
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
