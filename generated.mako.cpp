@@ -23,7 +23,10 @@ const Manager::Makers Manager::_makers{
         std::make_tuple(
             MakeInterface<
                 ServerObject<
-                    ${i.namespace()}>>::make
+                    ${i.namespace()}>>::make,
+            MakeInterface<
+                ServerObject<
+                    ${i.namespace()}>>::assign
         )
     },
 % endfor
