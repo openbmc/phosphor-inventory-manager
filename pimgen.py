@@ -297,6 +297,26 @@ class PropertyChanged(Filter):
         super(PropertyChanged, self).__init__(**kw)
 
 
+class PropertyIs(Filter):
+    '''Assemble a propertyIs filter.'''
+
+    def __init__(self, **kw):
+        args = []
+        args.append(TrivialArgument(value=kw.pop('path'), type='string'))
+        args.append(TrivialArgument(value=kw.pop('interface'), type='string'))
+        args.append(TrivialArgument(value=kw.pop('property'), type='string'))
+        args.append(TrivialArgument(
+            decorators=[
+                Literal(kw['value'].get('type', None))], **kw.pop('value')))
+
+        service = kw.pop('service', None)
+        if service:
+            args.append(TrivialArgument(value=service, type='string'))
+
+        kw['args'] = args
+        super(PropertyIs, self).__init__(**kw)
+
+
 class Event(MethodCall):
     '''Assemble an inventory manager event.'''
 
@@ -307,6 +327,7 @@ class Event(MethodCall):
 
     filter_map = {
         'propertyChangedTo': PropertyChanged,
+        'propertyIs': PropertyIs,
     }
 
     def __init__(self, **kw):
