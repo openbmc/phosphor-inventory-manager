@@ -154,14 +154,20 @@ void Manager::notify(sdbusplus::message::object_path path, Object object)
         {
             // Defer sending any signals until the last interface.
             auto deferSignals = --i != 0;
-            auto maker = _makers.find(x.first.c_str());
+            auto pMakers = _makers.find(x.first.c_str());
 
-            if (maker == _makers.end())
+            if (pMakers == _makers.end())
                 throw std::runtime_error(
                     "Unimplemented interface: " + x.first);
 
-            ref.emplace(x.first,
-                        (maker->second)(_bus, path.str.c_str(), deferSignals));
+            auto& maker = std::get<MakerType>(pMakers->second);
+
+            auto& props = x.second;
+            ref.emplace(x.first, maker(
+                            _bus,
+                            path.str.c_str(),
+                            props,
+                            deferSignals));
         }
 
         if (!ref.empty())
