@@ -51,7 +51,16 @@ struct MakeInterface
                     std::forward<decltype(path)>(path),
                     std::forward<decltype(deferSignals)>(deferSignals))));
     }
+
+    static void assign(const Interface& properties, holder::Base& base)
+    {
+        // TODO: replace interface with new properties
+        // auto& holder = static_cast<details::holder::Holder<T> &>(base);
+        // auto& iface = holder.get();
+        // iface.update(properties);
+    }
 };
+
 } // namespace details
 
 /** @class Manager
@@ -148,10 +157,11 @@ class Manager final :
         using ObjectReferences = std::map<std::string, InterfaceComposite>;
         using Events = std::vector<EventInfo>;
 
-        // The int instantiation is safe since the signature of these
+        // The int instantiations are safe since the signature of these
         // functions don't change from one instantiation to the next.
         using MakerType = decltype(details::MakeInterface<int>::make)*;
-        using Makers = std::map<std::string, std::tuple<MakerType>>;
+        using AssignerType = decltype(details::MakeInterface<int>::assign)*;
+        using Makers = std::map<std::string, std::tuple<MakerType, AssignerType>>;
 
         /** @brief Provides weak references to interface holders.
          *
