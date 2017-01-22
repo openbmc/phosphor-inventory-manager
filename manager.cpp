@@ -16,8 +16,10 @@
 #include <iostream>
 #include <exception>
 #include <chrono>
+#include <algorithm>
 #include <log.hpp>
 #include "manager.hpp"
+#include "errors.hpp"
 
 using namespace std::literals::chrono_literals;
 
@@ -137,6 +139,119 @@ void Manager::run() noexcept
         {
             std::cerr << e.what() << std::endl;
         }
+    }
+}
+
+void Manager::updateInterfaces(
+    const sdbusplus::message::object_path& path,
+    const Object& interfaces,
+    ObjectReferences::iterator pos,
+    bool newObject)
+{
+    auto& refaces = pos->second;
+    auto ifaceit = interfaces.cbegin();
+    auto opsit = _makers.cbegin();
+    auto refaceit = refaces.begin();
+    std::vector<std::string> signals;
+
+    while (ifaceit != interfaces.cend())
+    {
+        try
+        {
+            // Find the binding ops for this interface.
+            opsit = std::lower_bound(
+                        opsit,
+                        _makers.cend(),
+                        ifaceit->first,
+                        compareFirst(_makers.key_comp()));
+
+            if (opsit == _makers.cend() || opsit->first != ifaceit->first)
+            {
+                // This interface is not supported.
+                throw InterfaceError(
+                    "Encountered unsupported interface.",
+                    ifaceit->first);
+            }
+
+            // Find the binding insertion point or the binding to update.
+            refaceit = std::lower_bound(
+                           refaceit,
+                           refaces.end(),
+                           ifaceit->first,
+                           compareFirst(refaces.key_comp()));
+
+            if (refaceit == refaces.end() || refaceit->first != ifaceit->first)
+            {
+                // Add the new interface.
+                auto& ctor = std::get<MakerType>(opsit->second);
+                refaceit = refaces.insert(
+                               refaceit,
+                               std::make_pair(
+                                   ifaceit->first,
+                                   ctor(_bus, path.str.c_str(), ifaceit->second)));
+                signals.push_back(ifaceit->first);
+            }
+            else
+            {
+                // Set the new property values.
+                auto& assign = std::get<AssignerType>(opsit->second);
+                assign(ifaceit->second, refaceit->second);
+            }
+        }
+        catch (const InterfaceError& e)
+        {
+            // Reset the binding ops iterator since we are
+            // at the end.
+            opsit = _makers.cbegin();
+            e.log();
+        }
+
+        ++ifaceit;
+    }
+
+    if (newObject)
+    {
+        _bus.emit_object_added(path.str.c_str());
+    }
+    else if (!signals.empty())
+    {
+        // TODO: emit an interfaces added signal
+    }
+}
+
+void Manager::updateObjects(
+    const std::map<sdbusplus::message::object_path, Object>& objs)
+{
+    auto objit = objs.cbegin();
+    auto refit = _refs.begin();
+    std::string absPath;
+    bool newObj;
+
+    while (objit != objs.cend())
+    {
+        // Find the insertion point or the object to update.
+        refit = std::lower_bound(
+                    refit,
+                    _refs.end(),
+                    objit->first,
+                    compareFirst(RelPathCompare(_root)));
+
+        absPath.assign(_root);
+        absPath.append(objit->first);
+
+        newObj = false;
+        if (refit == _refs.end() || refit->first != absPath)
+        {
+            refit = _refs.insert(
+                        refit,
+                        std::make_pair(
+                            absPath,
+                            decltype(_refs)::mapped_type()));
+            newObj = true;
+        }
+
+        updateInterfaces(absPath, objit->second, refit, newObj);
+        ++objit;
     }
 }
 
