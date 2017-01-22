@@ -44,12 +44,10 @@ class Manager
         /** @brief Implementation for Notify
          *  Signal the implementing service that an item is ready to have its state managed.
          *
-         *  @param[in] path - The path of the item to be managed, relative to the inventory namespace root.
-         *  @param[in] object - The fully enumerated item to be managed.
+         *  @param[in] object - A dictionary of fully enumerated items to be managed.
          */
         virtual void notify(
-            sdbusplus::message::object_path path,
-            std::map<std::string, std::map<std::string, sdbusplus::message::variant<bool, int64_t, std::string>>> object) = 0;
+            std::map<sdbusplus::message::object_path, std::map<std::string, std::map<std::string, sdbusplus::message::variant<bool, int64_t, std::string>>>> object) = 0;
 
 
 

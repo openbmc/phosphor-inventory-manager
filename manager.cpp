@@ -144,11 +144,11 @@ void Manager::run() noexcept
     }
 }
 
-void Manager::notify(sdbusplus::message::object_path path, Object object)
+void Manager::notify(std::map<sdbusplus::message::object_path, Object> objs)
 {
     try
     {
-        createObjects({std::make_pair(path, object)});
+        createObjects(objs);
     }
     catch (const std::exception& e)
     {
