@@ -183,15 +183,19 @@ void Manager::signal(
     const details::DbusSignal& event,
     const EventInfo& info)
 {
-    auto& filter = *std::get<1>(event);
+    auto& filters = std::get<1>(event);
     auto& actions = std::get<1>(info);
 
-    if (filter(msg, *this))
+    for (auto& f : filters)
     {
-        for (auto& action : actions)
+        if (!(*f)(msg, *this))
         {
-            (*action)(*this);
+            return;
         }
+    }
+    for (auto& action : actions)
+    {
+        (*action)(*this);
     }
 }
 
