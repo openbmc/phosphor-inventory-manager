@@ -49,7 +49,7 @@ class Manager
          */
         virtual void notify(
             sdbusplus::message::object_path path,
-            std::map<std::string, std::map<std::string, sdbusplus::message::variant<int64_t, std::string>>> object) = 0;
+            std::map<std::string, std::map<std::string, sdbusplus::message::variant<bool, int64_t, std::string>>> object) = 0;
 
 
 
