@@ -412,11 +412,21 @@ class MatchEvent(Event):
         super(MatchEvent, self).__init__(**kw)
 
 
+class StartupEvent(Event):
+    '''Assemble a startup event.'''
+
+    def __init__(self, **kw):
+        kw['event'] = 'StartupEvent'
+        kw['event_namespace'] = ['details']
+        super(StartupEvent, self).__init__(**kw)
+
+
 class Everything(Renderer):
     '''Parse/render entry point.'''
 
     class_map = {
         'match': MatchEvent,
+        'startup': StartupEvent,
     }
 
     @staticmethod

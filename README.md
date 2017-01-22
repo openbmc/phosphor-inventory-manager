@@ -21,7 +21,7 @@ Supported event tags are:
 
 * name - A globally unique event name.
 * description - An optional description of the event.
-* type - The event type.  Supported types are: *match*.
+* type - The event type.  Supported types are: *match* and *startup*.
 * actions - The responses to the event.
 
 Subsequent tags are defined by the event type.
@@ -33,6 +33,13 @@ Supported match tags are:
 
 * signatures - A DBus match specification.
 * filters - Filters to apply when a match occurs.
+
+-----
+**startup**
+
+Supported startup tags are:
+
+* filters - Filters to apply at startup.
 
 ----
 **filters**
