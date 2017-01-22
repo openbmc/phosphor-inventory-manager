@@ -18,6 +18,7 @@
 #include <chrono>
 #include <log.hpp>
 #include "manager.hpp"
+#include "errors.hpp"
 
 using namespace std::literals::chrono_literals;
 
@@ -149,7 +150,69 @@ void Manager::notify(std::map<sdbusplus::message::object_path, Object> objs)
 {
     try
     {
-        createObjects(objs);
+        // Create objects that don't exist.
+        // Update objects that already exist.
+
+        std::string absPath;
+        for (auto& o : objs)
+        {
+            auto& relPath = o.first.str;
+            auto& ifaces = o.second;
+
+            absPath.assign(_root);
+            absPath.append(relPath);
+
+            auto refpair = _refs.find(absPath);
+            if (refpair == _refs.end())
+            {
+                // This object doesn't exist.
+                createObjects({o});
+                continue;
+            }
+
+            try
+            {
+                // This object already exists.
+                auto it = refpair->second.begin();
+
+                for (auto& i : ifaces)
+                {
+                    auto& storedName = it->first;
+                    auto& name = i.first;
+                    if (name != storedName)
+                    {
+                        // At the moment adding or removing
+                        // interfaces is not allowed.
+                        throw InterfaceError(
+                            "Adding or removing interfaces is not allowed.",
+                            name);
+                    }
+                    ++it;
+                }
+
+                it = refpair->second.begin();
+                for (auto& i : ifaces)
+                {
+                    auto& name = i.first;
+                    // Skip checking for end of array since the interface
+                    // would not have been able to be constructed in the
+                    // the first place if a table entry is not present.
+                    auto& maker = _makers.find(name.c_str())->second;
+                    auto& assigner = std::get<AssignerType>(maker);
+                    auto& props = i.second;
+                    assigner(props, *it->second);
+                    ++it;
+                }
+            }
+            catch (const InterfaceError& e)
+            {
+                e.log();
+            }
+            catch (const std::exception& e)
+            {
+                logging::log<logging::level::ERR>(e.what());
+            }
+        }
     }
     catch (const std::exception& e)
     {
