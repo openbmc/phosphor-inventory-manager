@@ -33,6 +33,7 @@ struct Event : public std::vector<FilterBasePtr>
     enum class Type
     {
         DBUS_SIGNAL,
+        STARTUP,
     };
 
     virtual ~Event() = default;
@@ -47,13 +48,15 @@ struct Event : public std::vector<FilterBasePtr>
      *  @param[in] t - The event type.
      */
     explicit Event(
-        const std::vector<FilterBasePtr>& filters, Type t) :
+        const std::vector<FilterBasePtr>& filters, Type t = Type::STARTUP) :
         std::vector<FilterBasePtr>(filters),
         type(t) {}
 
     /** @brief event class enumeration. */
     Type type;
 };
+
+using StartupEvent = Event;
 
 using EventBasePtr = std::shared_ptr<Event>;
 

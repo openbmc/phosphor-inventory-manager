@@ -74,4 +74,17 @@ events:
                     value: 888
                     type: int64
 
+    - name: startup event example
+      description: >
+          Create /createme3 at startup.
+      type: startup
+      actions:
+          - name: createObjects
+            objs:
+              /createme3:
+                xyz.openbmc_project.Example.Iface1:
+                  ExampleProperty1:
+                    value: foo
+                    type: string
+
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

@@ -114,6 +114,22 @@ void Manager::shutdown() noexcept
 
 void Manager::run() noexcept
 {
+    sdbusplus::message::message unusedMsg{nullptr};
+
+    // Run startup events.
+    for (auto& group : _events)
+    {
+        for (auto pEvent : std::get<std::vector<details::EventBasePtr>>(
+                 group))
+        {
+            if (pEvent->type ==
+                details::Event::Type::STARTUP)
+            {
+                handleEvent(unusedMsg, *pEvent, group);
+            }
+        }
+    }
+
     while (!_shutdown)
     {
         try
