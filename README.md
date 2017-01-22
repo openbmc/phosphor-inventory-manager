@@ -108,6 +108,12 @@ Supported arguments for the setProperty action are:
 * path - The object hosting the property to be set.
 * value - The value to set.
 
+----
+**createObjects**
+
+Supported arguments for the createObjects action are:
+* objs - A dictionary of objects to create.
+
 
 ----
 
