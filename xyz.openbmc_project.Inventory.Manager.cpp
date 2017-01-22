@@ -31,13 +31,12 @@ int Manager::_callback_Notify(
     {
         auto m = message::message(msg);
 
-        sdbusplus::message::object_path path{};
-    std::map<std::string, std::map<std::string, sdbusplus::message::variant<bool, int64_t, std::string>>> object{};
+        std::map<sdbusplus::message::object_path, std::map<std::string, std::map<std::string, sdbusplus::message::variant<bool, int64_t, std::string>>>> object{};
 
-        m.read(path, object);
+        m.read(object);
 
         auto o = static_cast<Manager*>(context);
-        o->notify(path, object);
+        o->notify(object);
 
         auto reply = m.new_method_return();
         // No data to append on reply.
@@ -59,7 +58,7 @@ namespace Manager
 {
 static const auto _param_Notify =
         utility::tuple_to_array(message::types::type_id<
-                sdbusplus::message::object_path, std::map<std::string, std::map<std::string, sdbusplus::message::variant<bool, int64_t, std::string>>>>());
+                std::map<sdbusplus::message::object_path, std::map<std::string, std::map<std::string, sdbusplus::message::variant<bool, int64_t, std::string>>>>>());
 static const auto _return_Notify =
         utility::tuple_to_array(std::make_tuple('\0'));
 }
