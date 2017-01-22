@@ -103,6 +103,10 @@ class Manager final :
         void destroyObjects(
             const std::vector<const char*>& paths);
 
+        /** @brief Add objects to DBus. */
+        void createObjects(
+            const std::map<sdbusplus::message::object_path, Object>& objs);
+
         /** @brief Invoke an sdbusplus server binding method.
          *
          *  Invoke the requested method with a reference to the requested
