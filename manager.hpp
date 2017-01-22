@@ -97,8 +97,9 @@ class Manager final :
                     const details::DbusSignal& event,
                     const EventInfo& info);
 
-        /** @brief Drop an object from DBus. */
-        void destroyObject(const char*);
+        /** @brief Drop one or more objects from DBus. */
+        void destroyObjects(
+            const std::vector<const char*>& paths);
 
         /** @brief Invoke an sdbusplus server binding method.
          *

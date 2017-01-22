@@ -74,7 +74,7 @@ The available actions provided by PIM are:
 **destroyObject**
 
 Supported arguments for the destroyObject action are:
-* path - The path of the object to remove from DBus.
+* paths - The paths of the objects to remove from DBus.
 
 ----
 **setProperty**
