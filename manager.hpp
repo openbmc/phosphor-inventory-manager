@@ -8,6 +8,7 @@
 #include "xyz/openbmc_project/Inventory/Manager/server.hpp"
 #include "events.hpp"
 #include "actions.hpp"
+#include "types.hpp"
 
 namespace phosphor
 {
@@ -76,9 +77,6 @@ class Manager final :
          */
         Manager(sdbusplus::bus::bus&&, const char*, const char*, const char*);
 
-        using Object = std::map <
-                       std::string, std::map <
-                       std::string, sdbusplus::message::variant<int64_t, std::string >>>;
         using EventInfo = std::tuple <
                           std::vector<details::EventBasePtr>,
                           std::vector<details::ActionBasePtr >>;
