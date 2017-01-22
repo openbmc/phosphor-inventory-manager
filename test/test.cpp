@@ -201,11 +201,11 @@ void runTests()
     {
         {
             "xyz.openbmc_project.Example.Iface1",
-            {{"ExampleProperty1", "test1"}}
+            {{"ExampleProperty1", "test1"s}}
         },
         {
             "xyz.openbmc_project.Example.Iface2",
-            {{"ExampleProperty2", "test2"}}
+            {{"ExampleProperty2", "test2"s}}
         },
     };
 
