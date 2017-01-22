@@ -12,7 +12,8 @@ namespace manager
 {
 
 /** @brief Inventory manager supported property types. */
-using InterfaceVariantType = sdbusplus::message::variant<int64_t, std::string>;
+using InterfaceVariantType =
+    sdbusplus::message::variant<bool, int64_t, std::string>;
 
 template <typename T>
 using InterfaceType = std::map<std::string, T>;
