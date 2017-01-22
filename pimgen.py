@@ -273,7 +273,7 @@ class Everything(Renderer):
         events = []
         for x in yaml_files:
             with open(os.path.join(events_dir, x), 'r') as fd:
-                for e in yaml.load(fd.read()).get('events', {}):
+                for e in yaml.safe_load(fd.read()).get('events', {}):
                     events.append(e)
 
         return Everything(
@@ -293,7 +293,7 @@ class Everything(Renderer):
         interfaces = []
         for x in yaml_files:
             with open(os.path.join(interfaces_dir, x), 'r') as fd:
-                for i in yaml.load(fd.read()):
+                for i in yaml.safe_load(fd.read()):
                     interfaces.append(i)
 
         return interfaces
