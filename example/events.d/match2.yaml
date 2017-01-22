@@ -21,10 +21,10 @@ events:
               type: string
               value: xxxyyy
       actions:
-          - name: destroyObject
-            path: /deleteme1
-          - name: destroyObject
-            path: /deleteme2
+          - name: destroyObjects
+            paths:
+              - /deleteme1
+              - /deleteme2
 
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

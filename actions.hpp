@@ -39,12 +39,12 @@ auto make_action(T&& action)
 namespace actions
 {
 
-/** @brief Destroy an object action.  */
-inline auto destroyObject(const char* path)
+/** @brief Destroy objects action.  */
+inline auto destroyObjects(std::vector<const char*> paths)
 {
-    return [path](auto & m)
+    return [paths = std::move(paths)](auto & m)
     {
-        m.destroyObject(path);
+        m.destroyObjects(paths);
     };
 }
 

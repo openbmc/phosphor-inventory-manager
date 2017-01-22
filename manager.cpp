@@ -195,10 +195,14 @@ void Manager::signal(
     }
 }
 
-void Manager::destroyObject(const char* path)
+void Manager::destroyObjects(
+    const std::vector<const char*>& paths)
 {
-    std::string p{path};
-    _refs.erase(_root + p);
+    for (auto path : paths)
+    {
+        std::string p{path};
+        _refs.erase(_root + p);
+    }
 }
 
 details::holder::Base& Manager::getInterfaceHolder(

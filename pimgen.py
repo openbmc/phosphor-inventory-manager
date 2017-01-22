@@ -242,13 +242,15 @@ class Action(Wrapper):
         super(Action, self).__init__(**kw)
 
 
-class DestroyObject(Action):
+class DestroyObjects(Action):
     '''Assemble a destroyObject action.'''
 
     def __init__(self, **kw):
-        args = [TrivialArgument(value=kw.pop('path'), type='string')]
+        values = [{'value': x, 'type': 'string'} for x in kw.pop('paths')]
+        args = [InitializerList(
+            values=[TrivialArgument(**x) for x in values])]
         kw['args'] = args
-        super(DestroyObject, self).__init__(**kw)
+        super(DestroyObjects, self).__init__(**kw)
 
 
 class SetProperty(Action):
@@ -299,7 +301,7 @@ class Event(MethodCall):
     '''Assemble an inventory manager event.'''
 
     action_map = {
-        'destroyObject': DestroyObject,
+        'destroyObjects': DestroyObjects,
         'setProperty': SetProperty,
     }
 
