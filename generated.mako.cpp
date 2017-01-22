@@ -20,9 +20,11 @@ const Manager::Makers Manager::_makers{
 % for i in interfaces:
     {
         "${str(i)}",
-        details::MakeInterface<
-            details::ServerObject<
-                ${i.namespace()}>>::make,
+        std::make_tuple(
+            details::MakeInterface<
+                details::ServerObject<
+                    ${i.namespace()}>>::make
+        )
     },
 % endfor
 };
