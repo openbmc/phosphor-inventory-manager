@@ -52,7 +52,7 @@ using EventBasePtr = std::shared_ptr<Event>;
  */
 struct DbusSignal final :
     public Event,
-    public std::tuple<const char*, FilterBasePtr>
+    public std::tuple<const char*, std::vector<FilterBasePtr>>
 {
     virtual ~DbusSignal() = default;
     DbusSignal(const DbusSignal&) = default;
@@ -65,10 +65,10 @@ struct DbusSignal final :
      *  @param[in] sig - The DBus match signature.
      *  @param[in] filter - A DBus signal match callback filtering function.
      */
-    DbusSignal(const char* sig, FilterBasePtr filter) :
+    DbusSignal(const char* sig, const std::vector<FilterBasePtr>& filters) :
         Event(Type::DBUS_SIGNAL),
-        std::tuple<const char*, FilterBasePtr>(
-            sig, std::move(filter)) {}
+        std::tuple<const char*, std::vector<FilterBasePtr>>(
+                    sig, std::move(filters)) {}
 };
 
 /** @brief make_filter
@@ -128,7 +128,7 @@ struct PropertyCondition
             const char* iface = nullptr;
 
             msg.read(iface);
-            if (strcmp(iface, _iface))
+            if (!iface || strcmp(iface, _iface))
             {
                 return false;
             }
