@@ -6,12 +6,12 @@ events:
       description: >
           Sets the value of ExampleProperty1 on /changeme
           when the value of ExampleProperty2 on
-          /testing/inventory/trigger2 changes to yyyxxx.
+          /testing/trigger2 changes to yyyxxx.
       type: match
       signatures:
           - type: signal
             interface: org.freedesktop.DBus.Properties
-            path: /testing/inventory/trigger2
+            path: /testing/trigger2
             member: PropertiesChanged
       filters:
           - name: propertyChangedTo

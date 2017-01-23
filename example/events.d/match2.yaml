@@ -6,11 +6,11 @@ events:
       description: >
           Destroys the /deleteme1 and /deleteme2 objects
           When the value of ExampleProperty2 on
-          /testing/inventory/trigger changes to xxxyyy.
+          /testing/trigger1 changes to xxxyyy.
       type: match
       signatures:
           - type: signal
-            path: /testing/inventory/trigger1
+            path: /testing/trigger1
             interface: org.freedesktop.DBus.Properties
             member: PropertiesChanged
       filters:

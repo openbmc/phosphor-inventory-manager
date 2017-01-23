@@ -19,10 +19,59 @@
 #include <iostream>
 #include <algorithm>
 #include <thread>
+#include <chrono>
+#include <xyz/openbmc_project/Example/Iface1/server.hpp>
+#include <xyz/openbmc_project/Example/Iface2/server.hpp>
 
-constexpr auto SERVICE = "phosphor.inventory.test";
-constexpr auto INTERFACE = IFACE;
-constexpr auto ROOT = "/testing/inventory";
+using namespace std::literals::chrono_literals;
+using namespace std::literals::string_literals;
+
+constexpr auto MGR_SERVICE = "phosphor.inventory.test.mgr";
+constexpr auto MGR_INTERFACE = IFACE;
+constexpr auto MGR_ROOT = "/testing/inventory";
+constexpr auto EXAMPLE_SERVICE = "phosphor.inventory.test.example";
+constexpr auto EXAMPLE_ROOT = "/testing";
+
+const auto trigger1 = sdbusplus::message::object_path(EXAMPLE_ROOT +
+                      "/trigger1"s);
+const auto trigger2 = sdbusplus::message::object_path(EXAMPLE_ROOT +
+                      "/trigger2"s);
+
+using ExampleIface1 = sdbusplus::xyz::openbmc_project::Example::server::Iface1;
+using ExampleIface2 = sdbusplus::xyz::openbmc_project::Example::server::Iface2;
+
+/** @class ExampleService
+ *  @brief Host an object for triggering events.
+ */
+struct ExampleService
+{
+    ~ExampleService() = default;
+    ExampleService() :
+        shutdown(false),
+        bus(sdbusplus::bus::new_default()),
+        objmgr(sdbusplus::server::manager::manager(bus, MGR_ROOT))
+    {
+        bus.request_name(EXAMPLE_SERVICE);
+    }
+
+    void run()
+    {
+        sdbusplus::server::object::object <
+        ExampleIface1, ExampleIface2 > t1(bus, trigger1.str.c_str());
+        sdbusplus::server::object::object <
+        ExampleIface1, ExampleIface2 > t2(bus, trigger2.str.c_str());
+
+        while (!shutdown)
+        {
+            bus.process_discard();
+            bus.wait((5000000us).count());
+        }
+    }
+
+    volatile bool shutdown;
+    sdbusplus::bus::bus bus;
+    sdbusplus::server::manager::manager objmgr;
+};
 
 /** @class SignalQueue
  *  @brief Store DBus signals in a queue.
@@ -112,22 +161,24 @@ auto hasInterfaces(const std::vector<std::string>& l, const Object<T...>& r)
     return interfaces.empty();
 }
 
-void runTests(phosphor::inventory::manager::Manager& mgr)
+void runTests()
 {
-    const std::string root{ROOT};
+    const std::string root{MGR_ROOT};
+    const std::string exampleRoot{EXAMPLE_ROOT};
     auto b = sdbusplus::bus::new_default();
+
     auto notify = [&]()
     {
         return b.new_method_call(
-                   SERVICE,
-                   ROOT,
-                   INTERFACE,
+                   MGR_SERVICE,
+                   MGR_ROOT,
+                   MGR_INTERFACE,
                    "Notify");
     };
     auto set = [&](const std::string & path)
     {
         return b.new_method_call(
-                   SERVICE,
+                   EXAMPLE_SERVICE,
                    path.c_str(),
                    "org.freedesktop.DBus.Properties",
                    "Set");
@@ -174,10 +225,8 @@ void runTests(phosphor::inventory::manager::Manager& mgr)
     {
         sdbusplus::message::object_path relDeleteMeOne{"/deleteme1"};
         sdbusplus::message::object_path relDeleteMeTwo{"/deleteme2"};
-        sdbusplus::message::object_path relTriggerOne{"/trigger1"};
         std::string deleteMeOne{root + relDeleteMeOne.str};
         std::string deleteMeTwo{root + relDeleteMeTwo.str};
-        std::string triggerOne{root + relTriggerOne.str};
 
         // Create some objects to be deleted by an action.
         {
@@ -193,19 +242,11 @@ void runTests(phosphor::inventory::manager::Manager& mgr)
             b.call(m);
         }
 
-        // Create the triggering object.
-        {
-            auto m = notify();
-            m.append(relTriggerOne);
-            m.append(obj);
-            b.call(m);
-        }
-
         // Set a property that should not trigger due to a filter.
         {
             SignalQueue queue(
                 "path='" + root + "',member='InterfacesRemoved'");
-            auto m = set(triggerOne);
+            auto m = set(trigger1.str);
             m.append("xyz.openbmc_project.Example.Iface2");
             m.append("ExampleProperty2");
             m.append(sdbusplus::message::variant<std::string>("abc123"));
@@ -219,7 +260,7 @@ void runTests(phosphor::inventory::manager::Manager& mgr)
             SignalQueue queue(
                 "path='" + root + "',member='InterfacesRemoved'");
 
-            auto m = set(triggerOne);
+            auto m = set(trigger1.str);
             m.append("xyz.openbmc_project.Example.Iface2");
             m.append("ExampleProperty2");
             m.append(sdbusplus::message::variant<std::string>("xxxyyy"));
@@ -258,9 +299,7 @@ void runTests(phosphor::inventory::manager::Manager& mgr)
     // Validate the set property action.
     {
         sdbusplus::message::object_path relChangeMe{"/changeme"};
-        sdbusplus::message::object_path relTriggerTwo{"/trigger2"};
         std::string changeMe{root + relChangeMe.str};
-        std::string triggerTwo{root + relTriggerTwo.str};
 
         // Create an object to be updated by the set property action.
         {
@@ -270,19 +309,11 @@ void runTests(phosphor::inventory::manager::Manager& mgr)
             b.call(m);
         }
 
-        // Create the triggering object.
-        {
-            auto m = notify();
-            m.append(relTriggerTwo);
-            m.append(obj);
-            b.call(m);
-        }
-
         // Trigger and validate the change.
         {
             SignalQueue queue(
                 "path='" + changeMe + "',member='PropertiesChanged'");
-            auto m = set(triggerTwo);
+            auto m = set(trigger2.str);
             m.append("xyz.openbmc_project.Example.Iface2");
             m.append("ExampleProperty2");
             m.append(sdbusplus::message::variant<std::string>("yyyxxx"));
@@ -302,26 +333,36 @@ void runTests(phosphor::inventory::manager::Manager& mgr)
             }
         }
     }
-
-    mgr.shutdown();
-    std::cout << "Success!" << std::endl;
 }
 
 int main()
 {
     phosphor::inventory::manager::Manager mgr(
         sdbusplus::bus::new_default(),
-        SERVICE, ROOT, INTERFACE);
+        MGR_SERVICE, MGR_ROOT, MGR_INTERFACE);
+    ExampleService d;
 
-    auto f = [](auto mgr)
+    auto f1 = [](auto mgr)
     {
         mgr->run();
     };
-    auto t = std::thread(f, &mgr);
-    runTests(mgr);
+    auto f2 = [](auto d)
+    {
+        d->run();
+    };
 
-    // Wait for server thread to exit.
-    t.join();
+    auto t1 = std::thread(f1, &mgr);
+    auto t2 = std::thread(f2, &d);
+
+    runTests();
+
+    mgr.shutdown();
+    d.shutdown = true;
+
+    // Wait for server threads to exit.
+    t1.join();
+    t2.join();
+    std::cout << "Success!  Waiting for threads to exit..." << std::endl;
 
     return 0;
 }
