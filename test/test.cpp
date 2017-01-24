@@ -163,7 +163,7 @@ void runTests(phosphor::inventory::manager::Manager& mgr)
         sdbusplus::message::object_path signalPath;
         Object<std::string> signalObject;
         sig.read(signalPath);
-        assert(path == signalPath);
+        assert(path == signalPath.str);
         sig.read(signalObject);
         assert(hasProperties(signalObject, obj));
         auto moreSignals{queue.pop()};
