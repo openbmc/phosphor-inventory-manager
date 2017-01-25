@@ -14,10 +14,10 @@ namespace manager
 class Manager;
 namespace details
 {
-using ActionBase = holder::CallableBase<void, Manager&>;
+using ActionBase = holder::CallableBase<void, sdbusplus::bus::bus&, Manager&>;
 using ActionBasePtr = std::shared_ptr<ActionBase>;
 template <typename T>
-using Action = holder::CallableHolder<T, void, Manager&>;
+using Action = holder::CallableHolder<T, void, sdbusplus::bus::bus&, Manager&>;
 
 /** @brief make_action
  *
@@ -42,7 +42,7 @@ namespace actions
 /** @brief Destroy objects action.  */
 inline auto destroyObjects(std::vector<const char*> paths)
 {
-    return [paths = std::move(paths)](auto & m)
+    return [paths = std::move(paths)](auto&, auto & m)
     {
         m.destroyObjects(paths);
     };
@@ -77,7 +77,7 @@ auto setProperty(
     // and value to a lambda.  When it is called, forward the
     // path, interface and value on to the manager member function.
     return [path, iface, member,
-                  value = std::forward<V>(value)](auto & m)
+                  value = std::forward<V>(value)](auto&, auto & m)
     {
         m.template invokeMethod<T>(
             path, iface, member, value);

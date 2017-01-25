@@ -16,11 +16,11 @@ class Manager;
 namespace details
 {
 using FilterBase = holder::CallableBase <
-                   bool, sdbusplus::message::message&, Manager& >;
+                   bool, sdbusplus::bus::bus&, sdbusplus::message::message&, Manager& >;
 using FilterBasePtr = std::shared_ptr<FilterBase>;
 template <typename T>
 using Filter = holder::CallableHolder <
-               T, bool, sdbusplus::message::message&, Manager& >;
+               T, bool, sdbusplus::bus::bus&, sdbusplus::message::message&, Manager& >;
 
 /** @struct Event
  *  @brief Event object interface.
@@ -121,7 +121,10 @@ struct PropertyChangedCondition
          * Extract the property from the PropertiesChanged
          * message and run the condition test.
          */
-        bool operator()(sdbusplus::message::message& msg, Manager&) const
+        bool operator()(
+            sdbusplus::bus::bus&,
+            sdbusplus::message::message& msg,
+            Manager&) const
         {
             std::map <
             std::string,

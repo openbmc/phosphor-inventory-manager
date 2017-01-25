@@ -188,14 +188,14 @@ void Manager::signal(
 
     for (auto& f : filters)
     {
-        if (!(*f)(msg, *this))
+        if (!(*f)(_bus, msg, *this))
         {
             return;
         }
     }
     for (auto& action : actions)
     {
-        (*action)(*this);
+        (*action)(_bus, *this);
     }
 }
 
