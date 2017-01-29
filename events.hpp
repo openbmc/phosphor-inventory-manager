@@ -15,12 +15,11 @@ namespace manager
 class Manager;
 namespace details
 {
-using FilterBase = holder::CallableBase <
-                   bool, sdbusplus::bus::bus&, sdbusplus::message::message&, Manager& >;
-using FilterBasePtr = std::shared_ptr<FilterBase>;
-template <typename T>
-using Filter = holder::CallableHolder <
-               T, bool, sdbusplus::bus::bus&, sdbusplus::message::message&, Manager& >;
+using Filter = holder::Adapted <
+               bool,
+               sdbusplus::bus::bus&,
+               sdbusplus::message::message&,
+               Manager& >;
 
 /** @struct Event
  *  @brief Event object interface.
@@ -28,7 +27,7 @@ using Filter = holder::CallableHolder <
  *  The event base is an assocation of an event type
  *  and an array of filter callbacks.
  */
-struct Event : public std::vector<FilterBasePtr>
+struct Event : public std::vector<Filter::Shared>
 {
     enum class Type
     {
@@ -48,8 +47,8 @@ struct Event : public std::vector<FilterBasePtr>
      *  @param[in] t - The event type.
      */
     explicit Event(
-        const std::vector<FilterBasePtr>& filters, Type t = Type::STARTUP) :
-        std::vector<FilterBasePtr>(filters),
+        const std::vector<Filter::Shared>& filters, Type t = Type::STARTUP) :
+        std::vector<Filter::Shared>(filters),
         type(t) {}
 
     /** @brief event class enumeration. */
@@ -80,28 +79,12 @@ struct DbusSignal final : public Event
      *  @param[in] filter - An array of DBus signal
      *     match callback filtering functions.
      */
-    DbusSignal(const char* sig, const std::vector<FilterBasePtr>& filters) :
+    DbusSignal(const char* sig, const std::vector<Filter::Shared>& filters) :
         Event(filters, Type::DBUS_SIGNAL),
         signature(sig) {}
 
     const char* signature;
 };
-
-/** @brief make_filter
- *
- *  Adapt a filter function object.
- *
- *  @param[in] filter - The filter being adapted.
- *  @returns - The adapted filter.
- *
- *  @tparam T - The type of the filter being adapted.
- */
-template <typename T>
-auto make_filter(T&& filter)
-{
-    return Filter<T>::template make_shared<Filter<T>>(
-        std::forward<T>(filter));
-}
 } // namespace details
 
 namespace filters
