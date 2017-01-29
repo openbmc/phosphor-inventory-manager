@@ -69,7 +69,7 @@ inline auto createObjects(
  *      function that sets the property.
  *  @tparam V - The property value type.
  *
- *  @param[in] path - The DBus path on which the property should
+ *  @param[in] paths - The DBus paths on which the property should
  *      be set.
  *  @param[in] iface - The DBus interface hosting the property.
  *  @param[in] member - Pointer to sdbusplus server binding member.
@@ -80,18 +80,21 @@ inline auto createObjects(
  */
 template <typename T, typename U, typename V>
 auto setProperty(
-    const char* path, const char* iface,
+    std::vector<const char*> paths, const char* iface,
     U&& member, V&& value)
 {
     // The manager is the only parameter passed to actions.
     // Bind the path, interface, interface member function pointer,
     // and value to a lambda.  When it is called, forward the
     // path, interface and value on to the manager member function.
-    return [path, iface, member,
+    return [paths = std::move(paths), iface, member,
                   value = std::forward<V>(value)](auto&, auto & m)
     {
-        m.template invokeMethod<T>(
-            path, iface, member, value);
+        for (auto p : paths)
+        {
+            m.template invokeMethod<T>(
+                p, iface, member, value);
+        }
     };
 }
 
