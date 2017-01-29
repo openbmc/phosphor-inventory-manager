@@ -153,6 +153,58 @@ struct CallableHolder final :
     }
 };
 
+/** @struct Adapted
+ *  @brief Convenience type for working with callables.
+ *
+ *  Reduce The required explicit declarations of callable
+ *  signatures to one.
+ *
+ *  @tparam Ret - The return type of the callable.
+ *  @tparam Args - The argument types of the callable.
+ */
+template <typename Ret, typename ...Args>
+struct Adapted
+{
+    using Base = CallableBase<Ret, Args...>;
+    using Shared = std::shared_ptr<Base>;
+    using Unique = std::unique_ptr<Base>;
+
+    template <typename T>
+    using Holder = CallableHolder<T, Ret, Args...>;
+
+    /** @brief make_unique
+     *
+     *  Adapt a function object.
+     *
+     *  @param[in] adaptable - The function object being adapted.
+     *  @returns - The adapted function object.
+     *
+     *  @tparam T - The type of the function object being adapted.
+     */
+    template <typename T>
+    static auto make_unique(T&& adaptable)
+    {
+        return Holder<T>::template make_unique<Holder<T>>(
+            std::forward<T>(adaptable));
+    }
+
+    /** @brief make_shared
+     *
+     *  Adapt a function object.
+     *
+     *  @param[in] adaptable - The function object being adapted.
+     *  @returns - The adapted function object.
+     *
+     *  @tparam T - The type of the function object being adapted.
+     */
+    template <typename T>
+    static auto make_shared(T&& adaptable)
+    {
+        return Holder<T>::template make_shared<Holder<T>>(
+            std::forward<T>(adaptable));
+    }
+};
+
 } // namespace holder
 } // namespace details
 

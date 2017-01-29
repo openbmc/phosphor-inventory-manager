@@ -127,7 +127,7 @@ class Manager final :
 
         using EventInfo = std::tuple <
                           std::vector<details::EventBasePtr>,
-                          std::vector<details::ActionBasePtr >>;
+                          std::vector<details::Action::Shared >>;
 
         /** @brief Start processing DBus messages. */
         void run() noexcept;

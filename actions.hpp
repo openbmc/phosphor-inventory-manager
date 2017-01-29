@@ -15,26 +15,10 @@ namespace manager
 class Manager;
 namespace details
 {
-using ActionBase = holder::CallableBase<void, sdbusplus::bus::bus&, Manager&>;
-using ActionBasePtr = std::shared_ptr<ActionBase>;
-template <typename T>
-using Action = holder::CallableHolder<T, void, sdbusplus::bus::bus&, Manager&>;
-
-/** @brief make_action
- *
- *  Adapt an action function object.
- *
- *  @param[in] action - The action being adapted.
- *  @returns - The adapted action.
- *
- *  @tparam T - The type of the action being adapted.
- */
-template <typename T>
-auto make_action(T&& action)
-{
-    return Action<T>::template make_shared<Action<T>>(
-        std::forward<T>(action));
-}
+using Action = holder::Adapted <
+               void,
+               sdbusplus::bus::bus&,
+               Manager& >;
 } // namespace details
 
 namespace actions
