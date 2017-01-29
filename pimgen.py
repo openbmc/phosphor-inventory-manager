@@ -306,7 +306,10 @@ class SetProperty(Action):
         member_type = cppTypeName(value['type'])
         member_cast = '{0} ({1}::*)({0})'.format(member_type, t.qualified())
 
-        args.append(TrivialArgument(value=kw.pop('path'), type='string'))
+        paths = [{'value': x, 'type': 'string'} for x in kw.pop('paths')]
+        args.append(InitializerList(
+            values=[TrivialArgument(**x) for x in paths]))
+
         args.append(TrivialArgument(value=str(iface), type='string'))
         args.append(TrivialArgument(
             value=member, decorators=[Cast('static', member_cast)]))
