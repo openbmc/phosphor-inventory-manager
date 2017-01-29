@@ -24,7 +24,8 @@ events:
           - name: setProperty
             interface: xyz.openbmc_project.Example.Iface1
             property: ExampleProperty1
-            path: /changeme
+            paths:
+                - /changeme
             value:
               type: string
               value: changed
