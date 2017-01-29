@@ -19,8 +19,8 @@ namespace manager
 namespace details
 {
 
-template <typename T>
-using ServerObject = typename sdbusplus::server::object::object<T>;
+template <typename ...T>
+using ServerObject = typename sdbusplus::server::object::object<T...>;
 
 using ManagerIface =
     sdbusplus::xyz::openbmc_project::Inventory::server::Manager;
@@ -92,7 +92,7 @@ class Manager final :
 
         using EventInfo = std::tuple <
                           std::vector<details::EventBasePtr>,
-                          std::vector<details::ActionBasePtr >>;
+                          std::vector<details::Action::Shared >>;
 
         /** @brief Start processing DBus messages. */
         void run() noexcept;
