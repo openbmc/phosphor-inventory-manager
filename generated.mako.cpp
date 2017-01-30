@@ -3,6 +3,7 @@
 // This file was auto generated.  Do not edit.
 #include "manager.hpp"
 #include "utils.hpp"
+#include "functor.hpp"
 % for i in interfaces:
 #include <${i.header()}>
 % endfor
