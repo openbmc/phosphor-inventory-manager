@@ -452,47 +452,6 @@ class Everything(Renderer):
 
     @staticmethod
     def load(args):
-        # Invoke sdbus++ to generate any extra interface bindings for
-        # extra interfaces that aren't defined externally.
-        yaml_files = []
-        extra_ifaces_dir = os.path.join(args.inputdir, 'extra_interfaces.d')
-        if os.path.exists(extra_ifaces_dir):
-            for directory, _, files in os.walk(extra_ifaces_dir):
-                if not files:
-                    continue
-
-                yaml_files += map(
-                    lambda f: os.path.relpath(
-                        os.path.join(directory, f),
-                        extra_ifaces_dir),
-                    filter(lambda f: f.endswith('.interface.yaml'), files))
-
-        genfiles = {
-            'server-cpp': lambda x: '%s.cpp' % (
-                x.replace(os.sep, '.')),
-            'server-header': lambda x: os.path.join(
-                os.path.join(
-                    *x.split('.')), 'server.hpp')
-        }
-
-        for i in yaml_files:
-            iface = i.replace('.interface.yaml', '').replace(os.sep, '.')
-            for process, f in genfiles.iteritems():
-
-                dest = os.path.join(args.outputdir, f(iface))
-                parent = os.path.dirname(dest)
-                if parent and not os.path.exists(parent):
-                    os.makedirs(parent)
-
-                with open(dest, 'w') as fd:
-                    subprocess.call([
-                        'sdbus++',
-                        '-r',
-                        extra_ifaces_dir,
-                        'interface',
-                        process,
-                        iface],
-                        stdout=fd)
 
         # Aggregate all the event YAML in the events.d directory
         # into a single list of events.
@@ -542,6 +501,49 @@ class Everything(Renderer):
 
     def generate_cpp(self, loader):
         '''Render the template with the provided events and interfaces.'''
+
+        # Invoke sdbus++ to generate any extra interface bindings for
+        # extra interfaces that aren't defined externally.
+        yaml_files = []
+        extra_ifaces_dir = os.path.join(args.inputdir, 'extra_interfaces.d')
+        if os.path.exists(extra_ifaces_dir):
+            for directory, _, files in os.walk(extra_ifaces_dir):
+                if not files:
+                    continue
+
+                yaml_files += map(
+                    lambda f: os.path.relpath(
+                        os.path.join(directory, f),
+                        extra_ifaces_dir),
+                    filter(lambda f: f.endswith('.interface.yaml'), files))
+
+        genfiles = {
+            'server-cpp': lambda x: '%s.cpp' % (
+                x.replace(os.sep, '.')),
+            'server-header': lambda x: os.path.join(
+                os.path.join(
+                    *x.split('.')), 'server.hpp')
+        }
+
+        for i in yaml_files:
+            iface = i.replace('.interface.yaml', '').replace(os.sep, '.')
+            for process, f in genfiles.iteritems():
+
+                dest = os.path.join(args.outputdir, f(iface))
+                parent = os.path.dirname(dest)
+                if parent and not os.path.exists(parent):
+                    os.makedirs(parent)
+
+                with open(dest, 'w') as fd:
+                    subprocess.call([
+                        'sdbus++',
+                        '-r',
+                        extra_ifaces_dir,
+                        'interface',
+                        process,
+                        iface],
+                        stdout=fd)
+
         with open(os.path.join(
                 args.outputdir,
                 'generated.cpp'), 'w') as fd:
