@@ -15,6 +15,19 @@ class Manager;
 namespace functor
 {
 
+template <typename T, typename ...Args>
+auto callPtrArrayWithStatus(T&& container, Args&& ...args)
+{
+    for (auto f : container)
+    {
+        if (!(*f)(std::forward<Args>(args)...))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 /** @struct PropertyChangedCondition
  *  @brief Match filter functor that tests a property value.
  *
@@ -108,7 +121,7 @@ struct PropertyConditionBase
             const char* iface,
             const char* property,
             const char* service) :
-            _path(path),
+            _path(path ? path : std::string()),
             _iface(iface),
             _property(property),
             _service(service) {}
@@ -123,6 +136,15 @@ struct PropertyConditionBase
         bool operator()(
             sdbusplus::bus::bus&,
             sdbusplus::message::message&,
+            Manager&) const;
+
+        /** @brief Test a property value.
+         *
+         * Make a DBus call and test the value of any property.
+         */
+        bool operator()(
+            const std::string&,
+            sdbusplus::bus::bus&,
             Manager&) const;
 
     private:
@@ -189,11 +211,19 @@ struct PropertyCondition final : public PropertyConditionBase
 };
 
 /** @brief Destroy objects action.  */
-inline auto destroyObjects(std::vector<const char*>&& paths)
+inline auto destroyObjects(
+    std::vector<const char*>&& paths,
+    std::vector<PathCondition::Shared>&& conditions)
 {
-    return [ = ](auto&, auto & m)
+    return [ = ](auto & b, auto & m)
     {
-        m.destroyObjects(paths);
+        for (const auto& p : paths)
+        {
+            if (callPtrArrayWithStatus(conditions, p, b, m))
+            {
+                m.destroyObjects({p});
+            }
+        }
     };
 }
 
@@ -228,20 +258,27 @@ inline auto createObjects(
  */
 template <typename T, typename U, typename V>
 auto setProperty(
-    std::vector<const char*> paths, const char* iface,
-    U&& member, V&& value)
+    std::vector<const char*> paths,
+    std::vector<PathCondition::Shared>&& conditions,
+    const char* iface,
+    U&& member,
+    V&& value)
 {
     // The manager is the only parameter passed to actions.
     // Bind the path, interface, interface member function pointer,
     // and value to a lambda.  When it is called, forward the
     // path, interface and value on to the manager member function.
-    return [paths = std::move(paths), iface, member,
-                  value = std::forward<V>(value)](auto&, auto & m)
+    return [paths = std::move(paths), conditions = conditions, iface,
+                  member,
+                  value = std::forward<V>(value)](auto & b, auto & m)
     {
         for (auto p : paths)
         {
-            m.template invokeMethod<T>(
-                p, iface, member, value);
+            if (callPtrArrayWithStatus(conditions, p, b, m))
+            {
+                m.template invokeMethod<T>(
+                    p, iface, member, value);
+            }
         }
     };
 }
