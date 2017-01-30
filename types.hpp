@@ -37,6 +37,12 @@ using Filter = details::holder::Adapted <
                sdbusplus::message::message&,
                Manager& >;
 
+using PathCondition = details::holder::Adapted <
+                      bool,
+                      const std::string&,
+                      sdbusplus::bus::bus&,
+                      Manager& >;
+
 } // namespace manager
 } // namespace inventory
 } // namespace phosphor

@@ -89,4 +89,41 @@ events:
                     value: foo
                     type: string
 
+    - name: conditional setProperty example
+      description: >
+          Sets the ExampleProperty1 on the /changeme object when
+          the value of ExampleProperty3 on /testing/trigger6
+          changes to 10 and the value of the ExampleProperty3
+          value on /changeme is 22.
+      type: match
+      signatures:
+          - type: signal
+            path: /testing/trigger7
+            interface: org.freedesktop.DBus.Properties
+            member: PropertiesChanged
+      filters:
+          - name: propertyChangedTo
+            interface: xyz.openbmc_project.Example.Iface2
+            property: ExampleProperty3
+            value:
+              value: 10
+              type: int64
+      actions:
+          - name: setProperty
+            interface: xyz.openbmc_project.Example.Iface1
+            property: ExampleProperty1
+            paths:
+                - /changeme
+            value:
+              type: string
+              value: changed
+            conditions:
+              - name: propertyIs
+                interface: xyz.openbmc_project.Example.Iface2
+                property: ExampleProperty3
+                value:
+                  value: 22
+                  type: int64
+
+
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
