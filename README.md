@@ -86,6 +86,9 @@ The service argument is optional.  If provided that service will
 be called explicitly.  If omitted, the service will be obtained
 with an xyz.openbmc_project.ObjectMapper lookup.
 
+propertyIs can be used in an action condition context when the
+action operates on a dbus object path.
+
 ---
 **actions**
 
@@ -105,6 +108,11 @@ The available actions provided by PIM are:
 
 Supported arguments for the destroyObject action are:
 * paths - The paths of the objects to remove from DBus.
+* conditions - An array of conditions.
+
+Conditions are tested and logically ANDed.  If the conditions do not
+pass, the object is not destroyed.  Any condition that accepts a path
+parameter is supported.
 
 ----
 **setProperty**
@@ -112,8 +120,13 @@ Supported arguments for the destroyObject action are:
 Supported arguments for the setProperty action are:
 * interface - The interface hosting the property to be set.
 * property - The property to set.
-* path - The object hosting the property to be set.
+* paths - The objects hosting the property to be set.
 * value - The value to set.
+* conditions - An array of conditions.
+
+Conditions are tested and logically ANDed.  If the conditions do not
+pass, the property is not set.  Any condition that accepts a path
+parameter is supported.
 
 ----
 **createObjects**
