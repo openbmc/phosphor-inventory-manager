@@ -451,7 +451,33 @@ class Everything(Renderer):
     }
 
     @staticmethod
+    def find_interfaces(targetdir):
+        yaml_files = []
+        interfaces = {}
+
+        for directory, _, files in os.walk(targetdir):
+            if not files:
+                continue
+
+            yaml_files += map(
+                lambda f: os.path.relpath(
+                    os.path.join(directory, f),
+                    targetdir),
+                filter(lambda f: f.endswith('.interface.yaml'), files))
+
+        for i in yaml_files:
+            with open(os.path.join(targetdir, i)) as fd:
+                i = i.replace('.interface.yaml', '').replace(os.sep, '.')
+                interfaces[i] = yaml.safe_load(fd.read())
+
+        return interfaces
+
+    @staticmethod
     def load(args):
+        extra_interfaces = {}
+        extra_ifaces_dir = os.path.join(args.inputdir, 'extra_interfaces.d')
+        if os.path.exists(extra_ifaces_dir):
+            extra_interfaces = Everything.find_interfaces(extra_ifaces_dir)
 
         # Aggregate all the event YAML in the events.d directory
         # into a single list of events.
@@ -467,69 +493,42 @@ class Everything(Renderer):
                 for e in yaml.safe_load(fd.read()).get('events', {}):
                     events.append(e)
 
+        interfaces = {}
+        if args.ifacesdir and os.path.exists(args.ifacesdir):
+            interfaces = Everything.find_interfaces(args.ifacesdir)
+
         return Everything(
             *events,
-            interfaces=Everything.get_interfaces(args))
-
-    @staticmethod
-    def get_interfaces(args):
-        '''Aggregate all the interface YAML in the interfaces.d
-        directory into a single list of interfaces.'''
-
-        interfaces_dir = os.path.join(args.inputdir, 'interfaces.d')
-        yaml_files = filter(
-            lambda x: x.endswith('.yaml'),
-            os.listdir(interfaces_dir))
-
-        interfaces = []
-        for x in yaml_files:
-            with open(os.path.join(interfaces_dir, x), 'r') as fd:
-                for i in yaml.safe_load(fd.read()):
-                    interfaces.append(i)
-
-        return interfaces
+            interfaces=interfaces,
+            extra_interfaces=extra_interfaces,
+            extra_ifaces_dir=extra_ifaces_dir)
 
     def __init__(self, *a, **kw):
-        self.interfaces = \
-            [Interface(x) for x in kw.pop('interfaces', [])]
+        self.interfaces = kw.pop('interfaces', {})
+        self.extra_interfaces = kw.pop('extra_interfaces', {})
+        self.extra_ifaces_dir = kw.pop('extra_ifaces_dir')
+
         self.events = [
             self.class_map[x['type']](**x) for x in a]
         super(Everything, self).__init__(**kw)
 
     def list_interfaces(self, *a):
-        print ' '.join([str(i) for i in self.interfaces])
+        print ' '.join([str(i) for i in self.extra_interfaces.keys()])
 
     def generate_cpp(self, loader):
         '''Render the template with the provided events and interfaces.'''
 
         # Invoke sdbus++ to generate any extra interface bindings for
         # extra interfaces that aren't defined externally.
-        yaml_files = []
-        extra_ifaces_dir = os.path.join(args.inputdir, 'extra_interfaces.d')
-        if os.path.exists(extra_ifaces_dir):
-            for directory, _, files in os.walk(extra_ifaces_dir):
-                if not files:
-                    continue
-
-                yaml_files += map(
-                    lambda f: os.path.relpath(
-                        os.path.join(directory, f),
-                        extra_ifaces_dir),
-                    filter(lambda f: f.endswith('.interface.yaml'), files))
-
         genfiles = {
-            'server-cpp': lambda x: '%s.cpp' % (
-                x.replace(os.sep, '.')),
-            'server-header': lambda x: os.path.join(
-                os.path.join(
-                    *x.split('.')), 'server.hpp')
+            'server-cpp': lambda x: '%s.cpp' % (str(x)),
+            'server-header': lambda x: Interface(x).header()
         }
 
-        for i in yaml_files:
-            iface = i.replace('.interface.yaml', '').replace(os.sep, '.')
+        for i in self.extra_interfaces:
             for process, f in genfiles.iteritems():
 
-                dest = os.path.join(args.outputdir, f(iface))
+                dest = os.path.join(args.outputdir, f(i))
                 parent = os.path.dirname(dest)
                 if parent and not os.path.exists(parent):
                     os.makedirs(parent)
@@ -538,11 +537,19 @@ class Everything(Renderer):
                     subprocess.call([
                         'sdbus++',
                         '-r',
-                        extra_ifaces_dir,
+                        self.extra_ifaces_dir,
                         'interface',
                         process,
-                        iface],
+                        str(i)],
                         stdout=fd)
+
+        # PIM can't create interfaces with methods.
+        interfaces = [Interface(x) for x, y in filter(
+            lambda x: not x[1].get('methods'),
+            self.interfaces.iteritems())]
+        extra_interfaces = [Interface(x) for x, y in filter(
+            lambda x: not x[1].get('methods'),
+            self.extra_interfaces.iteritems())]
 
         with open(os.path.join(
                 args.outputdir,
@@ -552,7 +559,7 @@ class Everything(Renderer):
                     loader,
                     'generated.mako.cpp',
                     events=self.events,
-                    interfaces=self.interfaces,
+                    interfaces=interfaces + extra_interfaces,
                     indent=Indent()))
 
 
@@ -573,6 +580,9 @@ if __name__ == '__main__':
         '-d', '--dir', dest='inputdir',
         default=os.path.join(script_dir, 'example'),
         help='Location of files to process.')
+    parser.add_argument(
+        '-i', '--interfaces-dir', dest='ifacesdir',
+        help='Location of interfaces to be supported.')
     parser.add_argument(
         'command', metavar='COMMAND', type=str,
         choices=valid_commands.keys(),
