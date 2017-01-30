@@ -74,6 +74,13 @@ class Template(NamedElement):
         return '::'.join(self.namespace + [self.name])
 
 
+class FixBool(object):
+    '''Un-capitalize booleans.'''
+
+    def __call__(self, arg):
+        return '{0}'.format(arg.lower())
+
+
 class Quote(object):
     '''Decorate an argument by quoting it.'''
 
@@ -134,6 +141,8 @@ class TrivialArgument(Argument):
         self.decorators = kw.pop('decorators', [])
         if kw.get('type', None) == 'string':
             self.decorators.insert(0, Quote())
+        if kw.get('type', None) == 'boolean':
+            self.decorators.insert(0, FixBool())
 
         super(TrivialArgument, self).__init__(**kw)
 
