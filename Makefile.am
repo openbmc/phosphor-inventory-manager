@@ -14,8 +14,8 @@ noinst_LTLIBRARIES = libmanager.la
 libmanager_la_SOURCES = \
 	xyz.openbmc_project.Inventory.Manager.cpp \
 	generated.cpp \
-	events.cpp \
 	errors.cpp \
+	functor.cpp \
 	manager.cpp
 libmanager_la_LIBADD = libextra.la
 
