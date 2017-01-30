@@ -222,6 +222,14 @@ class Action(MethodCall):
         super(Action, self).__init__(**kw)
 
 
+class PathCondition(MethodCall):
+    '''Convenience type for path conditions'''
+
+    def __init__(self, **kw):
+        kw['name'] = 'make_path_condition'
+        super(PathCondition, self).__init__(**kw)
+
+
 class CreateObjects(MethodCall):
     '''Assemble a createObjects functor.'''
 
@@ -262,8 +270,13 @@ class DestroyObjects(MethodCall):
 
     def __init__(self, **kw):
         values = [{'value': x, 'type': 'string'} for x in kw.pop('paths')]
+        conditions = [
+            Event.functor_map[
+                x['name']](**x) for x in kw.pop('conditions', [])]
+        conditions = [PathCondition(args=[x]) for x in conditions]
         args = [InitializerList(
             values=[TrivialArgument(**x) for x in values])]
+        args.append(InitializerList(values=conditions))
         kw['args'] = args
         kw['namespace'] = ['functor']
         super(DestroyObjects, self).__init__(**kw)
@@ -292,6 +305,12 @@ class SetProperty(MethodCall):
         args.append(InitializerList(
             values=[TrivialArgument(**x) for x in paths]))
 
+        conditions = [
+            Event.functor_map[
+                x['name']](**x) for x in kw.pop('conditions', [])]
+        conditions = [PathCondition(args=[x]) for x in conditions]
+
+        args.append(InitializerList(values=conditions))
         args.append(TrivialArgument(value=str(iface), type='string'))
         args.append(TrivialArgument(
             value=member, decorators=[Cast('static', member_cast)]))
@@ -323,7 +342,13 @@ class PropertyIs(MethodCall):
 
     def __init__(self, **kw):
         args = []
-        args.append(TrivialArgument(value=kw.pop('path'), type='string'))
+        path = kw.pop('path', None)
+        if not path:
+            path = TrivialArgument(value='nullptr')
+        else:
+            path = TrivialArgument(value=path, type='string')
+
+        args.append(path)
         args.append(TrivialArgument(value=kw.pop('interface'), type='string'))
         args.append(TrivialArgument(value=kw.pop('property'), type='string'))
         args.append(TrivialArgument(
@@ -342,22 +367,19 @@ class PropertyIs(MethodCall):
 class Event(MethodCall):
     '''Assemble an inventory manager event.'''
 
-    action_map = {
+    functor_map = {
         'destroyObjects': DestroyObjects,
         'createObjects': CreateObjects,
-        'setProperty': SetProperty,
-    }
-
-    filter_map = {
         'propertyChangedTo': PropertyChanged,
         'propertyIs': PropertyIs,
+        'setProperty': SetProperty,
     }
 
     def __init__(self, **kw):
         self.summary = kw.pop('name')
 
         filters = [
-            self.filter_map[x['name']](**x) for x in kw.pop('filters', [])]
+            self.functor_map[x['name']](**x) for x in kw.pop('filters', [])]
         filters = [Filter(args=[x]) for x in filters]
         filters = Vector(
             templates=[Template(name='Filter', namespace=[])],
@@ -377,7 +399,7 @@ class Event(MethodCall):
 
         action_type = Template(name='Action', namespace=[])
         action_args = [
-            self.action_map[x['name']](**x) for x in kw.pop('actions', [])]
+            self.functor_map[x['name']](**x) for x in kw.pop('actions', [])]
         action_args = [Action(args=[x]) for x in action_args]
         actions = Vector(
             templates=[action_type],
