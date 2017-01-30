@@ -82,4 +82,40 @@ events:
             paths:
               - /deleteme3
 
+    - name: conditional destroyObject example
+      description: >
+          Destroys the /deleteme3 object when the value of
+          ExampleProperty3 on /testing/trigger6
+          changes to 10 and the value of the ExampleProperty3
+          value on /deleteme3 is 22.
+          Destroys the /deleteme4 object when the value of
+          ExampleProperty3 on /testing/trigger6
+          changes to 10 and the value of the ExampleProperty3
+          value on /deleteme4 is 22.
+      type: match
+      signatures:
+          - type: signal
+            path: /testing/trigger6
+            interface: org.freedesktop.DBus.Properties
+            member: PropertiesChanged
+      filters:
+          - name: propertyChangedTo
+            interface: xyz.openbmc_project.Example.Iface2
+            property: ExampleProperty3
+            value:
+              value: 10
+              type: int64
+      actions:
+          - name: destroyObjects
+            paths:
+              - /deleteme3
+              - /deleteme4
+            conditions:
+              - name: propertyIs
+                interface: xyz.openbmc_project.Example.Iface2
+                property: ExampleProperty3
+                value:
+                  value: 22
+                  type: int64
+
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
