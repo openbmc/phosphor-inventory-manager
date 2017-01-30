@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 #include <sdbusplus/message.hpp>
+#include "utils.hpp"
 
 namespace phosphor
 {
@@ -10,6 +11,7 @@ namespace inventory
 {
 namespace manager
 {
+class Manager;
 
 /** @brief Inventory manager supported property types. */
 using InterfaceVariantType =
@@ -23,6 +25,17 @@ using ObjectType = std::map<std::string, InterfaceType<T>>;
 
 using Interface = InterfaceType<InterfaceVariantType>;
 using Object = ObjectType<InterfaceVariantType>;
+
+using Action = details::holder::Adapted <
+               void,
+               sdbusplus::bus::bus&,
+               Manager& >;
+
+using Filter = details::holder::Adapted <
+               bool,
+               sdbusplus::bus::bus&,
+               sdbusplus::message::message&,
+               Manager& >;
 
 } // namespace manager
 } // namespace inventory
