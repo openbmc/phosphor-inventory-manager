@@ -278,7 +278,7 @@ auto propertyChangedTo(
     const char* property,
     T&& val)
 {
-    auto condition = [val = std::move(val)](T && arg)
+    auto condition = [val = std::forward<T>(val)](T && arg)
     {
         return arg == val;
     };
