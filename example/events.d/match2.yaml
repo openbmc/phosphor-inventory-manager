@@ -1,8 +1,9 @@
 description: >
-    An example inventory match rule.
+    The sample events below serve to illustrate PIM features
+    and are also used by the PIM test suite.
 
 events:
-    - name: Example Match
+    - name: destroyObject + propertyChangedTo example
       description: >
           Destroys the /deleteme1 and /deleteme2 objects
           When the value of ExampleProperty2 on
@@ -26,7 +27,7 @@ events:
               - /deleteme1
               - /deleteme2
 
-    - name: Example Match
+    - name: destroyObject + propertyChangedTo<int64> example
       description: >
           Destroys the /deleteme3 object when the value of
           ExampleProperty3 on /testing/trigger3
@@ -49,7 +50,7 @@ events:
             paths:
               - /deleteme3
 
-    - name: Example Match
+    - name: propertyIs example
       description: >
           Destroys the /deleteme3 object when the value of
           ExampleProperty3 on /testing/trigger4 is 99

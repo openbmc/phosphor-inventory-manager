@@ -1,8 +1,9 @@
 description: >
-    An example inventory match rule.
+    The sample events below serve to illustrate PIM features
+    and are also used by the PIM test suite.
 
 events:
-    - name: Example Match
+    - name: setProperty + propertyChangedTo example
       description: >
           Sets the value of ExampleProperty1 on /changeme
           when the value of ExampleProperty2 on
@@ -29,7 +30,7 @@ events:
               type: string
               value: changed
 
-    - name: Example Match
+    - name: createObjects + propertyChangedTo example
       description: >
           Create /createme1 and /createme2 when the value of
           ExampleProperty2 on /testing/trigger5 changes to abc123.
