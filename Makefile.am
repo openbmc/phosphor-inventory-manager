@@ -15,6 +15,7 @@ libmanager_la_SOURCES = \
 	xyz.openbmc_project.Inventory.Manager.cpp \
 	generated.cpp \
 	events.cpp \
+	errors.cpp \
 	manager.cpp
 libmanager_la_LIBADD = libextra.la
 
