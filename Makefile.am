@@ -14,6 +14,7 @@ phosphor_inventory_CFLAGS = $(SDBUSPLUS_CFLAGS)
 
 libmanagercommon_la_SOURCES = \
 	events.cpp \
+	errors.cpp \
 	manager.cpp
 libmanagercommon_la_LIBADD = $(SDBUSPLUS_LIBS) $(PHOSPHOR_DBUS_INTERFACES_LIBS)
 libmanagercommon_la_CFLAGS = $(SDBUSPLUS_CFLAGS) $(PHOSPHOR_DBUS_INTERACES_CFLAGS)
