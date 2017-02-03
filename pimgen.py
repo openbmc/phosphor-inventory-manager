@@ -431,61 +431,21 @@ class Everything(Renderer):
 
     @staticmethod
     def load(args):
-        # Invoke sdbus++ to generate any extra interface bindings for
-        # extra interfaces that aren't defined externally.
-        yaml_files = []
-        extra_ifaces_dir = os.path.join(args.inputdir, 'extra_interfaces.d')
-        if os.path.exists(extra_ifaces_dir):
-            for directory, _, files in os.walk(extra_ifaces_dir):
-                if not files:
-                    continue
-
-                yaml_files += map(
-                    lambda f: os.path.relpath(
-                        os.path.join(directory, f),
-                        extra_ifaces_dir),
-                    filter(lambda f: f.endswith('.interface.yaml'), files))
-
-        genfiles = {
-            'server-cpp': lambda x: '%s.cpp' % (
-                x.replace(os.sep, '.')),
-            'server-header': lambda x: os.path.join(
-                os.path.join(
-                    *x.split('.')), 'server.hpp')
-        }
-
-        for i in yaml_files:
-            iface = i.replace('.interface.yaml', '').replace(os.sep, '.')
-            for process, f in genfiles.iteritems():
-
-                dest = os.path.join(args.outputdir, f(iface))
-                parent = os.path.dirname(dest)
-                if parent and not os.path.exists(parent):
-                    os.makedirs(parent)
-
-                with open(dest, 'w') as fd:
-                    subprocess.call([
-                        'sdbus++',
-                        '-r',
-                        extra_ifaces_dir,
-                        'interface',
-                        process,
-                        iface],
-                        stdout=fd)
-
         # Aggregate all the event YAML in the events.d directory
         # into a single list of events.
 
-        events_dir = os.path.join(args.inputdir, 'events.d')
-        yaml_files = filter(
-            lambda x: x.endswith('.yaml'),
-            os.listdir(events_dir))
-
         events = []
-        for x in yaml_files:
-            with open(os.path.join(events_dir, x), 'r') as fd:
-                for e in yaml.safe_load(fd.read()).get('events', {}):
-                    events.append(e)
+        events_dir = os.path.join(args.inputdir, 'events.d')
+
+        if os.path.exists(events_dir):
+            yaml_files = filter(
+                lambda x: x.endswith('.yaml'),
+                os.listdir(events_dir))
+
+            for x in yaml_files:
+                with open(os.path.join(events_dir, x), 'r') as fd:
+                    for e in yaml.safe_load(fd.read()).get('events', {}):
+                        events.append(e)
 
         return Everything(
             *events,
@@ -496,16 +456,17 @@ class Everything(Renderer):
         '''Aggregate all the interface YAML in the interfaces.d
         directory into a single list of interfaces.'''
 
-        interfaces_dir = os.path.join(args.inputdir, 'interfaces.d')
-        yaml_files = filter(
-            lambda x: x.endswith('.yaml'),
-            os.listdir(interfaces_dir))
-
         interfaces = []
-        for x in yaml_files:
-            with open(os.path.join(interfaces_dir, x), 'r') as fd:
-                for i in yaml.safe_load(fd.read()):
-                    interfaces.append(i)
+        interfaces_dir = os.path.join(args.inputdir, 'interfaces.d')
+        if os.path.exists(interfaces_dir):
+            yaml_files = filter(
+                lambda x: x.endswith('.yaml'),
+                os.listdir(interfaces_dir))
+
+            for x in yaml_files:
+                with open(os.path.join(interfaces_dir, x), 'r') as fd:
+                    for i in yaml.safe_load(fd.read()):
+                        interfaces.append(i)
 
         return interfaces
 
@@ -515,9 +476,6 @@ class Everything(Renderer):
         self.events = [
             self.class_map[x['type']](**x) for x in a]
         super(Everything, self).__init__(**kw)
-
-    def list_interfaces(self, *a):
-        print ' '.join([str(i) for i in self.interfaces])
 
     def generate_cpp(self, loader):
         '''Render the template with the provided events and interfaces.'''
@@ -537,7 +495,6 @@ if __name__ == '__main__':
     script_dir = os.path.dirname(os.path.realpath(__file__))
     valid_commands = {
         'generate-cpp': 'generate_cpp',
-        'list-interfaces': 'list_interfaces'
     }
 
     parser = argparse.ArgumentParser(

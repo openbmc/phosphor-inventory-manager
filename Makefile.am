@@ -1,34 +1,33 @@
-EXTRAIFACES_C=@EXTRAIFACES_C@
-EXTRAIFACES_LO=@EXTRAIFACES_LO@
-BUILT_SOURCES=generated.cpp
+BUILT_SOURCES=generated.cpp extra_ifaces.cpp
 
-CLEANFILES=$(BUILT_SOURCES) $(EXTRAIFACES_C) libextra.la
+CLEANFILES=$(BUILT_SOURCES)
 
 sbin_PROGRAMS = phosphor-inventory
+noinst_LTLIBRARIES = libmanagercommon.la libmanager.la
+
+extra_yamldir=$(YAML_PATH)/extra_interfaces.d
+
 phosphor_inventory_SOURCES = app.cpp
 phosphor_inventory_LDADD = libmanager.la
-phosphor_inventory_LDFLAGS = $(SYSTEMD_LIBS)
-phosphor_inventory_CFLAGS = $(SYSTEMD_CFLAGS)
+phosphor_inventory_LDFLAGS = $(SDBUSPLUS_LIBS)
+phosphor_inventory_CFLAGS = $(SDBUSPLUS_CFLAGS)
 
-noinst_LTLIBRARIES = libmanager.la
-libmanager_la_SOURCES = \
+libmanagercommon_la_SOURCES = \
 	xyz.openbmc_project.Inventory.Manager.cpp \
-	generated.cpp \
 	events.cpp \
 	manager.cpp
-libmanager_la_LIBADD = libextra.la $(SDBUSPLUS_LIBS)
+libmanagercommon_la_LIBADD = $(SDBUSPLUS_LIBS)
 
-# Automake does not allow autoconf substituted variables
-# in _SOURCES variables.  Work around this by providing
-# our own target.
-#
-# Typically the recommendation is conditional compilation
-# but here the generated source files are completely
-# arbitrary and not known making that approach difficult.
-libextra.la: $(EXTRAIFACES_LO)
-	$(AM_V_CXXLD)$(CXXLINK) $(EXTRAIFACES_LO)
+libmanager_la_SOURCES = \
+	extra_ifaces.cpp \
+	generated.cpp
+libmanager_la_LIBADD = libmanagercommon.la $(SDBUSPLUS_LIBS)
 
-$(EXTRAIFACES_C) generated.cpp:
-	$(AM_V_GEN)@PIMGEN@ -o $(top_builddir) generate-cpp
+clean-local: clean-extra
+
+generated.cpp:
+	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/pimgen.py -d $(extra_yamldir)/.. -o $(builddir) generate-cpp
 
 SUBDIRS = . test
+
+-include Makefile.extra
