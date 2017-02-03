@@ -17,7 +17,7 @@ libmanager_la_SOURCES = \
 	errors.cpp \
 	functor.cpp \
 	manager.cpp
-libmanager_la_LIBADD = libextra.la
+libmanager_la_LIBADD = libextra.la $(SDBUSPLUS_LIBS)
 
 # Automake does not allow autoconf substituted variables
 # in _SOURCES variables.  Work around this by providing
