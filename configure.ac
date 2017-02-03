@@ -12,6 +12,9 @@ AM_PROG_AR
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_AWK
+AC_CHECK_PROG([FIND], find, find)
+AC_CHECK_PROG([BASENAME], basename, basename)
+AC_CHECK_PROG([DIRNAME], dirname, dirname)
 AM_PATH_PYTHON([2.7],
     [AC_SUBST([PYTHON], [echo "$PYTHON"])],
     [AC_MSG_ERROR([Could not find python-2.7 installed...python-2.7 is required])])
@@ -53,6 +56,10 @@ AS_IF([test "x$enable_oe_sdk" == "xyes"],
     AC_SUBST([OESDK_TESTCASE_FLAGS], [$testcase_flags])
 )
 
+AC_PATH_PROG([SDBUSPLUSPLUS], [sdbus++])
+AS_IF([test "x$SDBUSPLUSPLUS" == "x"],
+    AC_MSG_ERROR([Cannot find sdbus++]))
+
 AC_ARG_VAR(BUSNAME, [The DBus busname to own.])
 AC_ARG_VAR(INVENTORY_ROOT, [The DBus inventory namespace root.])
 AC_ARG_VAR(IFACE, [The manager DBus interface.])
@@ -64,13 +71,13 @@ AS_IF([test "x$YAML_PATH" == "x"], [YAML_PATH="$srcdir/example"])
 AC_DEFINE_UNQUOTED([BUSNAME], ["$BUSNAME"], [The DBus busname to own.])
 AC_DEFINE_UNQUOTED([INVENTORY_ROOT], ["$INVENTORY_ROOT"], [The DBus inventory namespace root.])
 AC_DEFINE_UNQUOTED([IFACE], ["$IFACE"], [The manager DBus interface.])
-PIMGEN="$PYTHON $srcdir/pimgen.py -d $YAML_PATH"
-EXTRAIFACES_LO="`$PIMGEN list-interfaces|awk '{ for(i=1;i<=NF;i++){printf $i".lo ";}}'`"
-EXTRAIFACES_C="`$PIMGEN list-interfaces|awk '{ for(i=1;i<=NF;i++){printf $i".cpp ";}}'`"
-AC_SUBST(EXTRAIFACES_LO)
-AC_SUBST(EXTRAIFACES_C)
-AC_SUBST(PIMGEN)
 
 # Create configured output
+AC_CONFIG_FILES([Makefile.extra],
+    [${srcdir}/generate_makefile.sh $yaml > Makefile.extra],
+    [yaml=${YAML_PATH}/extra_interfaces.d])
+AC_CONFIG_FILES([test/Makefile.extra],
+    [${srcdir}/generate_makefile.sh $test_yaml > test/Makefile.extra],
+    [test_yaml=$srcdir/example/extra_interfaces.d])
 AC_CONFIG_FILES([Makefile test/Makefile])
 AC_OUTPUT
