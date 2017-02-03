@@ -41,9 +41,9 @@ namespace actions
 {
 
 /** @brief Destroy objects action.  */
-inline auto destroyObjects(std::vector<const char*> paths)
+inline auto destroyObjects(std::vector<const char*>&& paths)
 {
-    return [paths = std::move(paths)](auto&, auto & m)
+    return [=](auto&, auto & m)
     {
         m.destroyObjects(paths);
     };
@@ -51,9 +51,9 @@ inline auto destroyObjects(std::vector<const char*> paths)
 
 /** @brief Create objects action.  */
 inline auto createObjects(
-    const std::map<sdbusplus::message::object_path, Object>& objs)
+    std::map<sdbusplus::message::object_path, Object>&& objs)
 {
-    return [&objs](auto&, auto & m)
+    return [=](auto&, auto & m)
     {
         m.createObjects(objs);
     };
