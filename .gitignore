@@ -4,10 +4,8 @@
 *.sw*
 phosphor-inventory
 generated.cpp
-xyz.openbmc_project.Example.Iface1.cpp
-xyz.openbmc_project.Example.Iface2.cpp
-xyz/openbmc_project/Example/Iface1/server.hpp
-xyz/openbmc_project/Example/Iface2/server.hpp
+xyz.openbmc_project.Example.*.cpp
+xyz/openbmc_project/Example/
 Makefile
 Makefile.in
 configure
@@ -29,3 +27,5 @@ install-sh
 ltmain.sh
 missing
 stamp-h1
+Makefile.extra
+extra_ifaces.cpp
