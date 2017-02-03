@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 #include <sdbusplus/server.hpp>
-#include "xyz/openbmc_project/Inventory/Manager/server.hpp"
+#include <xyz/openbmc_project/Inventory/Manager/server.hpp>
 #include "events.hpp"
 #include "actions.hpp"
 #include "types.hpp"
@@ -92,7 +92,7 @@ class Manager final :
         void shutdown() noexcept;
 
         /** @brief sd_bus Notify method implementation callback. */
-        void notify(sdbusplus::message::object_path, Object) override;
+        void notify(std::map<sdbusplus::message::object_path, Object> objs) override;
 
         /** @brief Event processing entry point. */
         void handleEvent(sdbusplus::message::message&,

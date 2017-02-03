@@ -13,10 +13,10 @@ phosphor_inventory_LDFLAGS = $(SDBUSPLUS_LIBS)
 phosphor_inventory_CFLAGS = $(SDBUSPLUS_CFLAGS)
 
 libmanagercommon_la_SOURCES = \
-	xyz.openbmc_project.Inventory.Manager.cpp \
 	events.cpp \
 	manager.cpp
-libmanagercommon_la_LIBADD = $(SDBUSPLUS_LIBS)
+libmanagercommon_la_LIBADD = $(SDBUSPLUS_LIBS) $(PHOSPHOR_DBUS_INTERFACES_LIBS)
+libmanagercommon_la_CFLAGS = $(SDBUSPLUS_CFLAGS) $(PHOSPHOR_DBUS_INTERACES_CFLAGS)
 
 libmanager_la_SOURCES = \
 	extra_ifaces.cpp \

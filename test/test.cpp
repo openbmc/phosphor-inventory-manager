@@ -26,6 +26,9 @@
 using namespace std::literals::chrono_literals;
 using namespace std::literals::string_literals;
 
+using Object = phosphor::inventory::manager::Object;
+using ObjectMap = std::map<sdbusplus::message::object_path, Object>;
+
 constexpr auto MGR_SERVICE = "phosphor.inventory.test.mgr";
 constexpr auto MGR_INTERFACE = IFACE;
 constexpr auto MGR_ROOT = "/testing/inventory";
@@ -94,7 +97,6 @@ struct ExampleService
     sdbusplus::server::manager::manager objmgr;
 };
 
-using Object = phosphor::inventory::manager::Object;
 
 /** @class SignalQueue
  *  @brief Store DBus signals in a queue.
@@ -201,11 +203,11 @@ void runTests()
     {
         {
             "xyz.openbmc_project.Example.Iface1",
-            {{"ExampleProperty1", "test1"}}
+            {{"ExampleProperty1", "test1"s}}
         },
         {
             "xyz.openbmc_project.Example.Iface2",
-            {{"ExampleProperty2", "test2"}}
+            {{"ExampleProperty2", "test2"s}}
         },
     };
 
@@ -236,8 +238,7 @@ void runTests()
             "path='" + root + "',member='InterfacesAdded'");
 
         auto m = notify();
-        m.append(relPath);
-        m.append(obj);
+        m.append(ObjectMap({{relPath, obj}}));
         b.call(m);
 
         auto sig{queue.pop()};
@@ -257,8 +258,7 @@ void runTests()
         // Create an object to be deleted.
         {
             auto m = notify();
-            m.append(relDeleteMeThree);
-            m.append(obj);
+            m.append(ObjectMap({{relDeleteMeThree, obj}}));
             b.call(m);
         }
 
@@ -330,20 +330,17 @@ void runTests()
         // Create some objects to be deleted by an action.
         {
             auto m = notify();
-            m.append(relDeleteMeOne);
-            m.append(obj);
+            m.append(ObjectMap({{relDeleteMeOne, obj}}));
             b.call(m);
         }
         {
             auto m = notify();
-            m.append(relDeleteMeTwo);
-            m.append(obj);
+            m.append(ObjectMap({{relDeleteMeTwo, obj}}));
             b.call(m);
         }
         {
             auto m = notify();
-            m.append(relDeleteMeThree);
-            m.append(obj);
+            m.append(ObjectMap({{relDeleteMeThree, obj}}));
             b.call(m);
         }
 
@@ -448,8 +445,7 @@ void runTests()
         // Create an object to be updated by the set property action.
         {
             auto m = notify();
-            m.append(relChangeMe);
-            m.append(obj);
+            m.append(ObjectMap({{relChangeMe, obj}}));
             b.call(m);
         }
 
