@@ -179,10 +179,14 @@ void Manager::handleEvent(
 void Manager::destroyObjects(
     const std::vector<const char*>& paths)
 {
+    std::string p;
+
     for (const auto& path : paths)
     {
-        std::string p{path};
-        _refs.erase(_root + p);
+        p.assign(_root);
+        p.append(path);
+        _bus.emit_object_removed(p.c_str());
+        _refs.erase(p);
     }
 }
 
@@ -211,13 +215,9 @@ void Manager::createObjects(
         // a container.
         InterfaceComposite ref;
 
-        auto i = ifaces.size();
         for (auto& iface : ifaces)
         {
             auto& props = iface.second;
-
-            // Defer sending any signals until the last interface.
-            auto deferSignals = --i != 0;
             auto pMakers = _makers.find(iface.first.c_str());
 
             if (pMakers == _makers.end())
@@ -233,8 +233,7 @@ void Manager::createObjects(
                 maker(
                     _bus,
                     absPath.c_str(),
-                    props,
-                    deferSignals));
+                    props));
         }
 
         if (!ref.empty())
@@ -244,6 +243,7 @@ void Manager::createObjects(
             // to it if needed.
             _refs.emplace(
                 absPath, std::move(ref));
+            _bus.emit_object_added(absPath.c_str());
         }
     }
 }
