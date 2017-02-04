@@ -16,6 +16,7 @@
 #include <iostream>
 #include <exception>
 #include <chrono>
+#include <log.hpp>
 #include "manager.hpp"
 
 using namespace std::literals::chrono_literals;
@@ -197,53 +198,60 @@ void Manager::createObjects(
 
     for (auto& o : objs)
     {
-        auto& relPath = o.first;
-        auto& ifaces = o.second;
-
-        absPath.assign(_root);
-        absPath.append(relPath);
-
-        auto obj = _refs.find(absPath);
-        if (obj != _refs.end())
+        try
         {
-            // This object already exists...skip.
-            continue;
-        }
+            auto& relPath = o.first;
+            auto& ifaces = o.second;
 
-        // Create an interface holder for each interface
-        // provided by the client and group them into
-        // a container.
-        InterfaceComposite ref;
+            absPath.assign(_root);
+            absPath.append(relPath);
 
-        for (auto& iface : ifaces)
-        {
-            auto& props = iface.second;
-            auto pMakers = _makers.find(iface.first.c_str());
-
-            if (pMakers == _makers.end())
+            auto obj = _refs.find(absPath);
+            if (obj != _refs.end())
             {
-                // This interface is not known.
+                // This object already exists...skip.
                 continue;
             }
 
-            auto& maker = std::get<MakerType>(pMakers->second);
+            // Create an interface holder for each interface
+            // provided by the client and group them into
+            // a container.
+            InterfaceComposite ref;
 
-            ref.emplace(
-                iface.first,
-                maker(
-                    _bus,
-                    absPath.c_str(),
-                    props));
+            for (auto& iface : ifaces)
+            {
+                auto& props = iface.second;
+                auto pMakers = _makers.find(iface.first.c_str());
+
+                if (pMakers == _makers.end())
+                {
+                    // This interface is not known.
+                    continue;
+                }
+
+                auto& maker = std::get<MakerType>(pMakers->second);
+
+                ref.emplace(
+                    iface.first,
+                    maker(
+                        _bus,
+                        absPath.c_str(),
+                        props));
+            }
+
+            if (!ref.empty())
+            {
+                // Hang on to a reference to the object (interfaces)
+                // so it stays on the bus, and so we can make calls
+                // to it if needed.
+                _refs.emplace(
+                    absPath, std::move(ref));
+                _bus.emit_object_added(absPath.c_str());
+            }
         }
-
-        if (!ref.empty())
+        catch (const std::exception& e)
         {
-            // Hang on to a reference to the object (interfaces)
-            // so it stays on the bus, and so we can make calls
-            // to it if needed.
-            _refs.emplace(
-                absPath, std::move(ref));
-            _bus.emit_object_added(absPath.c_str());
+            logging::log<logging::level::ERR>(e.what());
         }
     }
 }

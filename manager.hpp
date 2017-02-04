@@ -41,13 +41,26 @@ struct MakeInterface
         const char* path,
         const Interface& props)
     {
-        // TODO: pass props to import constructor...
+        using PropertiesVariant = typename T::PropertiesVariant;
+        using InterfaceVariant =
+            std::map<std::string, PropertiesVariant>;
+
+        InterfaceVariant v;
+
+        for (const auto& p : props)
+        {
+            v.emplace(
+                p.first,
+                convertVariant<PropertiesVariant>(p.second));
+        }
+
         using HolderType = holder::Holder<std::unique_ptr<T>>;
         return HolderType::template make_unique<HolderType>(
             std::forward<std::unique_ptr<T>>(
                 std::make_unique<T>(
                     std::forward<decltype(bus)>(bus),
-                    std::forward<decltype(path)>(path))));
+                    std::forward<decltype(path)>(path),
+                    v)));
     }
 };
 } // namespace details
