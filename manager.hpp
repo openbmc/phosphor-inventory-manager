@@ -39,8 +39,20 @@ struct MakeInterface
         const char* path,
         const Interface& props)
     {
-        // TODO: pass props to import constructor...
-        return any_ns::any(std::make_shared<T>(bus, path));
+        using PropertiesVariant = typename T::PropertiesVariant;
+        using InterfaceVariant =
+            std::map<std::string, PropertiesVariant>;
+
+        InterfaceVariant v;
+
+        for (const auto& p : props)
+        {
+            v.emplace(
+                p.first,
+                convertVariant<PropertiesVariant>(p.second));
+        }
+
+        return any_ns::any(std::make_shared<T>(bus, path, v));
     }
 };
 
