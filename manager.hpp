@@ -20,7 +20,7 @@ namespace details
 {
 
 template <typename T>
-using ServerObject = typename sdbusplus::server::object::object<T>;
+using ServerObject = T;
 
 using ManagerIface =
     sdbusplus::xyz::openbmc_project::Inventory::server::Manager;
@@ -39,8 +39,7 @@ struct MakeInterface
     static std::unique_ptr<details::holder::Base> make(
         sdbusplus::bus::bus& bus,
         const char* path,
-        const Interface& props,
-        bool deferSignals)
+        const Interface& props)
     {
         // TODO: pass props to import constructor...
         using HolderType = holder::Holder<std::unique_ptr<T>>;
@@ -48,8 +47,7 @@ struct MakeInterface
             std::forward<std::unique_ptr<T>>(
                 std::make_unique<T>(
                     std::forward<decltype(bus)>(bus),
-                    std::forward<decltype(path)>(path),
-                    std::forward<decltype(deferSignals)>(deferSignals))));
+                    std::forward<decltype(path)>(path))));
     }
 };
 } // namespace details
