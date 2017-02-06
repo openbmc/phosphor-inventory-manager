@@ -7,7 +7,7 @@
 #include <sdbusplus/server.hpp>
 #include <xyz/openbmc_project/Inventory/Manager/server.hpp>
 #include "events.hpp"
-#include "actions.hpp"
+#include "functor.hpp"
 #include "types.hpp"
 
 namespace phosphor
@@ -127,7 +127,7 @@ class Manager final :
 
         using EventInfo = std::tuple <
                           std::vector<details::EventBasePtr>,
-                          std::vector<details::Action::Shared >>;
+                          std::vector<Action::Shared >>;
 
         /** @brief Start processing DBus messages. */
         void run() noexcept;

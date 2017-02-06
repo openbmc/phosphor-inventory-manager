@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "events.hpp"
 #include <sdbusplus/bus.hpp>
+#include "functor.hpp"
 
 namespace phosphor
 {
@@ -22,11 +22,7 @@ namespace inventory
 {
 namespace manager
 {
-namespace filters
-{
-namespace details
-{
-namespace property_condition
+namespace functor
 {
 
 bool PropertyConditionBase::operator()(
@@ -89,9 +85,7 @@ bool PropertyConditionBase::operator()(
     return eval(hostResponseMsg);
 }
 
-} // namespace property_condition
-} // namespace details
-} // namespace filters
+} // namespace functor
 } // namespace manager
 } // namespace inventory
 } // namespace phosphor
