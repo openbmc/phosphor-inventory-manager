@@ -26,8 +26,12 @@ libmanager_la_LIBADD = libmanagercommon.la $(SDBUSPLUS_LIBS)
 
 clean-local: clean-extra
 
+if IFACES_PATH
+PIMGEN_ARGS=-i $(IFACES_PATH)
+endif
+
 generated.cpp:
-	$(AM_V_GEN)$(top_srcdir)/pimgen.py -d $(extra_yamldir)/.. -o $(builddir) generate-cpp
+	$(AM_V_GEN)$(top_srcdir)/pimgen.py $(PIMGEN_ARGS) -d $(extra_yamldir)/.. -o $(builddir) generate-cpp
 
 SUBDIRS = . test
 

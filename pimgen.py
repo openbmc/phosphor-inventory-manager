@@ -468,26 +468,45 @@ class Everything(Renderer):
                     for e in yaml.safe_load(fd.read()).get('events', {}):
                         events.append(e)
 
+        interfaces = Everything.get_interfaces(args.ifacesdir)
+        extra_interfaces = Everything.get_interfaces(
+            os.path.join(args.inputdir, 'extra_interfaces.d'))
+
         return Everything(
             *events,
-            interfaces=Everything.get_interfaces(args))
+            interfaces=interfaces + extra_interfaces)
 
     @staticmethod
-    def get_interfaces(args):
-        '''Aggregate all the interface YAML in the interfaces.d
-        directory into a single list of interfaces.'''
+    def get_interfaces(targetdir):
+        '''Scan the interfaces directory for interfaces that PIM can create.'''
 
+        yaml_files = []
         interfaces = []
-        interfaces_dir = os.path.join(args.inputdir, 'interfaces.d')
-        if os.path.exists(interfaces_dir):
-            yaml_files = filter(
-                lambda x: x.endswith('.yaml'),
-                os.listdir(interfaces_dir))
 
-            for x in yaml_files:
-                with open(os.path.join(interfaces_dir, x), 'r') as fd:
-                    for i in yaml.safe_load(fd.read()):
-                        interfaces.append(i)
+        if targetdir and os.path.exists(targetdir):
+            for directory, _, files in os.walk(targetdir):
+                if not files:
+                    continue
+
+                yaml_files += map(
+                    lambda f: os.path.relpath(
+                        os.path.join(directory, f),
+                        targetdir),
+                    filter(lambda f: f.endswith('.interface.yaml'), files))
+
+        for y in yaml_files:
+            with open(os.path.join(targetdir, y)) as fd:
+                i = y.replace('.interface.yaml', '').replace(os.sep, '.')
+
+                # PIM can't create interfaces with methods.
+                # PIM can't create interfaces without properties.
+                parsed = yaml.safe_load(fd.read())
+                if parsed.get('methods', None):
+                    continue
+                if not parsed.get('properties', None):
+                    continue
+
+                interfaces.append(i)
 
         return interfaces
 
@@ -524,6 +543,9 @@ if __name__ == '__main__':
     parser.add_argument(
         '-o', '--output-dir', dest='outputdir',
         default='.', help='Output directory.')
+    parser.add_argument(
+        '-i', '--interfaces-dir', dest='ifacesdir',
+        help='Location of interfaces to be supported.')
     parser.add_argument(
         '-d', '--dir', dest='inputdir',
         default=os.path.join(script_dir, 'example'),
