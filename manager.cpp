@@ -26,9 +26,6 @@ namespace inventory
 {
 namespace manager
 {
-namespace details
-{
-
 /** @brief Fowrarding signal callback.
  *
  *  Extracts per-signal specific context and forwards the call to the manager
@@ -44,7 +41,7 @@ auto _signal(sd_bus_message* m, void* data, sd_bus_error* e) noexcept
         auto& mgr = *std::get<0>(args);
         mgr.handleEvent(
             msg,
-            static_cast<const details::DbusSignal&>(
+            static_cast<const DbusSignal&>(
                 *std::get<1>(args)),
             *std::get<2>(args));
     }
@@ -56,14 +53,12 @@ auto _signal(sd_bus_message* m, void* data, sd_bus_error* e) noexcept
     return 0;
 }
 
-} // namespace details
-
 Manager::Manager(
     sdbusplus::bus::bus&& bus,
     const char* busname,
     const char* root,
     const char* iface) :
-    details::ServerObject<details::ManagerIface>(bus, root),
+    ServerObject<ManagerIface>(bus, root),
     _shutdown(false),
     _root(root),
     _bus(std::move(bus)),
@@ -71,17 +66,17 @@ Manager::Manager(
 {
     for (auto& group : _events)
     {
-        for (auto pEvent : std::get<std::vector<details::EventBasePtr>>(
+        for (auto pEvent : std::get<std::vector<EventBasePtr>>(
                  group))
         {
             if (pEvent->type !=
-                details::Event::Type::DBUS_SIGNAL)
+                Event::Type::DBUS_SIGNAL)
             {
                 continue;
             }
 
             // Create a callback context for this event group.
-            auto dbusEvent = static_cast<details::DbusSignal*>(
+            auto dbusEvent = static_cast<DbusSignal*>(
                                  pEvent.get());
 
             // Go ahead and store an iterator pointing at
@@ -99,7 +94,7 @@ Manager::Manager(
             _matches.emplace_back(
                 _bus,
                 dbusEvent->signature,
-                details::_signal,
+                _signal,
                 _sigargs.back().get());
         }
     }
@@ -119,11 +114,11 @@ void Manager::run() noexcept
     // Run startup events.
     for (auto& group : _events)
     {
-        for (auto pEvent : std::get<std::vector<details::EventBasePtr>>(
+        for (auto pEvent : std::get<std::vector<EventBasePtr>>(
                  group))
         {
             if (pEvent->type ==
-                details::Event::Type::STARTUP)
+                Event::Type::STARTUP)
             {
                 handleEvent(unusedMsg, *pEvent, group);
             }
@@ -158,7 +153,7 @@ void Manager::notify(std::map<sdbusplus::message::object_path, Object> objs)
 
 void Manager::handleEvent(
     sdbusplus::message::message& msg,
-    const details::Event& event,
+    const Event& event,
     const EventInfo& info)
 {
     auto& actions = std::get<1>(info);

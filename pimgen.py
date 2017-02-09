@@ -227,7 +227,7 @@ class Filter(Wrapper):
 
     def __init__(self, **kw):
         kw['wrapper_name'] = 'make_filter'
-        kw['wrapper_namespace'] = ['details']
+        kw['wrapper_namespace'] = []
         kw['namespace'] = ['filters']
         super(Filter, self).__init__(**kw)
 
@@ -237,7 +237,7 @@ class Action(Wrapper):
 
     def __init__(self, **kw):
         kw['wrapper_name'] = 'make_action'
-        kw['wrapper_namespace'] = ['details']
+        kw['wrapper_namespace'] = []
         kw['namespace'] = ['actions']
         super(Action, self).__init__(**kw)
 
@@ -371,7 +371,7 @@ class Event(MethodCall):
         filters = [
             self.filter_map[x['name']](**x) for x in kw.pop('filters', [])]
         filters = Vector(
-            templates=[Template(name='Filter', namespace=['details'])],
+            templates=[Template(name='Filter', namespace=[])],
             args=filters)
 
         event = MethodCall(
@@ -383,10 +383,10 @@ class Event(MethodCall):
             args=kw.pop('event_args', []) + [filters])
 
         events = Vector(
-            templates=[Template(name='EventBasePtr', namespace=['details'])],
+            templates=[Template(name='EventBasePtr', namespace=[])],
             args=[event])
 
-        action_type = Template(name='Action', namespace=['details'])
+        action_type = Template(name='Action', namespace=[])
         action_args = [
             self.action_map[x['name']](**x) for x in kw.pop('actions', [])]
         actions = Vector(
@@ -405,7 +405,7 @@ class MatchEvent(Event):
 
     def __init__(self, **kw):
         kw['event'] = 'DbusSignal'
-        kw['event_namespace'] = ['details']
+        kw['event_namespace'] = []
         kw['event_args'] = [
             DbusSignature(**x) for x in kw.pop('signatures', [])]
 
@@ -417,7 +417,7 @@ class StartupEvent(Event):
 
     def __init__(self, **kw):
         kw['event'] = 'StartupEvent'
-        kw['event_namespace'] = ['details']
+        kw['event_namespace'] = []
         super(StartupEvent, self).__init__(**kw)
 
 
