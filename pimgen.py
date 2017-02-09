@@ -371,7 +371,7 @@ class Event(MethodCall):
         filters = [
             self.filter_map[x['name']](**x) for x in kw.pop('filters', [])]
         filters = Vector(
-            templates=[Template(name='FilterBasePtr', namespace=['details'])],
+            templates=[Template(name='Filter', namespace=['details'])],
             args=filters)
 
         event = MethodCall(
@@ -386,7 +386,7 @@ class Event(MethodCall):
             templates=[Template(name='EventBasePtr', namespace=['details'])],
             args=[event])
 
-        action_type = Template(name='ActionBasePtr', namespace=['details'])
+        action_type = Template(name='Action', namespace=['details'])
         action_args = [
             self.action_map[x['name']](**x) for x in kw.pop('actions', [])]
         actions = Vector(
