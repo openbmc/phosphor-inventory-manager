@@ -14,8 +14,7 @@ namespace manager
 {
 
 class Manager;
-namespace details
-{
+
 using Action = std::function<void (sdbusplus::bus::bus&, Manager&)>;
 
 /** @brief make_action
@@ -32,7 +31,6 @@ auto make_action(T&& action)
 {
     return Action(std::forward<T>(action));
 }
-} // namespace details
 
 namespace actions
 {

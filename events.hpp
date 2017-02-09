@@ -14,8 +14,6 @@ namespace manager
 {
 
 class Manager;
-namespace details
-{
 using Filter = std::function <
                bool (sdbusplus::bus::bus&, sdbusplus::message::message&, Manager&) >;
 
@@ -98,11 +96,8 @@ auto make_filter(T&& filter)
 {
     return Filter(std::forward<T>(filter));
 }
-} // namespace details
 
 namespace filters
-{
-namespace details
 {
 namespace property_condition
 {
@@ -281,7 +276,6 @@ struct PropertyCondition final : public PropertyConditionBase
 };
 
 } // namespace property_condition
-} // namespace details
 
 /** @brief Implicit type deduction for constructing PropertyChangedCondition.  */
 template <typename T>
@@ -295,7 +289,7 @@ auto propertyChangedTo(
         return arg == val;
     };
     using U = decltype(condition);
-    return details::property_condition::PropertyChangedCondition<T, U>(
+    return property_condition::PropertyChangedCondition<T, U>(
                iface, property, std::move(condition));
 }
 
@@ -313,7 +307,7 @@ auto propertyIs(
         return arg == val;
     };
     using U = decltype(condition);
-    return details::property_condition::PropertyCondition<T, U>(
+    return property_condition::PropertyCondition<T, U>(
                path, iface, property, std::move(condition), service);
 }
 

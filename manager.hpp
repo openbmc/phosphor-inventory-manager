@@ -16,8 +16,6 @@ namespace inventory
 {
 namespace manager
 {
-namespace details
-{
 
 template <typename T>
 using ServerObject = T;
@@ -45,7 +43,6 @@ struct MakeInterface
         return any_ns::any(std::make_shared<T>(bus, path));
     }
 };
-} // namespace details
 
 /** @class Manager
  *  @brief OpenBMC inventory manager implementation.
@@ -54,7 +51,7 @@ struct MakeInterface
  *  DBus API.
  */
 class Manager final :
-    public details::ServerObject<details::ManagerIface>
+    public ServerObject<ManagerIface>
 {
     public:
         Manager() = delete;
@@ -75,8 +72,8 @@ class Manager final :
         Manager(sdbusplus::bus::bus&&, const char*, const char*, const char*);
 
         using EventInfo = std::tuple <
-                          std::vector<details::EventBasePtr>,
-                          std::vector<details::Action >>;
+                          std::vector<EventBasePtr>,
+                          std::vector<Action >>;
 
         /** @brief Start processing DBus messages. */
         void run() noexcept;
@@ -89,7 +86,7 @@ class Manager final :
 
         /** @brief Event processing entry point. */
         void handleEvent(sdbusplus::message::message&,
-                         const details::Event& event,
+                         const Event& event,
                          const EventInfo& info);
 
         /** @brief Drop one or more objects from DBus. */
@@ -130,7 +127,7 @@ class Manager final :
                         std::unique_ptr <
                         std::tuple <
                         Manager*,
-                        const details::DbusSignal*,
+                        const DbusSignal*,
                         const EventInfo* >>>;
         using SigArg = SigArgs::value_type::element_type;
 
@@ -142,7 +139,7 @@ class Manager final :
         // The int instantiation is safe since the signature of these
         // functions don't change from one instantiation to the next.
         using MakerType = std::add_pointer_t <
-                          decltype(details::MakeInterface<int>::make) >;
+                          decltype(MakeInterface<int>::make) >;
         using Makers = std::map<std::string, std::tuple<MakerType>>;
 
         /** @brief Provides weak references to interface holders.
