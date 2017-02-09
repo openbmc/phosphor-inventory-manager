@@ -67,7 +67,7 @@ class Template(NamedElement):
     '''Associate a template name with its namespace.'''
 
     def __init__(self, **kw):
-        self.namespace = kw.pop('namespace')
+        self.namespace = kw.pop('namespace', [])
         super(Template, self).__init__(**kw)
 
     def qualified(self):
@@ -206,44 +206,24 @@ class Vector(MethodCall):
         super(Vector, self).__init__(**kw)
 
 
-class Wrapper(MethodCall):
-    '''Convenience type for functions that wrap other functions.'''
-
-    def __init__(self, **kw):
-        m = MethodCall(
-            name=kw.pop('name'),
-            namespace=kw.pop('namespace', []),
-            templates=kw.pop('templates', []),
-            args=kw.pop('args', []))
-
-        kw['name'] = kw.pop('wrapper_name')
-        kw['namespace'] = kw.pop('wrapper_namespace', [])
-        kw['args'] = [m]
-        super(Wrapper, self).__init__(**kw)
-
-
-class Filter(Wrapper):
+class Filter(MethodCall):
     '''Convenience type for filters'''
 
     def __init__(self, **kw):
-        kw['wrapper_name'] = 'make_filter'
-        kw['wrapper_namespace'] = []
-        kw['namespace'] = ['filters']
+        kw['name'] = 'make_filter'
         super(Filter, self).__init__(**kw)
 
 
-class Action(Wrapper):
+class Action(MethodCall):
     '''Convenience type for actions'''
 
     def __init__(self, **kw):
-        kw['wrapper_name'] = 'make_action'
-        kw['wrapper_namespace'] = []
-        kw['namespace'] = ['actions']
+        kw['name'] = 'make_action'
         super(Action, self).__init__(**kw)
 
 
-class CreateObjects(Action):
-    '''Assemble a createObjects action.'''
+class CreateObjects(MethodCall):
+    '''Assemble a createObjects functor.'''
 
     def __init__(self, **kw):
         objs = []
@@ -273,22 +253,24 @@ class CreateObjects(Action):
             objs.append(InitializerList(values=[key_o, value_i]))
 
         kw['args'] = [InitializerList(values=objs)]
+        kw['namespace'] = ['functor']
         super(CreateObjects, self).__init__(**kw)
 
 
-class DestroyObjects(Action):
-    '''Assemble a destroyObject action.'''
+class DestroyObjects(MethodCall):
+    '''Assemble a destroyObject functor.'''
 
     def __init__(self, **kw):
         values = [{'value': x, 'type': 'string'} for x in kw.pop('paths')]
         args = [InitializerList(
             values=[TrivialArgument(**x) for x in values])]
         kw['args'] = args
+        kw['namespace'] = ['functor']
         super(DestroyObjects, self).__init__(**kw)
 
 
-class SetProperty(Action):
-    '''Assemble a setProperty action.'''
+class SetProperty(MethodCall):
+    '''Assemble a setProperty functor.'''
 
     def __init__(self, **kw):
         args = []
@@ -317,11 +299,12 @@ class SetProperty(Action):
 
         kw['templates'] = [Template(name=name, namespace=namespace)]
         kw['args'] = args
+        kw['namespace'] = ['functor']
         super(SetProperty, self).__init__(**kw)
 
 
-class PropertyChanged(Filter):
-    '''Assemble a propertyChanged filter.'''
+class PropertyChanged(MethodCall):
+    '''Assemble a propertyChanged functor.'''
 
     def __init__(self, **kw):
         args = []
@@ -331,11 +314,12 @@ class PropertyChanged(Filter):
             decorators=[
                 Literal(kw['value'].get('type', None))], **kw.pop('value')))
         kw['args'] = args
+        kw['namespace'] = ['functor']
         super(PropertyChanged, self).__init__(**kw)
 
 
-class PropertyIs(Filter):
-    '''Assemble a propertyIs filter.'''
+class PropertyIs(MethodCall):
+    '''Assemble a propertyIs functor.'''
 
     def __init__(self, **kw):
         args = []
@@ -351,6 +335,7 @@ class PropertyIs(Filter):
             args.append(TrivialArgument(value=service, type='string'))
 
         kw['args'] = args
+        kw['namespace'] = ['functor']
         super(PropertyIs, self).__init__(**kw)
 
 
@@ -373,6 +358,7 @@ class Event(MethodCall):
 
         filters = [
             self.filter_map[x['name']](**x) for x in kw.pop('filters', [])]
+        filters = [Filter(args=[x]) for x in filters]
         filters = Vector(
             templates=[Template(name='Filter', namespace=[])],
             args=filters)
@@ -392,6 +378,7 @@ class Event(MethodCall):
         action_type = Template(name='Action', namespace=[])
         action_args = [
             self.action_map[x['name']](**x) for x in kw.pop('actions', [])]
+        action_args = [Action(args=[x]) for x in action_args]
         actions = Vector(
             templates=[action_type],
             args=action_args)
