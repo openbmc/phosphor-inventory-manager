@@ -36,18 +36,13 @@ using ManagerIface =
 template <typename T>
 struct MakeInterface
 {
-    static std::unique_ptr<details::holder::Base> make(
+    static any_ns::any make(
         sdbusplus::bus::bus& bus,
         const char* path,
         const Interface& props)
     {
         // TODO: pass props to import constructor...
-        using HolderType = holder::Holder<std::unique_ptr<T>>;
-        return HolderType::template make_unique<HolderType>(
-            std::forward<std::unique_ptr<T>>(
-                std::make_unique<T>(
-                    std::forward<decltype(bus)>(bus),
-                    std::forward<decltype(path)>(path))));
+        return any_ns::any(std::make_shared<T>(bus, path));
     }
 };
 } // namespace details
@@ -127,8 +122,7 @@ class Manager final :
         decltype(auto) invokeMethod(const char* path, const char* interface,
                                     U&& member, Args&& ...args)
         {
-            auto& holder = getInterface<std::unique_ptr<T>>(path, interface);
-            auto& iface = *holder.get();
+            auto& iface = getInterface<T>(path, interface);
             return (iface.*member)(std::forward<Args>(args)...);
         }
 
@@ -141,8 +135,7 @@ class Manager final :
         using SigArg = SigArgs::value_type::element_type;
 
     private:
-        using HolderPtr = std::unique_ptr<details::holder::Base>;
-        using InterfaceComposite = std::map<std::string, HolderPtr>;
+        using InterfaceComposite = std::map<std::string, any_ns::any>;
         using ObjectReferences = std::map<std::string, InterfaceComposite>;
         using Events = std::vector<EventInfo>;
 
@@ -164,9 +157,9 @@ class Manager final :
          *
          *  @returns A weak reference to the holder instance.
          */
-        details::holder::Base& getInterfaceHolder(
+        const any_ns::any& getInterfaceHolder(
             const char*, const char*) const;
-        details::holder::Base& getInterfaceHolder(
+        any_ns::any& getInterfaceHolder(
             const char*, const char*);
 
         /** @brief Provides weak references to interface holders.
@@ -183,15 +176,13 @@ class Manager final :
         auto& getInterface(const char* path, const char* interface)
         {
             auto& holder = getInterfaceHolder(path, interface);
-            return static_cast <
-                   details::holder::Holder<T>& >(holder);
+            return *any_ns::any_cast<std::shared_ptr<T> &>(holder);
         }
         template<typename T>
         auto& getInterface(const char* path, const char* interface) const
         {
             auto& holder = getInterfaceHolder(path, interface);
-            return static_cast <
-                   const details::holder::Holder<T>& >(holder);
+            return *any_ns::any_cast<T>(holder);
         }
 
         /** @brief Provided for testing only. */
