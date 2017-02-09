@@ -2,6 +2,7 @@
 
 #include <utility>
 #include <memory>
+#include <functional>
 #include "utils.hpp"
 #include "types.hpp"
 
@@ -15,10 +16,7 @@ namespace manager
 class Manager;
 namespace details
 {
-using ActionBase = holder::CallableBase<void, sdbusplus::bus::bus&, Manager&>;
-using ActionBasePtr = std::shared_ptr<ActionBase>;
-template <typename T>
-using Action = holder::CallableHolder<T, void, sdbusplus::bus::bus&, Manager&>;
+using Action = std::function<void (sdbusplus::bus::bus&, Manager&)>;
 
 /** @brief make_action
  *
@@ -32,8 +30,7 @@ using Action = holder::CallableHolder<T, void, sdbusplus::bus::bus&, Manager&>;
 template <typename T>
 auto make_action(T&& action)
 {
-    return Action<T>::template make_shared<Action<T>>(
-        std::forward<T>(action));
+    return Action(std::forward<T>(action));
 }
 } // namespace details
 
@@ -43,7 +40,7 @@ namespace actions
 /** @brief Destroy objects action.  */
 inline auto destroyObjects(std::vector<const char*>&& paths)
 {
-    return [=](auto&, auto & m)
+    return [ = ](auto&, auto & m)
     {
         m.destroyObjects(paths);
     };
@@ -53,7 +50,7 @@ inline auto destroyObjects(std::vector<const char*>&& paths)
 inline auto createObjects(
     std::map<sdbusplus::message::object_path, Object>&& objs)
 {
-    return [=](auto&, auto & m)
+    return [ = ](auto&, auto & m)
     {
         m.createObjects(objs);
     };

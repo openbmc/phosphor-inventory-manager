@@ -165,14 +165,14 @@ void Manager::handleEvent(
 
     for (auto& f : event)
     {
-        if (!(*f)(_bus, msg, *this))
+        if (!f(_bus, msg, *this))
         {
             return;
         }
     }
     for (auto& action : actions)
     {
-        (*action)(_bus, *this);
+        action(_bus, *this);
     }
 }
 

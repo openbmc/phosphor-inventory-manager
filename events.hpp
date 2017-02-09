@@ -2,6 +2,7 @@
 
 #include <utility>
 #include <memory>
+#include <functional>
 #include <sdbusplus/message.hpp>
 #include "utils.hpp"
 
@@ -15,12 +16,8 @@ namespace manager
 class Manager;
 namespace details
 {
-using FilterBase = holder::CallableBase <
-                   bool, sdbusplus::bus::bus&, sdbusplus::message::message&, Manager& >;
-using FilterBasePtr = std::shared_ptr<FilterBase>;
-template <typename T>
-using Filter = holder::CallableHolder <
-               T, bool, sdbusplus::bus::bus&, sdbusplus::message::message&, Manager& >;
+using Filter = std::function <
+               bool (sdbusplus::bus::bus&, sdbusplus::message::message&, Manager&) >;
 
 /** @struct Event
  *  @brief Event object interface.
@@ -28,7 +25,7 @@ using Filter = holder::CallableHolder <
  *  The event base is an assocation of an event type
  *  and an array of filter callbacks.
  */
-struct Event : public std::vector<FilterBasePtr>
+struct Event : public std::vector<Filter>
 {
     enum class Type
     {
@@ -48,8 +45,8 @@ struct Event : public std::vector<FilterBasePtr>
      *  @param[in] t - The event type.
      */
     explicit Event(
-        const std::vector<FilterBasePtr>& filters, Type t = Type::STARTUP) :
-        std::vector<FilterBasePtr>(filters),
+        const std::vector<Filter>& filters, Type t = Type::STARTUP) :
+        std::vector<Filter>(filters),
         type(t) {}
 
     /** @brief event class enumeration. */
@@ -80,7 +77,7 @@ struct DbusSignal final : public Event
      *  @param[in] filter - An array of DBus signal
      *     match callback filtering functions.
      */
-    DbusSignal(const char* sig, const std::vector<FilterBasePtr>& filters) :
+    DbusSignal(const char* sig, const std::vector<Filter>& filters) :
         Event(filters, Type::DBUS_SIGNAL),
         signature(sig) {}
 
@@ -99,8 +96,7 @@ struct DbusSignal final : public Event
 template <typename T>
 auto make_filter(T&& filter)
 {
-    return Filter<T>::template make_shared<Filter<T>>(
-        std::forward<T>(filter));
+    return Filter(std::forward<T>(filter));
 }
 } // namespace details
 
@@ -123,7 +119,7 @@ struct PropertyChangedCondition
         PropertyChangedCondition() = delete;
         ~PropertyChangedCondition() = default;
         PropertyChangedCondition(const PropertyChangedCondition&) = default;
-        PropertyChangedCondition& operator=(const PropertyChangedCondition&) = delete;
+        PropertyChangedCondition& operator=(const PropertyChangedCondition&) = default;
         PropertyChangedCondition(PropertyChangedCondition&&) = default;
         PropertyChangedCondition& operator=(PropertyChangedCondition&&) = default;
         PropertyChangedCondition(const char* iface, const char* property,
@@ -180,8 +176,8 @@ struct PropertyConditionBase
 {
         PropertyConditionBase() = delete;
         virtual ~PropertyConditionBase() = default;
-        PropertyConditionBase(const PropertyConditionBase&) = delete;
-        PropertyConditionBase& operator=(const PropertyConditionBase&) = delete;
+        PropertyConditionBase(const PropertyConditionBase&) = default;
+        PropertyConditionBase& operator=(const PropertyConditionBase&) = default;
         PropertyConditionBase(PropertyConditionBase&&) = default;
         PropertyConditionBase& operator=(PropertyConditionBase&&) = default;
 
@@ -239,8 +235,8 @@ struct PropertyCondition final : public PropertyConditionBase
 {
         PropertyCondition() = delete;
         ~PropertyCondition() = default;
-        PropertyCondition(const PropertyCondition&) = delete;
-        PropertyCondition& operator=(const PropertyCondition&) = delete;
+        PropertyCondition(const PropertyCondition&) = default;
+        PropertyCondition& operator=(const PropertyCondition&) = default;
         PropertyCondition(PropertyCondition&&) = default;
         PropertyCondition& operator=(PropertyCondition&&) = default;
 
