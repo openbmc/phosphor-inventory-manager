@@ -21,8 +21,8 @@ const Manager::Makers Manager::_makers{
     {
         "${str(i)}",
         std::make_tuple(
-            details::MakeInterface<
-                details::ServerObject<
+            MakeInterface<
+                ServerObject<
                     ${i.namespace()}>>::make
         )
     },

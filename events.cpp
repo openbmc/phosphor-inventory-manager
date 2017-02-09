@@ -24,8 +24,6 @@ namespace manager
 {
 namespace filters
 {
-namespace details
-{
 namespace property_condition
 {
 
@@ -90,7 +88,6 @@ bool PropertyConditionBase::operator()(
 }
 
 } // namespace property_condition
-} // namespace details
 } // namespace filters
 } // namespace manager
 } // namespace inventory
