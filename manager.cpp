@@ -248,14 +248,15 @@ void Manager::createObjects(
     }
 }
 
-details::holder::Base& Manager::getInterfaceHolder(
+any_ns::any& Manager::getInterfaceHolder(
     const char* path, const char* interface)
 {
-    return const_cast<const Manager*>(
-               this)->getInterfaceHolder(path, interface);
+    return const_cast<any_ns::any&>(
+               const_cast<const Manager*>(
+                   this)->getInterfaceHolder(path, interface));
 }
 
-details::holder::Base& Manager::getInterfaceHolder(
+const any_ns::any& Manager::getInterfaceHolder(
     const char* path, const char* interface) const
 {
     std::string p{path};
@@ -270,7 +271,7 @@ details::holder::Base& Manager::getInterfaceHolder(
         throw std::runtime_error(
             "interface was not found");
 
-    return *iit->second;
+    return iit->second;
 }
 
 } // namespace manager

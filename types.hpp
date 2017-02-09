@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 #include <sdbusplus/message.hpp>
+#include <experimental/any>
 
 namespace phosphor
 {
@@ -10,6 +11,8 @@ namespace inventory
 {
 namespace manager
 {
+
+namespace any_ns = std::experimental;
 
 /** @brief Inventory manager supported property types. */
 using InterfaceVariantType =
