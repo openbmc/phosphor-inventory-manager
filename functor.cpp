@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 #include "functor.hpp"
+#include "config.h"
 #include <sdbusplus/bus.hpp>
 
 namespace phosphor
@@ -47,9 +48,9 @@ bool PropertyConditionBase::operator()(
     else
     {
         auto mapperCall = bus.new_method_call(
-                              "xyz.openbmc_project.ObjectMapper",
-                              "/xyz/openbmc_project/ObjectMapper",
-                              "xyz.openbmc_project.ObjectMapper",
+                              MAPPER_BUSNAME,
+                              MAPPER_PATH,
+                              MAPPER_IFACE,
                               "GetObject");
         mapperCall.append(path);
         mapperCall.append(std::vector<std::string>({_iface}));
