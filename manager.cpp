@@ -257,14 +257,7 @@ void Manager::updateObjects(
 
 void Manager::notify(std::map<sdbusplus::message::object_path, Object> objs)
 {
-    try
-    {
-        createObjects(objs);
-    }
-    catch (const std::exception& e)
-    {
-        std::cerr << e.what() << std::endl;
-    }
+    updateObjects(objs);
 }
 
 void Manager::handleEvent(
@@ -304,66 +297,7 @@ void Manager::destroyObjects(
 void Manager::createObjects(
     const std::map<sdbusplus::message::object_path, Object>& objs)
 {
-    std::string absPath;
-
-    for (auto& o : objs)
-    {
-        try
-        {
-            auto& relPath = o.first;
-            auto& ifaces = o.second;
-
-            absPath.assign(_root);
-            absPath.append(relPath);
-
-            auto obj = _refs.find(absPath);
-            if (obj != _refs.end())
-            {
-                // This object already exists...skip.
-                continue;
-            }
-
-            // Create an interface holder for each interface
-            // provided by the client and group them into
-            // a container.
-            InterfaceComposite ref;
-
-            for (auto& iface : ifaces)
-            {
-                auto& props = iface.second;
-                auto pMakers = _makers.find(iface.first.c_str());
-
-                if (pMakers == _makers.end())
-                {
-                    // This interface is not known.
-                    continue;
-                }
-
-                auto& maker = std::get<MakerType>(pMakers->second);
-
-                ref.emplace(
-                    iface.first,
-                    maker(
-                        _bus,
-                        absPath.c_str(),
-                        props));
-            }
-
-            if (!ref.empty())
-            {
-                // Hang on to a reference to the object (interfaces)
-                // so it stays on the bus, and so we can make calls
-                // to it if needed.
-                _refs.emplace(
-                    absPath, std::move(ref));
-                _bus.emit_object_added(absPath.c_str());
-            }
-        }
-        catch (const std::exception& e)
-        {
-            logging::log<logging::level::ERR>(e.what());
-        }
-    }
+    updateObjects(objs);
 }
 
 any_ns::any& Manager::getInterfaceHolder(
