@@ -17,7 +17,7 @@
 #include <exception>
 #include <chrono>
 #include <algorithm>
-#include <log.hpp>
+#include <phosphor-logging/log.hpp>
 #include "manager.hpp"
 #include "errors.hpp"
 

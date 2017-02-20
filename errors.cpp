@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <log.hpp>
+#include <phosphor-logging/log.hpp>
 #include "errors.hpp"
 
 namespace phosphor
