@@ -135,8 +135,8 @@ auto setProperty(
     // and value to a lambda.  When it is called, forward the
     // path, interface and value on to the manager member function.
     return [paths, conditions = conditions, iface,
-                  member,
-                  value = std::forward<V>(value)](auto & b, auto & m)
+                   member,
+                   value = std::forward<V>(value)](auto & b, auto & m)
     {
         for (auto p : paths)
         {
