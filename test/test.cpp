@@ -207,7 +207,9 @@ void runTests()
         },
         {
             "xyz.openbmc_project.Example.Iface2",
-            {{"ExampleProperty2", "test2"s}, {"ExampleProperty3", 0ll}}
+            {   {"ExampleProperty2", "test2"s},
+                {"ExampleProperty3", static_cast<int64_t>(0ll)}
+            }
         },
     };
 

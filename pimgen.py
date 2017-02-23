@@ -104,20 +104,31 @@ class Cast(object):
 class Literal(object):
     '''Decorate an argument with a literal operator.'''
 
-    literals = {
-        'string': 's',
-        'int64': 'll',
-        'uint64': 'ull'
-    }
+    integer_types = [
+        'int8',
+        'int16',
+        'int32',
+        'int64',
+        'uint8',
+        'uint16',
+        'uint32',
+        'uint64'
+    ]
 
     def __init__(self, type):
         self.type = type
 
     def __call__(self, arg):
-        literal = self.literals.get(self.type)
+        if 'uint' in self.type:
+            arg = '{0}ull'.format(arg)
+        elif 'int' in self.type:
+            arg = '{0}ll'.format(arg)
 
-        if literal:
-            return '{0}{1}'.format(arg, literal)
+        if self.type in self.integer_types:
+            return Cast('static', '{0}_t'.format(self.type))(arg)
+
+        if self.type == 'string':
+            return '{0}s'.format(arg)
 
         return arg
 
