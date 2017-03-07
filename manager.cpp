@@ -65,7 +65,7 @@ Manager::Manager(
     _shutdown(false),
     _root(root),
     _bus(std::move(bus)),
-    _manager(sdbusplus::server::manager::manager(_bus, root))
+    _manager(_bus, root)
 {
     for (auto& group : _events)
     {
