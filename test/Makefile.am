@@ -10,12 +10,14 @@ noinst_LTLIBRARIES = libtest.la
 extra_yamldir=$(top_srcdir)/example/extra_interfaces.d
 
 phosphor_inventory_test_SOURCES = test.cpp
-phosphor_inventory_test_LDADD = libtest.la
-phosphor_inventory_test_LDFLAGS = \
-	$(SDBSUPLUS_LIBS) \
+phosphor_inventory_test_LDADD = \
+	libtest.la
+	$(SDBSUPLUS_LIBS)
+phosphor_inventory_test_CXXFLAGS = \
+	$(SDBUSPLUS_CFLAGS) \
 	$(PTHREAD_CFLAGS)
-phosphor_inventory_test_CFLAGS = $(SDBUSPLUS_CFLAGS)
 
+libtest_la_LDFLAGS = -static
 libtest_la_SOURCES = \
 	extra_ifaces.cpp \
 	generated.cpp
