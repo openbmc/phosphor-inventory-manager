@@ -8,10 +8,10 @@ noinst_LTLIBRARIES = libmanagercommon.la libmanager.la
 extra_yamldir=$(YAML_PATH)/extra_interfaces.d
 
 phosphor_inventory_SOURCES = app.cpp
-phosphor_inventory_LDADD = libmanager.la
-phosphor_inventory_LDFLAGS = $(SDBUSPLUS_LIBS)
-phosphor_inventory_CFLAGS = $(SDBUSPLUS_CFLAGS)
+phosphor_inventory_LDADD = libmanager.la $(SDBUSPLUS_LIBS)
+phosphor_inventory_CXXFLAGS = $(SDBUSPLUS_CFLAGS)
 
+libmanagercommon_la_LDFLAGS = -static
 libmanagercommon_la_SOURCES = \
 	errors.cpp \
 	functor.cpp \
@@ -20,11 +20,12 @@ libmanagercommon_la_LIBADD = \
 	$(SDBUSPLUS_LIBS) \
 	$(PHOSPHOR_DBUS_INTERFACES_LIBS) \
 	$(PHOSPHOR_LOGGING_LIBS)
-libmanagercommon_la_CFLAGS = \
+libmanagercommon_la_CXXFLAGS = \
 	$(SDBUSPLUS_CFLAGS) \
 	$(PHOSPHOR_DBUS_INTERACES_CFLAGS) \
 	$(PHOSPHOR_LOGGING_CFLAGS)
 
+libmanager_la_LDFLAGS = -static
 libmanager_la_SOURCES = \
 	extra_ifaces.cpp \
 	generated.cpp
