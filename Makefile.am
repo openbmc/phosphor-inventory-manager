@@ -16,13 +16,21 @@ libmanagercommon_la_SOURCES = \
 	errors.cpp \
 	functor.cpp \
 	manager.cpp
-libmanagercommon_la_LIBADD = $(SDBUSPLUS_LIBS) $(PHOSPHOR_DBUS_INTERFACES_LIBS) $(PHOSPHOR_LOGGING_LIBS)
-libmanagercommon_la_CFLAGS = $(SDBUSPLUS_CFLAGS) $(PHOSPHOR_DBUS_INTERACES_CFLAGS) $(PHOSPHOR_LOGGING_CFLAGS)
+libmanagercommon_la_LIBADD = \
+	$(SDBUSPLUS_LIBS) \
+	$(PHOSPHOR_DBUS_INTERFACES_LIBS) \
+	$(PHOSPHOR_LOGGING_LIBS)
+libmanagercommon_la_CFLAGS = \
+	$(SDBUSPLUS_CFLAGS) \
+	$(PHOSPHOR_DBUS_INTERACES_CFLAGS) \
+	$(PHOSPHOR_LOGGING_CFLAGS)
 
 libmanager_la_SOURCES = \
 	extra_ifaces.cpp \
 	generated.cpp
-libmanager_la_LIBADD = libmanagercommon.la $(SDBUSPLUS_LIBS)
+libmanager_la_LIBADD = \
+	libmanagercommon.la \
+	$(SDBUSPLUS_LIBS)
 
 clean-local: clean-extra
 
