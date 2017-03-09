@@ -63,7 +63,7 @@ bool PropertyConditionBase::operator()(
         std::map<std::string, std::vector<std::string>> mapperResponse;
         mapperResponseMsg.read(mapperResponse);
 
-        if (mapperResponse.begin() == mapperResponse.end())
+        if (mapperResponse.empty())
         {
             return false;
         }
