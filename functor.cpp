@@ -47,9 +47,9 @@ bool PropertyConditionBase::operator()(
     else
     {
         auto mapperCall = bus.new_method_call(
-                              "xyz.openbmc_project.ObjectMapper",
-                              "/xyz/openbmc_project/ObjectMapper",
-                              "xyz.openbmc_project.ObjectMapper",
+                              "xyz.openbmc_project.object_mapper",
+                              "/xyz/openbmc_project/object_mapper",
+                              "xyz.openbmc_project.object_mapper",
                               "GetObject");
         mapperCall.append(path);
         mapperCall.append(std::vector<std::string>({_iface}));
