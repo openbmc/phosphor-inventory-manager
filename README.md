@@ -84,7 +84,7 @@ Supported arguments for the propertyIs filter are:
 
 The service argument is optional.  If provided that service will
 be called explicitly.  If omitted, the service will be obtained
-with an xyz.openbmc_project.ObjectMapper lookup.
+with an xyz.openbmc_project.object_mapper lookup.
 
 propertyIs can be used in an action condition context when the
 action operates on a dbus object path.
