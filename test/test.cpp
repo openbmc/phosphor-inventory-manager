@@ -139,7 +139,7 @@ class SignalQueue
         }
 
         sdbusplus::bus::bus _bus;
-        sdbusplus::server::match::match _match;
+        sdbusplus::bus::match_t _match;
         sdbusplus::message::message _next;
 };
 

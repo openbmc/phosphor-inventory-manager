@@ -252,7 +252,7 @@ class Manager final :
         SigArgs _sigargs;
 
         /** @brief A container of sdbusplus signal matches.  */
-        std::vector<sdbusplus::server::match::match> _matches;
+        std::vector<sdbusplus::bus::match_t> _matches;
 
         /** @brief Persistent sdbusplus DBus bus connection. */
         sdbusplus::bus::bus _bus;
