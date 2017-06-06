@@ -218,7 +218,7 @@ void Manager::updateInterfaces(
     }
     else if (!signals.empty())
     {
-        // TODO: emit an interfaces added signal
+        _bus.emit_interfaces_added(path.str.c_str(), signals);
     }
 }
 
