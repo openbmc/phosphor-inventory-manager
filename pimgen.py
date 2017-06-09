@@ -506,6 +506,9 @@ class Everything(Renderer):
                     filter(lambda f: f.endswith('.interface.yaml'), files))
 
         for y in yaml_files:
+            # parse only phosphor dbus related interface files
+            if not y.startswith('xyz'):
+                continue
             with open(os.path.join(targetdir, y)) as fd:
                 i = y.replace('.interface.yaml', '').replace(os.sep, '.')
 
