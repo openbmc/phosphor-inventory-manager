@@ -6,6 +6,7 @@ sbin_PROGRAMS = phosphor-inventory
 noinst_LTLIBRARIES = libmanagercommon.la libmanager.la
 
 extra_yamldir=$(YAML_PATH)/extra_interfaces.d
+base_yamldir=$(YAML_PATH)
 
 phosphor_inventory_SOURCES = app.cpp
 phosphor_inventory_LDADD = libmanager.la $(SDBUSPLUS_LIBS)
@@ -40,7 +41,7 @@ PIMGEN_ARGS=-i $(IFACES_PATH)
 endif
 
 generated.cpp:
-	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/pimgen.py $(PIMGEN_ARGS) -d $(extra_yamldir)/.. -o $(builddir) generate-cpp
+	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/pimgen.py $(PIMGEN_ARGS) -d $(base_yamldir) -o $(builddir) generate-cpp
 
 SUBDIRS = . test
 
