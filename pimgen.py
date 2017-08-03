@@ -31,6 +31,23 @@ def cppTypeName(yaml_type):
     return sdbusplus.property.Property(type=yaml_type).cppTypeName
 
 
+class InterfaceComposite(object):
+    '''Compose interface properties.'''
+
+    def __init__(self, dict):
+        self.dict = dict
+
+    def properties(self, interface):
+        return self.dict[interface]
+
+    def interfaces(self):
+        return self.dict.keys()
+
+    def names(self, interface):
+        names = [x["name"] for x in self.dict[interface]]
+        return names
+
+
 class Interface(list):
     '''Provide various interface transformations.'''
 
@@ -479,13 +496,18 @@ class Everything(Renderer):
                     for e in yaml.safe_load(fd.read()).get('events', {}):
                         events.append(e)
 
-        interfaces = Everything.get_interfaces(args.ifacesdir)
-        extra_interfaces = Everything.get_interfaces(
-            os.path.join(args.inputdir, 'extra_interfaces.d'))
+        interfaces, interface_composite = Everything.get_interfaces(
+            args.ifacesdir)
+        extra_interfaces, extra_interface_composite = \
+            Everything.get_interfaces(
+                os.path.join(args.inputdir, 'extra_interfaces.d'))
+        interface_composite.update(extra_interface_composite)
+        interface_composite = InterfaceComposite(interface_composite)
 
         return Everything(
             *events,
-            interfaces=interfaces + extra_interfaces)
+            interfaces=interfaces + extra_interfaces,
+            interface_composite=interface_composite)
 
     @staticmethod
     def get_interfaces(targetdir):
@@ -493,6 +515,7 @@ class Everything(Renderer):
 
         yaml_files = []
         interfaces = []
+        interface_composite = {}
 
         if targetdir and os.path.exists(targetdir):
             for directory, _, files in os.walk(targetdir):
@@ -517,16 +540,19 @@ class Everything(Renderer):
                 parsed = yaml.safe_load(fd.read())
                 if parsed.get('methods', None):
                     continue
-                if not parsed.get('properties', None):
+                properties = parsed.get('properties', None)
+                if not properties:
                     continue
-
+                interface_composite[i] = properties
                 interfaces.append(i)
 
-        return interfaces
+        return interfaces, interface_composite
 
     def __init__(self, *a, **kw):
         self.interfaces = \
             [Interface(x) for x in kw.pop('interfaces', [])]
+        self.interface_composite = \
+            kw.pop('interface_composite', {})
         self.events = [
             self.class_map[x['type']](**x) for x in a]
         super(Everything, self).__init__(**kw)
