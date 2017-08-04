@@ -570,11 +570,23 @@ class Everything(Renderer):
                     interfaces=self.interfaces,
                     indent=Indent()))
 
+    def generate_serialization(self, loader):
+        with open(os.path.join(
+                args.outputdir,
+                'gen_serialization.hpp'), 'w') as fd:
+            fd.write(
+                self.render(
+                    loader,
+                    'gen_serialization.mako.hpp',
+                    interfaces=self.interfaces,
+                    interface_composite=self.interface_composite))
+
 
 if __name__ == '__main__':
     script_dir = os.path.dirname(os.path.realpath(__file__))
     valid_commands = {
         'generate-cpp': 'generate_cpp',
+        'generate-serialization': 'generate_serialization',
     }
 
     parser = argparse.ArgumentParser(
