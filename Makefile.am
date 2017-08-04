@@ -1,4 +1,4 @@
-BUILT_SOURCES=generated.cpp extra_ifaces.cpp
+BUILT_SOURCES=generated.cpp extra_ifaces.cpp gen_serialization.hpp
 
 CLEANFILES=$(BUILT_SOURCES)
 
@@ -41,6 +41,9 @@ endif
 
 generated.cpp:
 	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/pimgen.py $(PIMGEN_ARGS) -d $(extra_yamldir)/.. -o $(builddir) generate-cpp
+
+gen_serialization.hpp:
+	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/pimgen.py $(PIMGEN_ARGS) -d $(extra_yamldir)/.. -o $(builddir) generate-serialization
 
 SUBDIRS = . test
 
