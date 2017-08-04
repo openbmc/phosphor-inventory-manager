@@ -1,4 +1,4 @@
-BUILT_SOURCES=generated.cpp extra_ifaces.cpp
+BUILT_SOURCES=generated.cpp extra_ifaces.cpp gen_serialization.hpp
 CLEANFILES=$(BUILT_SOURCES)
 
 AM_CPPFLAGS = -iquote$(top_srcdir)
@@ -30,5 +30,8 @@ clean-local: clean-extra
 
 generated.cpp:
 	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/pimgen.py -d $(extra_yamldir)/.. -o $(builddir) generate-cpp
+
+gen_serialization.hpp:
+	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/pimgen.py -d $(extra_yamldir)/.. -o $(builddir) generate-serialization
 
 -include Makefile.extra
