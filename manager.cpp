@@ -200,6 +200,8 @@ void Manager::updateInterfaces(
                 auto& assign = std::get<AssignerType>(opsit->second);
                 assign(ifaceit->second, refaceit->second);
             }
+            auto& serialize = std::get<SerializerType>(opsit->second);
+            serialize(path, ifaceit->first, refaceit->second);
         }
         catch (const InterfaceError& e)
         {
