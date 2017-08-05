@@ -76,6 +76,12 @@ AC_DEFINE_UNQUOTED([BUSNAME], ["$BUSNAME"], [The DBus busname to own.])
 AC_DEFINE_UNQUOTED([INVENTORY_ROOT], ["$INVENTORY_ROOT"], [The DBus inventory namespace root.])
 AC_DEFINE_UNQUOTED([IFACE], ["$IFACE"], [The manager DBus interface.])
 
+AC_ARG_VAR(PIM_PERSIST_PATH, [Path of directory housing persisted inventory.])
+AS_IF([test "x$PIM_PERSIST_PATH" == "x"], \
+    [PIM_PERSIST_PATH="/var/lib/phosphor-inventory-manager"])
+AC_DEFINE_UNQUOTED([PIM_PERSIST_PATH], ["$PIM_PERSIST_PATH"], \
+    [Path of directory housing persisted inventory])
+
 # Create configured output
 AC_CONFIG_FILES([Makefile.extra],
     [${srcdir}/generate_makefile.sh $yaml > Makefile.extra],

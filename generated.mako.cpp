@@ -7,6 +7,7 @@
 % for i in interfaces:
 #include <${i.header()}>
 % endfor
+#include "gen_serialization.hpp"
 
 namespace phosphor
 {
@@ -27,7 +28,10 @@ const Manager::Makers Manager::_makers{
                     ${i.namespace()}>>::make,
             MakeInterface<
                 ServerObject<
-                    ${i.namespace()}>>::assign
+                    ${i.namespace()}>>::assign,
+            MakeInterface<
+                ServerObject<
+                    ${i.namespace()}>>::serialize
         )
     },
 % endfor

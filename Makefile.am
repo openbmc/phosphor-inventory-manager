@@ -19,7 +19,8 @@ libmanagercommon_la_SOURCES = \
 libmanagercommon_la_LIBADD = \
 	$(SDBUSPLUS_LIBS) \
 	$(PHOSPHOR_DBUS_INTERFACES_LIBS) \
-	$(PHOSPHOR_LOGGING_LIBS)
+	$(PHOSPHOR_LOGGING_LIBS) \
+	-lstdc++fs
 libmanagercommon_la_CXXFLAGS = \
 	$(SDBUSPLUS_CFLAGS) \
 	$(PHOSPHOR_DBUS_INTERACES_CFLAGS) \
