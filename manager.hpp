@@ -9,6 +9,7 @@
 #include "events.hpp"
 #include "functor.hpp"
 #include "types.hpp"
+#include "serialize.hpp"
 
 namespace phosphor
 {
@@ -84,6 +85,14 @@ struct MakeInterface
             iface.setPropertyByName(
                 p.first, convertVariant<PropertiesVariantType<T>>(p.second));
         }
+    }
+
+    static void serialize(const std::string& path, const std::string& iface,
+                          const any_ns::any& holder)
+    {
+        const auto& object =
+            *any_ns::any_cast<const std::shared_ptr<T> &>(holder);
+        cereal::serialize(path, iface, object);
     }
 };
 
@@ -190,7 +199,10 @@ class Manager final :
                           decltype(MakeInterface<int>::make) >;
         using AssignerType = std::add_pointer_t <
                              decltype(MakeInterface<int>::assign) >;
-        using Makers = std::map<std::string, std::tuple<MakerType, AssignerType>>;
+        using SerializerType = std::add_pointer_t <
+                               decltype(MakeInterface<int>::serialize) >;
+        using Makers = std::map<std::string,
+                           std::tuple<MakerType, AssignerType, SerializerType>>;
 
         /** @brief Provides weak references to interface holders.
          *
