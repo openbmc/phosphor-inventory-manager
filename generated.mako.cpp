@@ -31,7 +31,10 @@ const Manager::Makers Manager::_makers{
                     ${i.namespace()}>>::assign,
             MakeInterface<
                 ServerObject<
-                    ${i.namespace()}>>::serialize
+                    ${i.namespace()}>>::serialize,
+            MakeInterface<
+                ServerObject<
+                    ${i.namespace()}>>::deserialize
         )
     },
 % endfor
