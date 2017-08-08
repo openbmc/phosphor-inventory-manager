@@ -31,4 +31,25 @@ inline void serialize(const Path& path, const Interface& iface, const T& object)
     oarchive(object);
 }
 
+/** @brief Deserialize inventory item
+ *
+ *  @param[in] path - DBus object path
+ *  @param[in] iface - Inventory interface name
+ *  @param[in] object - Object to be serialized
+ */
+template <typename T>
+inline void deserialize(
+    const Path& path, const Interface& iface, T& object)
+{
+    fs::path p(PIM_PERSIST_PATH);
+    p /= path;
+    p /= iface;
+    if (fs::exists(p))
+    {
+        std::ifstream is(p, std::ios::in | std::ios::binary);
+        cereal::JSONInputArchive iarchive(is);
+        iarchive(object);
+    }
+}
+
 } // namespace cereal

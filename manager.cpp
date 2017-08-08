@@ -18,6 +18,7 @@
 #include <chrono>
 #include <algorithm>
 #include <phosphor-logging/log.hpp>
+#include <experimental/filesystem>
 #include "manager.hpp"
 #include "errors.hpp"
 
@@ -103,6 +104,9 @@ Manager::Manager(
     }
 
     _bus.request_name(busname);
+
+    // Restore any persistent inventory
+    restore();
 }
 
 void Manager::shutdown() noexcept
@@ -146,7 +150,8 @@ void Manager::updateInterfaces(
     const sdbusplus::message::object_path& path,
     const Object& interfaces,
     ObjectReferences::iterator pos,
-    bool newObject)
+    bool newObject,
+    bool restoreFromCache)
 {
     auto& refaces = pos->second;
     auto ifaceit = interfaces.cbegin();
@@ -200,8 +205,16 @@ void Manager::updateInterfaces(
                 auto& assign = std::get<AssignerType>(opsit->second);
                 assign(ifaceit->second, refaceit->second);
             }
-            auto& serialize = std::get<SerializerType>(opsit->second);
-            serialize(path, ifaceit->first, refaceit->second);
+            if (!restoreFromCache)
+            {
+                auto& serialize = std::get<SerializerType>(opsit->second);
+                serialize(path, ifaceit->first, refaceit->second);
+            }
+            else
+            {
+                auto& deserialize = std::get<DeserializerType>(opsit->second);
+                deserialize(path, ifaceit->first, refaceit->second);
+            }
         }
         catch (const InterfaceError& e)
         {
@@ -225,7 +238,8 @@ void Manager::updateInterfaces(
 }
 
 void Manager::updateObjects(
-    const std::map<sdbusplus::message::object_path, Object>& objs)
+    const std::map<sdbusplus::message::object_path, Object>& objs,
+    bool restoreFromCache)
 {
     auto objit = objs.cbegin();
     auto refit = _refs.begin();
@@ -255,7 +269,8 @@ void Manager::updateObjects(
             newObj = true;
         }
 
-        updateInterfaces(absPath, objit->second, refit, newObj);
+        updateInterfaces(absPath, objit->second, refit, newObj,
+                         restoreFromCache);
         ++objit;
     }
 }
@@ -329,6 +344,50 @@ const any_ns::any& Manager::getInterfaceHolder(
             "interface was not found");
 
     return iit->second;
+}
+
+void Manager::restore()
+{
+    namespace fs = std::experimental::filesystem;
+
+    if (!fs::exists(fs::path(PIM_PERSIST_PATH)))
+    {
+        return;
+    }
+
+    static const std::string remove =
+        std::string(PIM_PERSIST_PATH) + INVENTORY_ROOT;
+
+    std::map<sdbusplus::message::object_path, Object> objects;
+    for (const auto& dirent :
+         fs::recursive_directory_iterator(PIM_PERSIST_PATH))
+    {
+        const auto& path = dirent.path();
+        if (fs::is_regular_file(path))
+        {
+            auto ifaceName = path.filename().string();
+            auto objPath = path.parent_path().string();
+            objPath.erase(0, remove.length());
+            auto objit = objects.find(objPath);
+            Interface propertyMap{};
+            if (objects.end() != objit)
+            {
+                auto& object = objit->second;
+                object.emplace(std::move(ifaceName), std::move(propertyMap));
+            }
+            else
+            {
+                Object object;
+                object.emplace(std::move(ifaceName), std::move(propertyMap));
+                objects.emplace(std::move(objPath), std::move(object));
+            }
+        }
+    }
+    if (!objects.empty())
+    {
+        auto restoreFromCache = true;
+        updateObjects(objects, restoreFromCache);
+    }
 }
 
 } // namespace manager
