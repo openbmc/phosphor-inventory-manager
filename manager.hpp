@@ -94,6 +94,13 @@ struct MakeInterface
             *any_ns::any_cast<const std::shared_ptr<T> &>(holder);
         cereal::serialize(path, iface, object);
     }
+
+    static void deserialize(const std::string& path, const std::string& iface,
+                            any_ns::any& holder)
+    {
+        auto& object = *any_ns::any_cast<std::shared_ptr<T> &>(holder);
+        cereal::deserialize(path, iface, object);
+    }
 };
 
 /** @class Manager
@@ -152,7 +159,11 @@ class Manager final :
 
         /** @brief Add or update objects on DBus. */
         void updateObjects(
-            const std::map<sdbusplus::message::object_path, Object>& objs);
+            const std::map<sdbusplus::message::object_path, Object>& objs,
+            bool restoreFromCache = false);
+
+        /** @brief Restore persistent inventory items */
+        void restore();
 
         /** @brief Invoke an sdbusplus server binding method.
          *
@@ -201,8 +212,11 @@ class Manager final :
                              decltype(MakeInterface<int>::assign) >;
         using SerializerType = std::add_pointer_t <
                                decltype(MakeInterface<int>::serialize) >;
+        using DeserializerType = std::add_pointer_t <
+                                 decltype(MakeInterface<int>::deserialize) >;
         using Makers = std::map<std::string,
-                           std::tuple<MakerType, AssignerType, SerializerType>>;
+                           std::tuple<MakerType, AssignerType,
+                                      SerializerType, DeserializerType>>;
 
         /** @brief Provides weak references to interface holders.
          *
@@ -249,7 +263,8 @@ class Manager final :
             const sdbusplus::message::object_path& path,
             const Object& interfaces,
             ObjectReferences::iterator pos,
-            bool emitSignals = true);
+            bool emitSignals = true,
+            bool restoreFromCache = false);
 
         /** @brief Provided for testing only. */
         volatile bool _shutdown;
