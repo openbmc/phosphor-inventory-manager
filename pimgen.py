@@ -535,6 +535,16 @@ class Everything(Renderer):
             with open(os.path.join(targetdir, y)) as fd:
                 i = y.replace('.interface.yaml', '').replace(os.sep, '.')
 
+                # xyz.openbmc_project.Association has a property of type
+                # sdbusplus::object_path, which Cereal can't understand. This
+                # type is a wrapper around std::string. Ignore this interface
+                # for now. It's an unused interface anyway. No inventory objects
+                # implement this interface.
+                # TODO via openbmc/openbmc#2123 : figure out how to make Cereal
+                # understand sdbusplus::object_path.
+                if 'xyz.openbmc_project.Association' == i:
+                    continue
+
                 # PIM can't create interfaces with methods.
                 # PIM can't create interfaces without properties.
                 parsed = yaml.safe_load(fd.read())
