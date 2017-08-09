@@ -543,6 +543,16 @@ class Everything(Renderer):
                 properties = parsed.get('properties', None)
                 if not properties:
                     continue
+                # Cereal can't understand the type sdbusplus::object_path. This
+                # type is a wrapper around std::string. Ignore interfaces having
+                # a property of this type for now. The only interface that has a
+                # property of this type now is xyz.openbmc_project.Association,
+                # which is an unused interface. No inventory objects implement
+                # this interface.
+                # TODO via openbmc/openbmc#2123 : figure out how to make Cereal
+                # understand sdbusplus::object_path.
+                if any('path' in p['type'] for p in properties):
+                    continue
                 interface_composite[i] = properties
                 interfaces.append(i)
 
