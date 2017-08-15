@@ -514,12 +514,11 @@ class Everything(Renderer):
 
                 # PIM can't create interfaces with methods.
                 # PIM can't create interfaces without properties.
-                parsed = yaml.safe_load(fd.read())
-                if parsed.get('methods', None):
-                    continue
-                if not parsed.get('properties', None):
-                    continue
-
+                #parsed = yaml.safe_load(fd.read())
+                #if parsed.get('methods', None):
+                #    continue
+                #if not parsed.get('properties', None):
+                #    continue
                 interfaces.append(i)
 
         return interfaces
