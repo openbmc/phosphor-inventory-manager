@@ -87,6 +87,30 @@ struct MakeInterface
     }
 };
 
+/** @struct MakeEmptyInterface
+ *  @brief Adapt an sdbusplus interface proxy.
+ *
+ *  Template instances are builder functions that create
+ *  adapted sdbusplus interface proxy interface objects.
+ *
+ *  @tparam T - The type of the interface being adapted.
+ */
+
+template <typename T>
+struct MakeEmptyInterface
+{
+    static any_ns::any make(
+        sdbusplus::bus::bus& bus,
+        const char* path)
+    {
+        return any_ns::any(std::make_shared<T>(bus, path));
+    }
+
+    static void assign(const Interface& props, any_ns::any& holder)
+    {
+    }
+};
+
 /** @class Manager
  *  @brief OpenBMC inventory manager implementation.
  *
@@ -192,6 +216,14 @@ class Manager final :
                              decltype(MakeInterface<int>::assign) >;
         using Makers = std::map<std::string, std::tuple<MakerType, AssignerType>>;
 
+        // The int instantiations are safe since the signature of these
+        // functions don't change from one instantiation to the next.
+        using EmptyMakerType = std::add_pointer_t <
+                          decltype(MakeEmptyInterface<int>::make) >;
+        using EmptyAssignerType = std::add_pointer_t <
+                             decltype(MakeEmptyInterface<int>::assign) >;
+        using EmptyMakers = std::map<std::string, std::tuple<EmptyMakerType, EmptyAssignerType>>;
+
         /** @brief Provides weak references to interface holders.
          *
          *  Common code for all types for the templated getInterface
@@ -265,6 +297,9 @@ class Manager final :
 
         /** @brief A container of pimgen generated factory methods.  */
         static const Makers _makers;
+
+        /** @brief A container of pimgen generated factory methods.  */
+        static const EmptyMakers _empty_makers;
 };
 
 } // namespace manager

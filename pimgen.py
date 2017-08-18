@@ -479,13 +479,15 @@ class Everything(Renderer):
                     for e in yaml.safe_load(fd.read()).get('events', {}):
                         events.append(e)
 
-        interfaces = Everything.get_interfaces(args.ifacesdir)
-        extra_interfaces = Everything.get_interfaces(
+        interfaces, empty_interfaces = Everything.get_interfaces(args.ifacesdir)
+        extra_interfaces, extra_empty_interfaces = Everything.get_interfaces(
             os.path.join(args.inputdir, 'extra_interfaces.d'))
-
         return Everything(
             *events,
-            interfaces=interfaces + extra_interfaces)
+            interfaces=(list(interfaces) + list(extra_interfaces)),
+            empty_interfaces=list(empty_interfaces) +
+                list(extra_empty_interfaces))
+
 
     @staticmethod
     def get_interfaces(targetdir):
@@ -493,7 +495,7 @@ class Everything(Renderer):
 
         yaml_files = []
         interfaces = []
-
+        empty_interfaces = []
         if targetdir and os.path.exists(targetdir):
             for directory, _, files in os.walk(targetdir):
                 if not files:
@@ -514,18 +516,20 @@ class Everything(Renderer):
 
                 # PIM can't create interfaces with methods.
                 # PIM can't create interfaces without properties.
-                #parsed = yaml.safe_load(fd.read())
-                #if parsed.get('methods', None):
-                #    continue
-                #if not parsed.get('properties', None):
-                #    continue
+                parsed = yaml.safe_load(fd.read())
+                if parsed.get('methods', None):
+                   continue
+                if not parsed.get('properties', None):
+                    empty_interfaces.append(i)
+                    continue;
                 interfaces.append(i)
-
-        return interfaces
+        return interfaces, empty_interfaces
 
     def __init__(self, *a, **kw):
         self.interfaces = \
             [Interface(x) for x in kw.pop('interfaces', [])]
+        self.empty_interfaces = \
+            [Interface(x) for x in kw.pop('empty_interfaces', [])]
         self.events = [
             self.class_map[x['type']](**x) for x in a]
         super(Everything, self).__init__(**kw)
@@ -541,6 +545,7 @@ class Everything(Renderer):
                     'generated.mako.cpp',
                     events=self.events,
                     interfaces=self.interfaces,
+                    empty_interfaces = self.empty_interfaces,
                     indent=Indent()))
 
 

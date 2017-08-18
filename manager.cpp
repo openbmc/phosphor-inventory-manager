@@ -151,13 +151,14 @@ void Manager::updateInterfaces(
     auto& refaces = pos->second;
     auto ifaceit = interfaces.cbegin();
     auto opsit = _makers.cbegin();
+    auto opsitempty = _empty_makers.cbegin();
     auto refaceit = refaces.begin();
     std::vector<std::string> signals;
-
     while (ifaceit != interfaces.cend())
     {
         try
         {
+            bool propertiesInteface = true;
             // Find the binding ops for this interface.
             opsit = std::lower_bound(
                         opsit,
@@ -165,14 +166,25 @@ void Manager::updateInterfaces(
                         ifaceit->first,
                         compareFirst(_makers.key_comp()));
 
+            //check if it is part of the empty interfaces list
             if (opsit == _makers.cend() || opsit->first != ifaceit->first)
             {
-                // This interface is not supported.
-                throw InterfaceError(
-                    "Encountered unsupported interface.",
-                    ifaceit->first);
+                //If not found in properties interfaces check in empty interfaces
+                opsitempty = _empty_makers.cbegin();
+                opsitempty = std::lower_bound(
+                            opsitempty,
+                            _empty_makers.cend(),
+                            ifaceit->first,
+                            compareFirst(_empty_makers.key_comp()));
+                if (opsitempty == _empty_makers.cend() || opsitempty->first != ifaceit->first)
+                {
+                    // This interface is not supported.
+                    throw InterfaceError(
+                        "Encountered unsupported interface.",
+                        ifaceit->first);
+                }
+                propertiesInteface = false;
             }
-
             // Find the binding insertion point or the binding to update.
             refaceit = std::lower_bound(
                            refaceit,
@@ -180,25 +192,50 @@ void Manager::updateInterfaces(
                            ifaceit->first,
                            compareFirst(refaces.key_comp()));
 
-            if (refaceit == refaces.end() || refaceit->first != ifaceit->first)
+            //Interface with properties
+            if (propertiesInteface)
             {
-                // Add the new interface.
-                auto& ctor = std::get<MakerType>(opsit->second);
-                refaceit = refaces.insert(
-                               refaceit,
-                               std::make_pair(
-                                   ifaceit->first,
-                                   ctor(
-                                       _bus,
-                                       path.str.c_str(),
-                                       ifaceit->second)));
-                signals.push_back(ifaceit->first);
+                if (refaceit == refaces.end() ||
+                    refaceit->first != ifaceit->first)
+                {
+
+                    // Add the new interface.
+                    auto& ctor = std::get<MakerType>(opsit->second);
+                    refaceit = refaces.insert(
+                                   refaceit,
+                                   std::make_pair(
+                                       ifaceit->first,
+                                       ctor(
+                                           _bus,
+                                           path.str.c_str(),
+                                           ifaceit->second)));
+                    signals.push_back(ifaceit->first);
+                }
+                else
+                {
+                    // Set the new property values.
+                    auto& assign = std::get<AssignerType>(opsit->second);
+                    assign(ifaceit->second, refaceit->second);
+                }
             }
+            //Empty interfaces
             else
             {
-                // Set the new property values.
-                auto& assign = std::get<AssignerType>(opsit->second);
-                assign(ifaceit->second, refaceit->second);
+                if (refaceit == refaces.end() ||
+                    refaceit->first != ifaceit->first)
+                {
+
+                    // Add the new interface.
+                    auto& ctor = std::get<EmptyMakerType>(opsitempty->second);
+                    refaceit = refaces.insert(
+                                   refaceit,
+                                   std::make_pair(
+                                       ifaceit->first,
+                                       ctor(
+                                           _bus,
+                                           path.str.c_str())));
+                    signals.push_back(ifaceit->first);
+                }
             }
         }
         catch (const InterfaceError& e)
@@ -206,6 +243,7 @@ void Manager::updateInterfaces(
             // Reset the binding ops iterator since we are
             // at the end.
             opsit = _makers.cbegin();
+            opsitempty = _empty_makers.cbegin();
             e.log();
         }
 

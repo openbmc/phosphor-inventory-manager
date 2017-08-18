@@ -7,6 +7,9 @@
 % for i in interfaces:
 #include <${i.header()}>
 % endfor
+% for i in empty_interfaces:
+#include <${i.header()}>
+% endfor
 
 namespace phosphor
 {
@@ -32,7 +35,21 @@ const Manager::Makers Manager::_makers{
     },
 % endfor
 };
-
+const Manager::EmptyMakers Manager::_empty_makers{
+% for i in empty_interfaces:
+    {
+        "${str(i)}",
+        std::make_tuple(
+            MakeEmptyInterface<
+                ServerObject<
+                    ${i.namespace()}>>::make,
+            MakeEmptyInterface<
+                ServerObject<
+                    ${i.namespace()}>>::assign
+        )
+    },
+% endfor
+};
 const Manager::Events Manager::_events{
 % for e in events:
     {
