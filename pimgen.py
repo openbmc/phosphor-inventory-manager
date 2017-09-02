@@ -44,7 +44,10 @@ class InterfaceComposite(object):
         return self.dict.keys()
 
     def names(self, interface):
-        names = [x["name"] for x in self.dict[interface]]
+        self.dict[interface]
+        names = []
+        if self.dict[interface]:
+            names = [x["name"] for x in self.dict[interface]]
         return names
 
 
@@ -279,17 +282,16 @@ class CreateObjects(MethodCall):
                 type='string',
                 decorators=[Literal('string')])
             value_i = []
-
             for interface, properties, in interfaces.iteritems():
                 key_i = TrivialArgument(value=interface, type='string')
                 value_p = []
-
-                for prop, value in properties.iteritems():
-                    key_p = TrivialArgument(value=prop, type='string')
-                    value_v = TrivialArgument(
-                        decorators=[Literal(value.get('type', None))],
-                        **value)
-                    value_p.append(InitializerList(values=[key_p, value_v]))
+                if type(properties) is list:
+                    for prop, value in properties.iteritems():
+                        key_p = TrivialArgument(value=prop, type='string')
+                        value_v = TrivialArgument(
+                            decorators=[Literal(value.get('type', None))],
+                            **value)
+                        value_p.append(InitializerList(values=[key_p, value_v]))
 
                 value_p = InitializerList(values=value_p)
                 value_i.append(InitializerList(values=[key_i, value_p]))
@@ -536,12 +538,8 @@ class Everything(Renderer):
                 i = y.replace('.interface.yaml', '').replace(os.sep, '.')
 
                 # PIM can't create interfaces with methods.
-                # PIM can't create interfaces without properties.
                 parsed = yaml.safe_load(fd.read())
                 if parsed.get('methods', None):
-                    continue
-                properties = parsed.get('properties', None)
-                if not properties:
                     continue
                 # Cereal can't understand the type sdbusplus::object_path. This
                 # type is a wrapper around std::string. Ignore interfaces having
@@ -551,11 +549,12 @@ class Everything(Renderer):
                 # this interface.
                 # TODO via openbmc/openbmc#2123 : figure out how to make Cereal
                 # understand sdbusplus::object_path.
-                if any('path' in p['type'] for p in properties):
-                    continue
+                properties = parsed.get('properties', None)
+                if properties:
+                    if any('path' in p['type'] for p in properties):
+                        continue
                 interface_composite[i] = properties
                 interfaces.append(i)
-
         return interfaces, interface_composite
 
     def __init__(self, *a, **kw):
