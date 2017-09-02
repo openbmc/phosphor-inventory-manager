@@ -34,6 +34,21 @@ inline void serialize(const Path& path, const Interface& iface, const T& object)
     oarchive(object);
 }
 
+/** @brief Serialize inventory item path
+ *  Serializing only path for an empty interface to be consistent
+ *  interfaces.
+ *  @param[in] path - DBus object path
+ *  @param[in] iface - Inventory interface name
+ */
+inline void serialize(const Path& path, const Interface& iface)
+{
+    fs::path p(PIM_PERSIST_PATH);
+    p /= path;
+    fs::create_directories(p);
+    p /= iface;
+    std::ofstream os(p, std::ios::binary);
+}
+
 /** @brief Deserialize inventory item
  *
  *  @param[in] path - DBus object path
