@@ -101,6 +101,40 @@ struct MakeInterface
         auto& object = *any_ns::any_cast<std::shared_ptr<T> &>(holder);
         cereal::deserialize(path, iface, object);
     }
+
+};
+
+/** @struct MakeEmptyInterface
+ *  @brief Adapt an sdbusplus interface proxy.
+ *
+ *  Template instances are builder functions that create
+ *  adapted sdbusplus interface proxy interface objects.
+ *
+ *  @tparam T - The type of the interface being adapted.
+ */
+
+template <typename T>
+struct MakeEmptyInterface
+{
+    static any_ns::any make(
+        sdbusplus::bus::bus& bus,
+        const char* path)
+    {
+        return any_ns::any(std::make_shared<T>(bus, path));
+    }
+
+    static void assign(const Interface& props, any_ns::any& holder)
+    {
+    }
+    static void serialize(const std::string& path, const std::string& iface,
+                          const any_ns::any& holder)
+    {
+    }
+
+    static void deserialize(const std::string& path, const std::string& iface,
+                            any_ns::any& holder)
+    {
+    }
 };
 
 /** @class Manager
@@ -218,6 +252,18 @@ class Manager final :
                            std::tuple<MakerType, AssignerType,
                                       SerializerType, DeserializerType>>;
 
+        using EmptyMakerType = std::add_pointer_t <
+                          decltype(MakeEmptyInterface<int>::make) >;
+        using EmptyAssignerType = std::add_pointer_t <
+                             decltype(MakeEmptyInterface<int>::assign) >;
+        using EmptySerializerType = std::add_pointer_t <
+                               decltype(MakeEmptyInterface<int>::serialize) >;
+        using EmptyDeserializerType = std::add_pointer_t <
+                                 decltype(MakeEmptyInterface<int>::deserialize) >;
+        using EmptyMakers = std::map<std::string,
+                            std::tuple<EmptyMakerType, EmptyAssignerType,
+                                EmptySerializerType, EmptyDeserializerType>>;
+
         /** @brief Provides weak references to interface holders.
          *
          *  Common code for all types for the templated getInterface
@@ -292,6 +338,9 @@ class Manager final :
 
         /** @brief A container of pimgen generated factory methods.  */
         static const Makers _makers;
+
+        /** @brief A container of pimgen generated factory methods.  */
+        static const EmptyMakers _empty_makers;
 };
 
 } // namespace manager
