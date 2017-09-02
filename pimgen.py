@@ -279,17 +279,16 @@ class CreateObjects(MethodCall):
                 type='string',
                 decorators=[Literal('string')])
             value_i = []
-
             for interface, properties, in interfaces.iteritems():
                 key_i = TrivialArgument(value=interface, type='string')
                 value_p = []
-
-                for prop, value in properties.iteritems():
-                    key_p = TrivialArgument(value=prop, type='string')
-                    value_v = TrivialArgument(
-                        decorators=[Literal(value.get('type', None))],
-                        **value)
-                    value_p.append(InitializerList(values=[key_p, value_v]))
+                if type(properties) is list:
+                    for prop, value in properties.iteritems():
+                        key_p = TrivialArgument(value=prop, type='string')
+                        value_v = TrivialArgument(
+                            decorators=[Literal(value.get('type', None))],
+                            **value)
+                        value_p.append(InitializerList(values=[key_p, value_v]))
 
                 value_p = InitializerList(values=value_p)
                 value_i.append(InitializerList(values=[key_i, value_p]))
@@ -496,9 +495,9 @@ class Everything(Renderer):
                     for e in yaml.safe_load(fd.read()).get('events', {}):
                         events.append(e)
 
-        interfaces, interface_composite = Everything.get_interfaces(
-            args.ifacesdir)
-        extra_interfaces, extra_interface_composite = \
+        interfaces, interface_composite, empty_interfaces = \
+            Everything.get_interfaces(args.ifacesdir)
+        extra_interfaces, extra_interface_composite, extra_empty_interfaces = \
             Everything.get_interfaces(
                 os.path.join(args.inputdir, 'extra_interfaces.d'))
         interface_composite.update(extra_interface_composite)
@@ -507,7 +506,8 @@ class Everything(Renderer):
         return Everything(
             *events,
             interfaces=interfaces + extra_interfaces,
-            interface_composite=interface_composite)
+            interface_composite=interface_composite,
+            empty_interfaces = list(empty_interfaces) + list(extra_empty_interfaces))
 
     @staticmethod
     def get_interfaces(targetdir):
@@ -516,7 +516,7 @@ class Everything(Renderer):
         yaml_files = []
         interfaces = []
         interface_composite = {}
-
+        empty_interfaces = []
         if targetdir and os.path.exists(targetdir):
             for directory, _, files in os.walk(targetdir):
                 if not files:
@@ -542,6 +542,7 @@ class Everything(Renderer):
                     continue
                 properties = parsed.get('properties', None)
                 if not properties:
+                    empty_interfaces.append(i)
                     continue
                 # Cereal can't understand the type sdbusplus::object_path. This
                 # type is a wrapper around std::string. Ignore interfaces having
@@ -556,13 +557,15 @@ class Everything(Renderer):
                 interface_composite[i] = properties
                 interfaces.append(i)
 
-        return interfaces, interface_composite
+        return interfaces, interface_composite, empty_interfaces
 
     def __init__(self, *a, **kw):
         self.interfaces = \
             [Interface(x) for x in kw.pop('interfaces', [])]
         self.interface_composite = \
             kw.pop('interface_composite', {})
+        self.empty_interfaces = \
+            [Interface(x) for x in kw.pop('empty_interfaces', [])]
         self.events = [
             self.class_map[x['type']](**x) for x in a]
         super(Everything, self).__init__(**kw)
@@ -578,6 +581,7 @@ class Everything(Renderer):
                     'generated.mako.cpp',
                     events=self.events,
                     interfaces=self.interfaces,
+                    empty_interfaces = self.empty_interfaces,
                     indent=Indent()))
 
     def generate_serialization(self, loader):
