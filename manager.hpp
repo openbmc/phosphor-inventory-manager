@@ -10,6 +10,7 @@
 #include "functor.hpp"
 #include "types.hpp"
 #include "serialize.hpp"
+#include <iostream>
 
 namespace phosphor
 {
@@ -45,6 +46,92 @@ struct PropertiesVariant<T, typename std::enable_if<std::is_object<T>::value>::t
 template <typename T>
 using PropertiesVariantType = typename PropertiesVariant<T>::Type;
 
+template <typename T, typename U = int>
+struct HasProperties : std::false_type
+{
+};
+
+template <typename T>
+struct HasProperties <T,
+                decltype((void) std::declval<typename T::PropertiesVariant>(), 0)> :
+            std::true_type
+{
+};
+
+template <typename T, std::enable_if_t<HasProperties<T>::value, bool> = true>
+any_ns::any propMake(
+        sdbusplus::bus::bus& bus, const char* path, const Interface& props)
+{
+    using InterfaceVariant =
+        std::map<std::string, PropertiesVariantType<T>>;
+
+    InterfaceVariant v;
+    for (const auto& p : props)
+    {
+        v.emplace(
+            p.first,
+            convertVariant<PropertiesVariantType<T>>(p.second));
+    }
+
+    return any_ns::any(std::make_shared<T>(bus, path, v));
+}
+
+template <typename T, std::enable_if_t<!HasProperties<T>::value, bool> = false>
+any_ns::any propMake(
+        sdbusplus::bus::bus& bus, const char* path, const Interface& props)
+{
+    return any_ns::any(std::make_shared<T>(bus, path));
+}
+
+template <typename T, std::enable_if_t<HasProperties<T>::value, bool> = true>
+void propAssign(const Interface& props, any_ns::any& holder)
+{
+    auto& iface = *any_ns::any_cast<std::shared_ptr<T> &>(holder);
+    for (const auto& p : props)
+    {
+        iface.setPropertyByName(
+            p.first, convertVariant<PropertiesVariantType<T>>(p.second));
+    }
+}
+
+template <typename T, std::enable_if_t<!HasProperties<T>::value, bool> = false>
+void propAssign(const Interface& props, any_ns::any& holder)
+{
+}
+
+template <typename T, std::enable_if_t<HasProperties<T>::value, bool> = true>
+void propSerialize(
+        const std::string& path, const std::string& iface,
+        const any_ns::any& holder)
+{
+    const auto& object =
+        *any_ns::any_cast<const std::shared_ptr<T> &>(holder);
+    cereal::serialize(path, iface, object);
+}
+
+template <typename T, std::enable_if_t<!HasProperties<T>::value, bool> = false>
+void propSerialize(
+        const std::string& path, const std::string& iface,
+        const any_ns::any& holder)
+{
+    cereal::serialize(path, iface);
+}
+
+template <typename T, std::enable_if_t<HasProperties<T>::value, bool> = true>
+void propDeSerialize(
+        const std::string& path, const std::string& iface, any_ns::any& holder)
+{
+    auto& object = *any_ns::any_cast<std::shared_ptr<T> &>(holder);
+    cereal::deserialize(path, iface, object);
+}
+
+template <typename T, std::enable_if_t<!HasProperties<T>::value, bool> = false>
+void propDeSerialize(
+        const std::string& path, const std::string& iface, any_ns::any& holder)
+{
+}
+
+
 /** @struct MakeInterface
  *  @brief Adapt an sdbusplus interface proxy.
  *
@@ -58,49 +145,30 @@ template <typename T>
 struct MakeInterface
 {
     static any_ns::any make(
-        sdbusplus::bus::bus& bus,
-        const char* path,
-        const Interface& props)
+        sdbusplus::bus::bus& bus, const char* path, const Interface& props)
     {
-        using InterfaceVariant =
-            std::map<std::string, PropertiesVariantType<T>>;
-
-        InterfaceVariant v;
-
-        for (const auto& p : props)
-        {
-            v.emplace(
-                p.first,
-                convertVariant<PropertiesVariantType<T>>(p.second));
-        }
-
-        return any_ns::any(std::make_shared<T>(bus, path, v));
+        std::cout << "MakeInterface::make path  "<< path << "size=" << props.size() << std::endl;
+        return propMake<T>(bus, path, props);
     }
 
     static void assign(const Interface& props, any_ns::any& holder)
     {
-        auto& iface = *any_ns::any_cast<std::shared_ptr<T> &>(holder);
-        for (const auto& p : props)
-        {
-            iface.setPropertyByName(
-                p.first, convertVariant<PropertiesVariantType<T>>(p.second));
-        }
+        propAssign<T>(props, holder);
     }
 
-    static void serialize(const std::string& path, const std::string& iface,
-                          const any_ns::any& holder)
+    static void serialize(
+        const std::string& path, const std::string& iface,
+        const any_ns::any& holder)
     {
-        const auto& object =
-            *any_ns::any_cast<const std::shared_ptr<T> &>(holder);
-        cereal::serialize(path, iface, object);
+        propSerialize<T>(path, iface, holder);
     }
 
-    static void deserialize(const std::string& path, const std::string& iface,
-                            any_ns::any& holder)
+    static void deserialize(
+        const std::string& path, const std::string& iface, any_ns::any& holder)
     {
-        auto& object = *any_ns::any_cast<std::shared_ptr<T> &>(holder);
-        cereal::deserialize(path, iface, object);
+        propDeSerialize<T>(path, iface, holder);
     }
+
 };
 
 /** @class Manager

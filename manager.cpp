@@ -21,6 +21,7 @@
 #include <experimental/filesystem>
 #include "manager.hpp"
 #include "errors.hpp"
+#include <iostream>
 
 using namespace std::literals::chrono_literals;
 
@@ -169,12 +170,13 @@ void Manager::updateInterfaces(
                         _makers.cend(),
                         ifaceit->first,
                         compareFirst(_makers.key_comp()));
+            std::cout << "DEVENDER Manager::updateInterfaces opsitfirst " << opsit->first<< std::endl;
 
             if (opsit == _makers.cend() || opsit->first != ifaceit->first)
             {
                 // This interface is not supported.
                 throw InterfaceError(
-                    "Encountered unsupported interface.",
+                    "DEVENDER Encountered unsupported interface.",
                     ifaceit->first);
             }
 
@@ -187,6 +189,7 @@ void Manager::updateInterfaces(
 
             if (refaceit == refaces.end() || refaceit->first != ifaceit->first)
             {
+                std::cout << "DEVENDER Manager::updateInterfaces add signals " << opsit->first<< std::endl;
                 // Add the new interface.
                 auto& ctor = std::get<MakerType>(opsit->second);
                 refaceit = refaces.insert(
@@ -229,10 +232,12 @@ void Manager::updateInterfaces(
 
     if (newObject)
     {
+        std::cout << "DEVENDER Manager::updateInterfaces new objects added " << path.str.c_str()<< std::endl;
         _bus.emit_object_added(path.str.c_str());
     }
     else if (!signals.empty())
     {
+        std::cout << "DEVENDER Manager::updateInterfaces signals is not empty " << path.str.c_str()<< std::endl;
         _bus.emit_interfaces_added(path.str.c_str(), signals);
     }
 }
@@ -363,10 +368,12 @@ void Manager::restore()
          fs::recursive_directory_iterator(PIM_PERSIST_PATH))
     {
         const auto& path = dirent.path();
+        std::cout << "DEVENDER restore path " << path << std::endl;
         if (fs::is_regular_file(path))
         {
             auto ifaceName = path.filename().string();
             auto objPath = path.parent_path().string();
+            std::cout << "DEVENDER ifaceName=" << ifaceName << " objPath=" << objPath << std::endl;
             objPath.erase(0, remove.length());
             auto objit = objects.find(objPath);
             Interface propertyMap{};
