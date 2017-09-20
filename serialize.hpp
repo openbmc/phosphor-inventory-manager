@@ -5,6 +5,8 @@
 #include <fstream>
 #include "config.h"
 
+#include <phosphor-logging/log.hpp>
+
 namespace cereal
 {
 
@@ -12,6 +14,7 @@ namespace fs = std::experimental::filesystem;
 
 using Path = std::string;
 using Interface = std::string;
+using namespace phosphor::logging;
 
 /** @brief Serialize inventory item
  *
@@ -44,11 +47,19 @@ inline void deserialize(
     fs::path p(PIM_PERSIST_PATH);
     p /= path;
     p /= iface;
-    if (fs::exists(p))
+    try
     {
-        std::ifstream is(p, std::ios::in | std::ios::binary);
-        cereal::JSONInputArchive iarchive(is);
-        iarchive(object);
+        if (fs::exists(p))
+        {
+            std::ifstream is(p, std::ios::in | std::ios::binary);
+            cereal::JSONInputArchive iarchive(is);
+            iarchive(object);
+        }
+    }
+    catch(cereal::Exception& e)
+    {
+        log<level::ERR>(e.what());
+        fs::remove(p);
     }
 }
 
