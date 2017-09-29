@@ -4,8 +4,14 @@
 
 #include <cereal/types/string.hpp>
 #include <cereal/types/vector.hpp>
+#include "config.h"
 % for iface in interfaces:
 #include <${iface.header()}>
+% endfor
+
+% for iface in interfaces:
+<% properties = interface_composite.names(str(iface)) %>\
+CEREAL_CLASS_VERSION(${iface.namespace()}, CLASS_VERSION);
 % endfor
 
 namespace cereal
@@ -15,7 +21,8 @@ namespace cereal
 <% properties = interface_composite.names(str(iface)) %>\
 template<class Archive>
 void save(Archive& a,
-          const ${iface.namespace()}& object)
+          const ${iface.namespace()}& object,
+          const std::uint32_t version)
 {
 <%
     props = ["object." + p[:1].lower() + p[1:] + "()" for p in properties]
@@ -27,7 +34,8 @@ void save(Archive& a,
 
 template<class Archive>
 void load(Archive& a,
-          ${iface.namespace()}& object)
+          ${iface.namespace()}& object,
+          const std::uint32_t version)
 {
 % for p in properties:
 <% t = "object." + p[:1].lower() + p[1:] + "()" %>\

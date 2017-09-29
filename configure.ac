@@ -82,6 +82,10 @@ AS_IF([test "x$PIM_PERSIST_PATH" == "x"], \
 AC_DEFINE_UNQUOTED([PIM_PERSIST_PATH], ["$PIM_PERSIST_PATH"], \
     [Path of directory housing persisted inventory])
 
+AC_ARG_VAR(CLASS_VERSION, [Class version to register with Cereal])
+AS_IF([test "x$CLASS_VERSION" == "x"], [CLASS_VERSION=1])
+AC_DEFINE_UNQUOTED([CLASS_VERSION], [$CLASS_VERSION], [Class version to register with Cereal])
+
 # Create configured output
 AC_CONFIG_FILES([Makefile.extra],
     [${srcdir}/generate_makefile.sh $yaml > Makefile.extra],
