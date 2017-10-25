@@ -14,7 +14,7 @@ class Manager;
 /** @struct Event
  *  @brief Event object interface.
  *
- *  The event base is an assocation of an event type
+ *  The event base is an association of an event type
  *  and an array of filter callbacks.
  */
 struct Event : public std::vector<Filter>
