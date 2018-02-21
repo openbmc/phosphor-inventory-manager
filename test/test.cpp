@@ -244,7 +244,7 @@ void runTests()
         b.call(m);
 
         auto sig{queue.pop()};
-        assert(sig);
+        assert(static_cast<bool>(sig));
         sdbusplus::message::object_path signalPath;
         Object signalObjectType;
         sig.read(signalPath);
@@ -317,7 +317,7 @@ void runTests()
             {
                 std::vector<std::string> interfaces;
                 auto sig{queue.pop()};
-                assert(sig);
+                assert(static_cast<bool>(sig));
                 sig.read(sigpath);
                 assert(sigpath == deleteMeThree);
                 sig.read(interfaces);
@@ -386,7 +386,7 @@ void runTests()
             {
                 std::vector<std::string> interfaces;
                 auto sig{queue.pop()};
-                assert(sig);
+                assert(static_cast<bool>(sig));
                 sig.read(sigpath);
                 assert(sigpath == deleteMeOne);
                 sig.read(interfaces);
@@ -396,7 +396,7 @@ void runTests()
             {
                 std::vector<std::string> interfaces;
                 auto sig{queue.pop()};
-                assert(sig);
+                assert(static_cast<bool>(sig));
                 sig.read(sigpath);
                 assert(sigpath == deleteMeTwo);
                 sig.read(interfaces);
@@ -424,7 +424,7 @@ void runTests()
             {
                 std::vector<std::string> interfaces;
                 auto sig{queue.pop()};
-                assert(sig);
+                assert(static_cast<bool>(sig));
                 sig.read(sigpath);
                 assert(sigpath == deleteMeThree);
                 sig.read(interfaces);
@@ -498,14 +498,14 @@ void runTests()
             b.call(m);
             {
                 auto sig{queue.pop()};
-                assert(sig);
+                assert(static_cast<bool>(sig));
                 sig.read(signalPath);
                 assert(createMe1 == signalPath.str);
                 sig.read(signalObject);
             }
             {
                 auto sig{queue.pop()};
-                assert(sig);
+                assert(static_cast<bool>(sig));
                 sig.read(signalPath);
                 assert(createMe2 == signalPath.str);
                 sig.read(signalObject);
