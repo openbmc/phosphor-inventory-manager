@@ -11,8 +11,7 @@ namespace manager
  *
  *  @tparam V - The desired variant type.
  */
-template <typename V>
-struct MakeVariantVisitor
+template <typename V> struct MakeVariantVisitor
 {
     /** @struct Make
      *  @brief Return variant visitor.
@@ -21,8 +20,7 @@ struct MakeVariantVisitor
      *  @tparam Arg - The type being visited in the source variant.
      *  @tparam Enable - Overload resolution removal.
      */
-    template <typename T, typename Arg, typename Enable = void>
-    struct Make
+    template <typename T, typename Arg, typename Enable = void> struct Make
     {
         static auto make(Arg&& arg)
         {
@@ -38,8 +36,9 @@ struct MakeVariantVisitor
      *  struct Make specialization if Arg is in T (int -> variant<int, char>).
      */
     template <typename T, typename Arg>
-    struct Make<T, Arg,
-               typename std::enable_if<std::is_convertible<Arg, T>::value>::type>
+    struct Make<
+        T, Arg,
+        typename std::enable_if<std::is_convertible<Arg, T>::value>::type>
     {
         static auto make(Arg&& arg)
         {
@@ -48,8 +47,7 @@ struct MakeVariantVisitor
     };
 
     /** @brief Make variant visitor.  */
-    template <typename Arg>
-    auto operator()(Arg&& arg) const
+    template <typename Arg> auto operator()(Arg&& arg) const
     {
         return Make<V, Arg>::make(arg);
     }
@@ -63,11 +61,10 @@ struct MakeVariantVisitor
  *  @param[in] v - The source variant.
  *  @returns - The converted variant.
  */
-template <typename V, typename Arg>
-auto convertVariant(Arg&& v)
+template <typename V, typename Arg> auto convertVariant(Arg&& v)
 {
     return sdbusplus::message::variant_ns::apply_visitor(
-               MakeVariantVisitor<V>(), v);
+        MakeVariantVisitor<V>(), v);
 }
 
 /** @struct CompareFirst
@@ -78,14 +75,15 @@ auto convertVariant(Arg&& v)
  *
  *  @tparam Compare - The function object type being adapted.
  */
-template <typename Compare>
-struct CompareFirst
+template <typename Compare> struct CompareFirst
 {
     /** @brief Construct a CompareFirst adapter.
      *
      *  @param[in] c - The function object being adapted.
      */
-    explicit CompareFirst(Compare&& c) : compare(std::forward<Compare>(c)) {}
+    explicit CompareFirst(Compare&& c) : compare(std::forward<Compare>(c))
+    {
+    }
 
     /** @brief Compare two pairs adapter.
      *
@@ -100,7 +98,8 @@ struct CompareFirst
      *  @returns - The result of the comparison.
      */
     template <typename L1, typename L2, typename R1, typename R2>
-    bool operator()(const std::pair<L1, L2>& l, const std::pair<R1, R2>& r) const
+    bool operator()(const std::pair<L1, L2>& l,
+                    const std::pair<R1, R2>& r) const
     {
         return compare(l.first, r.first);
     }
@@ -144,8 +143,7 @@ struct CompareFirst
 };
 
 /* @brief Implicit template instantation wrapper for CompareFirst. */
-template <typename Compare>
-CompareFirst<Compare> compareFirst(Compare&& c)
+template <typename Compare> CompareFirst<Compare> compareFirst(Compare&& c)
 {
     return CompareFirst<Compare>(std::forward<Compare>(c));
 }
@@ -159,7 +157,9 @@ struct RelPathCompare
      *
      *  @param[in] p - The prefix to check for and remove.
      */
-    explicit RelPathCompare(const char* p) : prefix(p) {}
+    explicit RelPathCompare(const char* p) : prefix(p)
+    {
+    }
 
     /** @brief Check for the prefix and remove if found.
      *

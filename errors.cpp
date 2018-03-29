@@ -25,8 +25,7 @@ namespace manager
 void InterfaceError::log() const
 {
     logging::log<logging::level::ERR>(
-        what(),
-        phosphor::logging::entry("INTERFACE=%s", interface));
+        what(), phosphor::logging::entry("INTERFACE=%s", interface));
 }
 } // namespace manager
 } // namespace inventory

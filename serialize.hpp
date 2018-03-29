@@ -56,8 +56,7 @@ inline void serialize(const Path& path, const Interface& iface)
  *  @param[in] object - Object to be serialized
  */
 template <typename T>
-inline void deserialize(
-    const Path& path, const Interface& iface, T& object)
+inline void deserialize(const Path& path, const Interface& iface, T& object)
 {
     fs::path p(PIM_PERSIST_PATH);
     p /= path;
@@ -71,7 +70,7 @@ inline void deserialize(
             iarchive(object);
         }
     }
-    catch(cereal::Exception& e)
+    catch (cereal::Exception& e)
     {
         log<level::ERR>(e.what());
         fs::remove(p);

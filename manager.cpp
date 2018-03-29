@@ -43,11 +43,8 @@ auto _signal(sd_bus_message* m, void* data, sd_bus_error* e) noexcept
         auto& args = *static_cast<Manager::SigArg*>(data);
         sd_bus_message_ref(m);
         auto& mgr = *std::get<0>(args);
-        mgr.handleEvent(
-            msg,
-            static_cast<const DbusSignal&>(
-                *std::get<1>(args)),
-            *std::get<2>(args));
+        mgr.handleEvent(msg, static_cast<const DbusSignal&>(*std::get<1>(args)),
+                        *std::get<2>(args));
     }
     catch (const std::exception& e)
     {
@@ -57,49 +54,34 @@ auto _signal(sd_bus_message* m, void* data, sd_bus_error* e) noexcept
     return 0;
 }
 
-Manager::Manager(
-    sdbusplus::bus::bus&& bus,
-    const char* busname,
-    const char* root,
-    const char* iface) :
+Manager::Manager(sdbusplus::bus::bus&& bus, const char* busname,
+                 const char* root, const char* iface) :
     ServerObject<ManagerIface>(bus, root),
-    _shutdown(false),
-    _root(root),
-    _bus(std::move(bus)),
-    _manager(_bus, root)
+    _shutdown(false), _root(root), _bus(std::move(bus)), _manager(_bus, root)
 {
     for (auto& group : _events)
     {
-        for (auto pEvent : std::get<std::vector<EventBasePtr>>(
-                 group))
+        for (auto pEvent : std::get<std::vector<EventBasePtr>>(group))
         {
-            if (pEvent->type !=
-                Event::Type::DBUS_SIGNAL)
+            if (pEvent->type != Event::Type::DBUS_SIGNAL)
             {
                 continue;
             }
 
             // Create a callback context for this event group.
-            auto dbusEvent = static_cast<DbusSignal*>(
-                                 pEvent.get());
+            auto dbusEvent = static_cast<DbusSignal*>(pEvent.get());
 
             // Go ahead and store an iterator pointing at
             // the event data to avoid lookups later since
             // additional signal callbacks aren't added
             // after the manager is constructed.
             _sigargs.emplace_back(
-                std::make_unique<SigArg>(
-                    this,
-                    dbusEvent,
-                    &group));
+                std::make_unique<SigArg>(this, dbusEvent, &group));
 
             // Register our callback and the context for
             // each signal event.
-            _matches.emplace_back(
-                _bus,
-                dbusEvent->signature,
-                _signal,
-                _sigargs.back().get());
+            _matches.emplace_back(_bus, dbusEvent->signature, _signal,
+                                  _sigargs.back().get());
         }
     }
 
@@ -121,11 +103,9 @@ void Manager::run() noexcept
     // Run startup events.
     for (auto& group : _events)
     {
-        for (auto pEvent : std::get<std::vector<EventBasePtr>>(
-                 group))
+        for (auto pEvent : std::get<std::vector<EventBasePtr>>(group))
         {
-            if (pEvent->type ==
-                Event::Type::STARTUP)
+            if (pEvent->type == Event::Type::STARTUP)
             {
                 handleEvent(unusedMsg, *pEvent, group);
             }
@@ -146,12 +126,10 @@ void Manager::run() noexcept
     }
 }
 
-void Manager::updateInterfaces(
-    const sdbusplus::message::object_path& path,
-    const Object& interfaces,
-    ObjectReferences::iterator pos,
-    bool newObject,
-    bool restoreFromCache)
+void Manager::updateInterfaces(const sdbusplus::message::object_path& path,
+                               const Object& interfaces,
+                               ObjectReferences::iterator pos, bool newObject,
+                               bool restoreFromCache)
 {
     auto& refaces = pos->second;
     auto ifaceit = interfaces.cbegin();
@@ -164,39 +142,28 @@ void Manager::updateInterfaces(
         try
         {
             // Find the binding ops for this interface.
-            opsit = std::lower_bound(
-                        opsit,
-                        _makers.cend(),
-                        ifaceit->first,
-                        compareFirst(_makers.key_comp()));
+            opsit = std::lower_bound(opsit, _makers.cend(), ifaceit->first,
+                                     compareFirst(_makers.key_comp()));
 
             if (opsit == _makers.cend() || opsit->first != ifaceit->first)
             {
                 // This interface is not supported.
-                throw InterfaceError(
-                    "Encountered unsupported interface.",
-                    ifaceit->first);
+                throw InterfaceError("Encountered unsupported interface.",
+                                     ifaceit->first);
             }
 
             // Find the binding insertion point or the binding to update.
-            refaceit = std::lower_bound(
-                           refaceit,
-                           refaces.end(),
-                           ifaceit->first,
-                           compareFirst(refaces.key_comp()));
+            refaceit = std::lower_bound(refaceit, refaces.end(), ifaceit->first,
+                                        compareFirst(refaces.key_comp()));
 
             if (refaceit == refaces.end() || refaceit->first != ifaceit->first)
             {
                 // Add the new interface.
                 auto& ctor = std::get<MakerType>(opsit->second);
                 refaceit = refaces.insert(
-                               refaceit,
-                               std::make_pair(
-                                   ifaceit->first,
-                                   ctor(
-                                       _bus,
-                                       path.str.c_str(),
-                                       ifaceit->second)));
+                    refaceit,
+                    std::make_pair(ifaceit->first, ctor(_bus, path.str.c_str(),
+                                                        ifaceit->second)));
                 signals.push_back(ifaceit->first);
             }
             else
@@ -249,11 +216,8 @@ void Manager::updateObjects(
     while (objit != objs.cend())
     {
         // Find the insertion point or the object to update.
-        refit = std::lower_bound(
-                    refit,
-                    _refs.end(),
-                    objit->first,
-                    compareFirst(RelPathCompare(_root)));
+        refit = std::lower_bound(refit, _refs.end(), objit->first,
+                                 compareFirst(RelPathCompare(_root)));
 
         absPath.assign(_root);
         absPath.append(objit->first);
@@ -262,10 +226,7 @@ void Manager::updateObjects(
         if (refit == _refs.end() || refit->first != absPath)
         {
             refit = _refs.insert(
-                        refit,
-                        std::make_pair(
-                            absPath,
-                            decltype(_refs)::mapped_type()));
+                refit, std::make_pair(absPath, decltype(_refs)::mapped_type()));
             newObj = true;
         }
 
@@ -280,10 +241,8 @@ void Manager::notify(std::map<sdbusplus::message::object_path, Object> objs)
     updateObjects(objs);
 }
 
-void Manager::handleEvent(
-    sdbusplus::message::message& msg,
-    const Event& event,
-    const EventInfo& info)
+void Manager::handleEvent(sdbusplus::message::message& msg, const Event& event,
+                          const EventInfo& info)
 {
     auto& actions = std::get<1>(info);
 
@@ -300,8 +259,7 @@ void Manager::handleEvent(
     }
 }
 
-void Manager::destroyObjects(
-    const std::vector<const char*>& paths)
+void Manager::destroyObjects(const std::vector<const char*>& paths)
 {
     std::string p;
 
@@ -320,28 +278,25 @@ void Manager::createObjects(
     updateObjects(objs);
 }
 
-any_ns::any& Manager::getInterfaceHolder(
-    const char* path, const char* interface)
+any_ns::any& Manager::getInterfaceHolder(const char* path,
+                                         const char* interface)
 {
     return const_cast<any_ns::any&>(
-               const_cast<const Manager*>(
-                   this)->getInterfaceHolder(path, interface));
+        const_cast<const Manager*>(this)->getInterfaceHolder(path, interface));
 }
 
-const any_ns::any& Manager::getInterfaceHolder(
-    const char* path, const char* interface) const
+const any_ns::any& Manager::getInterfaceHolder(const char* path,
+                                               const char* interface) const
 {
     std::string p{path};
     auto oit = _refs.find(_root + p);
     if (oit == _refs.end())
-        throw std::runtime_error(
-            _root + p + " was not found");
+        throw std::runtime_error(_root + p + " was not found");
 
     auto& obj = oit->second;
     auto iit = obj.find(interface);
     if (iit == obj.end())
-        throw std::runtime_error(
-            "interface was not found");
+        throw std::runtime_error("interface was not found");
 
     return iit->second;
 }

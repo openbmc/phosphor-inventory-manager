@@ -24,8 +24,7 @@ class Manager;
  *
  *  @tparam T - The type of the action being adapted.
  */
-template <typename T>
-auto make_action(T&& action)
+template <typename T> auto make_action(T&& action)
 {
     return Action(std::forward<T>(action));
 }
@@ -39,8 +38,7 @@ auto make_action(T&& action)
  *
  *  @tparam T - The type of the filter being adapted.
  */
-template <typename T>
-auto make_filter(T&& filter)
+template <typename T> auto make_filter(T&& filter)
 {
     return Filter(std::forward<T>(filter));
 }
@@ -54,14 +52,13 @@ auto make_filter(T&& filter)
  *
  *  @tparam T - The type of the functor being adapted.
  */
-template <typename T>
-auto make_path_condition(T&& condition)
+template <typename T> auto make_path_condition(T&& condition)
 {
     return PathCondition(std::forward<T>(condition));
 }
 
-template <typename T, typename ...Args>
-auto callArrayWithStatus(T&& container, Args&& ...args)
+template <typename T, typename... Args>
+auto callArrayWithStatus(T&& container, Args&&... args)
 {
     for (auto f : container)
     {
@@ -77,12 +74,10 @@ namespace functor
 {
 
 /** @brief Destroy objects action.  */
-inline auto destroyObjects(
-    std::vector<const char*>&& paths,
-    std::vector<PathCondition>&& conditions)
+inline auto destroyObjects(std::vector<const char*>&& paths,
+                           std::vector<PathCondition>&& conditions)
 {
-    return [ = ](auto & b, auto & m)
-    {
+    return [=](auto& b, auto& m) {
         for (const auto& p : paths)
         {
             if (callArrayWithStatus(conditions, p, b, m))
@@ -94,13 +89,10 @@ inline auto destroyObjects(
 }
 
 /** @brief Create objects action.  */
-inline auto createObjects(
-    std::map<sdbusplus::message::object_path, Object>&& objs)
+inline auto
+    createObjects(std::map<sdbusplus::message::object_path, Object>&& objs)
 {
-    return [ = ](auto&, auto & m)
-    {
-        m.createObjects(objs);
-    };
+    return [=](auto&, auto& m) { m.createObjects(objs); };
 }
 
 /** @brief Set a property action.
@@ -123,27 +115,24 @@ inline auto createObjects(
  *      to the requested value.
  */
 template <typename T, typename U, typename V>
-auto setProperty(
-    std::vector<const char*>&& paths,
-    std::vector<PathCondition>&& conditions,
-    const char* iface,
-    U&& member,
-    V&& value)
+auto setProperty(std::vector<const char*>&& paths,
+                 std::vector<PathCondition>&& conditions, const char* iface,
+                 U&& member, V&& value)
 {
     // The manager is the only parameter passed to actions.
     // Bind the path, interface, interface member function pointer,
     // and value to a lambda.  When it is called, forward the
     // path, interface and value on to the manager member function.
-    return [paths, conditions = conditions, iface,
-                   member,
-                   value = std::forward<V>(value)](auto & b, auto & m)
+    return [
+        paths, conditions = conditions, iface, member,
+        value = std::forward<V>(value)
+    ](auto& b, auto& m)
     {
         for (auto p : paths)
         {
             if (callArrayWithStatus(conditions, p, b, m))
             {
-                m.template invokeMethod<T>(
-                    p, iface, member, value);
+                m.template invokeMethod<T>(p, iface, member, value);
             }
         }
     };
@@ -155,57 +144,53 @@ auto setProperty(
  *  @tparam T - The type of the property being tested.
  *  @tparam U - The type of the condition checking functor.
  */
-template <typename T, typename U>
-struct PropertyChangedCondition
+template <typename T, typename U> struct PropertyChangedCondition
 {
-        PropertyChangedCondition() = delete;
-        ~PropertyChangedCondition() = default;
-        PropertyChangedCondition(const PropertyChangedCondition&) = default;
-        PropertyChangedCondition& operator=(const PropertyChangedCondition&) = default;
-        PropertyChangedCondition(PropertyChangedCondition&&) = default;
-        PropertyChangedCondition& operator=(PropertyChangedCondition&&) = default;
-        PropertyChangedCondition(const char* iface, const char* property,
-                                 U&& condition) :
-            _iface(iface),
-            _property(property),
-            _condition(std::forward<U>(condition)) { }
+    PropertyChangedCondition() = delete;
+    ~PropertyChangedCondition() = default;
+    PropertyChangedCondition(const PropertyChangedCondition&) = default;
+    PropertyChangedCondition&
+        operator=(const PropertyChangedCondition&) = default;
+    PropertyChangedCondition(PropertyChangedCondition&&) = default;
+    PropertyChangedCondition& operator=(PropertyChangedCondition&&) = default;
+    PropertyChangedCondition(const char* iface, const char* property,
+                             U&& condition) :
+        _iface(iface),
+        _property(property), _condition(std::forward<U>(condition))
+    {
+    }
 
-        /** @brief Test a property value.
-         *
-         * Extract the property from the PropertiesChanged
-         * message and run the condition test.
-         */
-        bool operator()(
-            sdbusplus::bus::bus&,
-            sdbusplus::message::message& msg,
-            Manager&) const
+    /** @brief Test a property value.
+     *
+     * Extract the property from the PropertiesChanged
+     * message and run the condition test.
+     */
+    bool operator()(sdbusplus::bus::bus&, sdbusplus::message::message& msg,
+                    Manager&) const
+    {
+        std::map<std::string, sdbusplus::message::variant<T>> properties;
+        const char* iface = nullptr;
+
+        msg.read(iface);
+        if (!iface || strcmp(iface, _iface))
         {
-            std::map <
-            std::string,
-                sdbusplus::message::variant<T >> properties;
-            const char* iface = nullptr;
-
-            msg.read(iface);
-            if (!iface || strcmp(iface, _iface))
-            {
-                return false;
-            }
-
-            msg.read(properties);
-            auto it = properties.find(_property);
-            if (it == properties.cend())
-            {
-                return false;
-            }
-
-            return _condition(
-                       std::forward<T>(it->second.template get<T>()));
+            return false;
         }
 
-    private:
-        const char* _iface;
-        const char* _property;
-        U _condition;
+        msg.read(properties);
+        auto it = properties.find(_property);
+        if (it == properties.cend())
+        {
+            return false;
+        }
+
+        return _condition(std::forward<T>(it->second.template get<T>()));
+    }
+
+  private:
+    const char* _iface;
+    const char* _property;
+    U _condition;
 };
 
 /** @struct PropertyConditionBase
@@ -216,63 +201,55 @@ struct PropertyChangedCondition
  */
 struct PropertyConditionBase
 {
-        PropertyConditionBase() = delete;
-        virtual ~PropertyConditionBase() = default;
-        PropertyConditionBase(const PropertyConditionBase&) = default;
-        PropertyConditionBase& operator=(const PropertyConditionBase&) = default;
-        PropertyConditionBase(PropertyConditionBase&&) = default;
-        PropertyConditionBase& operator=(PropertyConditionBase&&) = default;
+    PropertyConditionBase() = delete;
+    virtual ~PropertyConditionBase() = default;
+    PropertyConditionBase(const PropertyConditionBase&) = default;
+    PropertyConditionBase& operator=(const PropertyConditionBase&) = default;
+    PropertyConditionBase(PropertyConditionBase&&) = default;
+    PropertyConditionBase& operator=(PropertyConditionBase&&) = default;
 
-        /** @brief Constructor
-         *
-         *  The service argument can be nullptr.  If something
-         *  else is provided the function will call the the
-         *  service directly.  If omitted, the function will
-         *  look up the service in the ObjectMapper.
-         *
-         *  @param path - The path of the object containing
-         *     the property to be tested.
-         *  @param iface - The interface hosting the property
-         *     to be tested.
-         *  @param property - The property to be tested.
-         *  @param service - The DBus service hosting the object.
-         */
-        PropertyConditionBase(
-            const char* path,
-            const char* iface,
-            const char* property,
-            const char* service) :
-            _path(path ? path : std::string()),
-            _iface(iface),
-            _property(property),
-            _service(service) {}
+    /** @brief Constructor
+     *
+     *  The service argument can be nullptr.  If something
+     *  else is provided the function will call the the
+     *  service directly.  If omitted, the function will
+     *  look up the service in the ObjectMapper.
+     *
+     *  @param path - The path of the object containing
+     *     the property to be tested.
+     *  @param iface - The interface hosting the property
+     *     to be tested.
+     *  @param property - The property to be tested.
+     *  @param service - The DBus service hosting the object.
+     */
+    PropertyConditionBase(const char* path, const char* iface,
+                          const char* property, const char* service) :
+        _path(path ? path : std::string()),
+        _iface(iface), _property(property), _service(service)
+    {
+    }
 
-        /** @brief Forward comparison to type specific implementation. */
-        virtual bool eval(sdbusplus::message::message&) const = 0;
+    /** @brief Forward comparison to type specific implementation. */
+    virtual bool eval(sdbusplus::message::message&) const = 0;
 
-        /** @brief Test a property value.
-         *
-         * Make a DBus call and test the value of any property.
-         */
-        bool operator()(
-            sdbusplus::bus::bus&,
-            sdbusplus::message::message&,
-            Manager&) const;
+    /** @brief Test a property value.
+     *
+     * Make a DBus call and test the value of any property.
+     */
+    bool operator()(sdbusplus::bus::bus&, sdbusplus::message::message&,
+                    Manager&) const;
 
-        /** @brief Test a property value.
-         *
-         * Make a DBus call and test the value of any property.
-         */
-        bool operator()(
-            const std::string&,
-            sdbusplus::bus::bus&,
-            Manager&) const;
+    /** @brief Test a property value.
+     *
+     * Make a DBus call and test the value of any property.
+     */
+    bool operator()(const std::string&, sdbusplus::bus::bus&, Manager&) const;
 
-    private:
-        std::string _path;
-        std::string _iface;
-        std::string _property;
-        const char* _service;
+  private:
+    std::string _path;
+    std::string _iface;
+    std::string _property;
+    const char* _service;
 };
 
 /** @struct PropertyCondition
@@ -284,85 +261,75 @@ struct PropertyConditionBase
 template <typename T, typename U>
 struct PropertyCondition final : public PropertyConditionBase
 {
-        PropertyCondition() = delete;
-        ~PropertyCondition() = default;
-        PropertyCondition(const PropertyCondition&) = default;
-        PropertyCondition& operator=(const PropertyCondition&) = default;
-        PropertyCondition(PropertyCondition&&) = default;
-        PropertyCondition& operator=(PropertyCondition&&) = default;
+    PropertyCondition() = delete;
+    ~PropertyCondition() = default;
+    PropertyCondition(const PropertyCondition&) = default;
+    PropertyCondition& operator=(const PropertyCondition&) = default;
+    PropertyCondition(PropertyCondition&&) = default;
+    PropertyCondition& operator=(PropertyCondition&&) = default;
 
-        /** @brief Constructor
-         *
-         *  The service argument can be nullptr.  If something
-         *  else is provided the function will call the the
-         *  service directly.  If omitted, the function will
-         *  look up the service in the ObjectMapper.
-         *
-         *  @param path - The path of the object containing
-         *     the property to be tested.
-         *  @param iface - The interface hosting the property
-         *     to be tested.
-         *  @param property - The property to be tested.
-         *  @param condition - The test to run on the property.
-         *  @param service - The DBus service hosting the object.
-         */
-        PropertyCondition(
-            const char* path,
-            const char* iface,
-            const char* property,
-            U&& condition,
-            const char* service) :
-            PropertyConditionBase(path, iface, property, service),
-            _condition(std::forward<decltype(condition)>(condition)) {}
+    /** @brief Constructor
+     *
+     *  The service argument can be nullptr.  If something
+     *  else is provided the function will call the the
+     *  service directly.  If omitted, the function will
+     *  look up the service in the ObjectMapper.
+     *
+     *  @param path - The path of the object containing
+     *     the property to be tested.
+     *  @param iface - The interface hosting the property
+     *     to be tested.
+     *  @param property - The property to be tested.
+     *  @param condition - The test to run on the property.
+     *  @param service - The DBus service hosting the object.
+     */
+    PropertyCondition(const char* path, const char* iface, const char* property,
+                      U&& condition, const char* service) :
+        PropertyConditionBase(path, iface, property, service),
+        _condition(std::forward<decltype(condition)>(condition))
+    {
+    }
 
-        /** @brief Test a property value.
-         *
-         * Make a DBus call and test the value of any property.
-         */
-        bool eval(sdbusplus::message::message& msg) const override
-        {
-            sdbusplus::message::variant<T> value;
-            msg.read(value);
-            return _condition(
-                       std::forward<T>(value.template get<T>()));
-        }
+    /** @brief Test a property value.
+     *
+     * Make a DBus call and test the value of any property.
+     */
+    bool eval(sdbusplus::message::message& msg) const override
+    {
+        sdbusplus::message::variant<T> value;
+        msg.read(value);
+        return _condition(std::forward<T>(value.template get<T>()));
+    }
 
-    private:
-        U _condition;
+  private:
+    U _condition;
 };
 
-/** @brief Implicit type deduction for constructing PropertyChangedCondition.  */
+/** @brief Implicit type deduction for constructing PropertyChangedCondition. */
 template <typename T>
-auto propertyChangedTo(
-    const char* iface,
-    const char* property,
-    T&& val)
+auto propertyChangedTo(const char* iface, const char* property, T&& val)
 {
     auto condition = [val = std::forward<T>(val)](T && arg)
     {
         return arg == val;
     };
     using U = decltype(condition);
-    return PropertyChangedCondition<T, U>(
-               iface, property, std::move(condition));
+    return PropertyChangedCondition<T, U>(iface, property,
+                                          std::move(condition));
 }
 
 /** @brief Implicit type deduction for constructing PropertyCondition.  */
 template <typename T>
-auto propertyIs(
-    const char* path,
-    const char* iface,
-    const char* property,
-    T&& val,
-    const char* service = nullptr)
+auto propertyIs(const char* path, const char* iface, const char* property,
+                T&& val, const char* service = nullptr)
 {
     auto condition = [val = std::forward<T>(val)](T && arg)
     {
         return arg == val;
     };
     using U = decltype(condition);
-    return PropertyCondition<T, U>(
-               path, iface, property, std::move(condition), service);
+    return PropertyCondition<T, U>(path, iface, property, std::move(condition),
+                                   service);
 }
 } // namespace functor
 } // namespace manager

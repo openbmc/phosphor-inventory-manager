@@ -36,10 +36,10 @@ struct Event : public std::vector<Filter>
      *  @param[in] filters - An array of filter callbacks.
      *  @param[in] t - The event type.
      */
-    explicit Event(
-        const std::vector<Filter>& filters, Type t = Type::STARTUP) :
-        std::vector<Filter>(filters),
-        type(t) {}
+    explicit Event(const std::vector<Filter>& filters, Type t = Type::STARTUP) :
+        std::vector<Filter>(filters), type(t)
+    {
+    }
 
     /** @brief event class enumeration. */
     Type type;
@@ -70,8 +70,9 @@ struct DbusSignal final : public Event
      *     match callback filtering functions.
      */
     DbusSignal(const char* sig, const std::vector<Filter>& filters) :
-        Event(filters, Type::DBUS_SIGNAL),
-        signature(sig) {}
+        Event(filters, Type::DBUS_SIGNAL), signature(sig)
+    {
+    }
 
     const char* signature;
 };

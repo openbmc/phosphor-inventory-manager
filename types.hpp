@@ -20,8 +20,7 @@ namespace any_ns = std::experimental;
 using InterfaceVariantType =
     sdbusplus::message::variant<bool, int64_t, std::string>;
 
-template <typename T>
-using InterfaceType = std::map<std::string, T>;
+template <typename T> using InterfaceType = std::map<std::string, T>;
 
 template <typename T>
 using ObjectType = std::map<std::string, InterfaceType<T>>;
@@ -29,11 +28,11 @@ using ObjectType = std::map<std::string, InterfaceType<T>>;
 using Interface = InterfaceType<InterfaceVariantType>;
 using Object = ObjectType<InterfaceVariantType>;
 
-using Action = std::function<void (sdbusplus::bus::bus&, Manager&)>;
-using Filter = std::function <
-               bool (sdbusplus::bus::bus&, sdbusplus::message::message&, Manager&) >;
-using PathCondition = std::function <
-                      bool (const std::string&, sdbusplus::bus::bus&, Manager&) >;
+using Action = std::function<void(sdbusplus::bus::bus&, Manager&)>;
+using Filter = std::function<bool(sdbusplus::bus::bus&,
+                                  sdbusplus::message::message&, Manager&)>;
+using PathCondition =
+    std::function<bool(const std::string&, sdbusplus::bus::bus&, Manager&)>;
 } // namespace manager
 } // namespace inventory
 } // namespace phosphor

@@ -24,19 +24,16 @@ namespace manager
 {
 namespace functor
 {
-bool PropertyConditionBase::operator()(
-    sdbusplus::bus::bus& bus,
-    sdbusplus::message::message&,
-    Manager& mgr) const
+bool PropertyConditionBase::operator()(sdbusplus::bus::bus& bus,
+                                       sdbusplus::message::message&,
+                                       Manager& mgr) const
 {
     std::string path(_path);
     return (*this)(path, bus, mgr);
 }
 
-bool PropertyConditionBase::operator()(
-    const std::string& path,
-    sdbusplus::bus::bus& bus,
-    Manager&) const
+bool PropertyConditionBase::operator()(const std::string& path,
+                                       sdbusplus::bus::bus& bus, Manager&) const
 {
     std::string host;
 
@@ -47,10 +44,9 @@ bool PropertyConditionBase::operator()(
     else
     {
         auto mapperCall = bus.new_method_call(
-                              "xyz.openbmc_project.ObjectMapper",
-                              "/xyz/openbmc_project/object_mapper",
-                              "xyz.openbmc_project.ObjectMapper",
-                              "GetObject");
+            "xyz.openbmc_project.ObjectMapper",
+            "/xyz/openbmc_project/object_mapper",
+            "xyz.openbmc_project.ObjectMapper", "GetObject");
         mapperCall.append(path);
         mapperCall.append(std::vector<std::string>({_iface}));
 
@@ -77,10 +73,7 @@ bool PropertyConditionBase::operator()(
         }
     }
     auto hostCall = bus.new_method_call(
-                        host.c_str(),
-                        path.c_str(),
-                        "org.freedesktop.DBus.Properties",
-                        "Get");
+        host.c_str(), path.c_str(), "org.freedesktop.DBus.Properties", "Get");
     hostCall.append(_iface);
     hostCall.append(_property);
 
