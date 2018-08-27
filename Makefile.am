@@ -10,7 +10,7 @@ base_yamldir=$(YAML_PATH)
 
 phosphor_inventory_SOURCES = app.cpp
 phosphor_inventory_LDADD = libmanager.la $(SDBUSPLUS_LIBS)
-phosphor_inventory_CXXFLAGS = $(SDBUSPLUS_CFLAGS)
+phosphor_inventory_CXXFLAGS = $(SDBUSPLUS_CFLAGS) -flto
 
 libmanagercommon_la_LDFLAGS = -static
 libmanagercommon_la_SOURCES = \
