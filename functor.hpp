@@ -57,6 +57,21 @@ template <typename T> auto make_path_condition(T&& condition)
     return PathCondition(std::forward<T>(condition));
 }
 
+/** @brief make_get_property
+ *
+ *  Adapt a get_property function object.
+ *
+ *  @param[in] method - The functor being adapted.
+ *  @returns - The adapted functor.
+ *
+ *  @tparam T - The return type of the function object.
+ *  @tparam U - The type of the functor being adapted.
+ */
+template <typename T, typename U> auto make_get_property(U&& method)
+{
+    return GetProperty<T>(std::forward<U>(method));
+}
+
 template <typename T, typename... Args>
 auto callArrayWithStatus(T&& container, Args&&... args)
 {
@@ -132,6 +147,31 @@ auto setProperty(std::vector<const char*>&& paths,
                 m.template invokeMethod<T>(p, iface, member, value);
             }
         }
+    };
+}
+
+/** @brief Get a property.
+ *
+ *  Invoke the requested method with a reference to the requested
+ *  sdbusplus server binding interface as a parameter.
+ *
+ *  @tparam T - The sdbusplus server binding interface type.
+ *  @tparam U - The type of the sdbusplus server binding member
+ *      function that sets the property.
+ *
+ *  @param[in] path - The DBus path to get the property from.
+ *  @param[in] iface - The DBus interface hosting the property.
+ *  @param[in] member - Pointer to sdbusplus server binding member.
+ *  @param[in] prop - The property name to get the value from.
+ *
+ *  @returns - A function object that gets the requested property.
+ */
+template <typename T, typename U>
+inline auto getProperty(const char* path, const char* iface, U&& member,
+                        const char* prop)
+{
+    return [path, iface, member, prop](auto& mgr) {
+        return mgr.template invokeMethod<T>(path, iface, member, prop);
     };
 }
 
@@ -229,6 +269,9 @@ struct PropertyConditionBase
     /** @brief Forward comparison to type specific implementation. */
     virtual bool eval(sdbusplus::message::message&) const = 0;
 
+    /** @brief Forward comparison to type specific implementation. */
+    virtual bool eval(Manager&) const = 0;
+
     /** @brief Test a property value.
      *
      * Make a DBus call and test the value of any property.
@@ -254,8 +297,9 @@ struct PropertyConditionBase
  *
  *  @tparam T - The type of the property being tested.
  *  @tparam U - The type of the condition checking functor.
+ *  @tparam V - The getProperty functor return type.
  */
-template <typename T, typename U>
+template <typename T, typename U, typename V>
 struct PropertyCondition final : public PropertyConditionBase
 {
     PropertyCondition() = delete;
@@ -267,10 +311,14 @@ struct PropertyCondition final : public PropertyConditionBase
 
     /** @brief Constructor
      *
-     *  The service argument can be nullptr.  If something
-     *  else is provided the function will call the the
+     *  The service & getProperty arguments can be nullptrs.
+     *  If something else is provided the function will call the the
      *  service directly.  If omitted, the function will
      *  look up the service in the ObjectMapper.
+     *  The getProperty function will be called to retrieve a property
+     *  value when given and the property is hosted by inventory manager.
+     *  When not given, the condition will default to return that the
+     *  condition failed and will not be executed.
      *
      *  @param path - The path of the object containing
      *     the property to be tested.
@@ -279,11 +327,15 @@ struct PropertyCondition final : public PropertyConditionBase
      *  @param property - The property to be tested.
      *  @param condition - The test to run on the property.
      *  @param service - The DBus service hosting the object.
+     *  @param getProperty - The function to get a property value
+     *     for the condition.
      */
     PropertyCondition(const char* path, const char* iface, const char* property,
-                      U&& condition, const char* service) :
+                      U&& condition, const char* service,
+                      GetProperty<V>&& getProperty = nullptr) :
         PropertyConditionBase(path, iface, property, service),
-        _condition(std::forward<decltype(condition)>(condition))
+        _condition(std::forward<decltype(condition)>(condition)),
+        _getProperty(getProperty)
     {
     }
 
@@ -298,8 +350,26 @@ struct PropertyCondition final : public PropertyConditionBase
         return _condition(std::forward<T>(value.template get<T>()));
     }
 
+    /** @brief Retrieve a property value from inventory and test it.
+     *
+     *  Get a property from the inventory manager and test the value.
+     *  Default to fail the test where no function is given to get the
+     *  property from the inventory manager.
+     */
+    bool eval(Manager& mgr) const override
+    {
+        if (_getProperty)
+        {
+            auto variant = _getProperty(mgr);
+            auto value = sdbusplus::message::variant_ns::get<T>(variant);
+            return _condition(std::forward<T>(value));
+        }
+        return false;
+    }
+
   private:
     U _condition;
+    GetProperty<V> _getProperty;
 };
 
 /** @brief Implicit type deduction for constructing PropertyChangedCondition. */
@@ -315,16 +385,18 @@ auto propertyChangedTo(const char* iface, const char* property, T&& val)
 }
 
 /** @brief Implicit type deduction for constructing PropertyCondition.  */
-template <typename T>
+template <typename T, typename V = InterfaceVariantType>
 auto propertyIs(const char* path, const char* iface, const char* property,
-                T&& val, const char* service = nullptr)
+                T&& val, const char* service = nullptr,
+                GetProperty<V>&& getProperty = nullptr)
 {
     auto condition = [val = std::forward<T>(val)](T&& arg) {
         return arg == val;
     };
     using U = decltype(condition);
-    return PropertyCondition<T, U>(path, iface, property, std::move(condition),
-                                   service);
+    return PropertyCondition<T, U, V>(path, iface, property,
+                                      std::move(condition), service,
+                                      std::move(getProperty));
 }
 } // namespace functor
 } // namespace manager

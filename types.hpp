@@ -33,6 +33,7 @@ using Filter = std::function<bool(sdbusplus::bus::bus&,
                                   sdbusplus::message::message&, Manager&)>;
 using PathCondition =
     std::function<bool(const std::string&, sdbusplus::bus::bus&, Manager&)>;
+template <typename T> using GetProperty = std::function<T(Manager&)>;
 } // namespace manager
 } // namespace inventory
 } // namespace phosphor
