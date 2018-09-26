@@ -217,6 +217,12 @@ class Manager final : public ServerObject<ManagerIface>
     /** @brief Restore persistent inventory items */
     void restore();
 
+    /** @brief Get inventory manager's bus name */
+    inline const auto& getBusName()
+    {
+        return _busName;
+    };
+
     /** @brief Invoke an sdbusplus server binding method.
      *
      *  Invoke the requested method with a reference to the requested
@@ -336,6 +342,9 @@ class Manager final : public ServerObject<ManagerIface>
 
     /** @brief A container of pimgen generated factory methods.  */
     static const Makers _makers;
+
+    /** @brief Inventory manager's bus name. */
+    const char* _busName;
 };
 
 } // namespace manager
