@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 #include "functor.hpp"
+#include "manager.hpp"
 #include <sdbusplus/bus.hpp>
 
 namespace phosphor
@@ -33,7 +34,8 @@ bool PropertyConditionBase::operator()(sdbusplus::bus::bus& bus,
 }
 
 bool PropertyConditionBase::operator()(const std::string& path,
-                                       sdbusplus::bus::bus& bus, Manager&) const
+                                       sdbusplus::bus::bus& bus,
+                                       Manager& mgr) const
 {
     std::string host;
 
@@ -65,13 +67,16 @@ bool PropertyConditionBase::operator()(const std::string& path,
         }
 
         host = mapperResponse.begin()->first;
-
-        if (host == bus.get_unique_name())
-        {
-            // TODO I can't call myself here.
-            return false;
-        }
     }
+
+    // When the host service name is inventory manager, eval using
+    // a given `getProperty` function to retrieve a property value from
+    // an interface hosted by inventory manager.
+    if (host == mgr.getBusName())
+    {
+        return eval(mgr);
+    }
+
     auto hostCall = bus.new_method_call(
         host.c_str(), path.c_str(), "org.freedesktop.DBus.Properties", "Get");
     hostCall.append(_iface);

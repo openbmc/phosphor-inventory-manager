@@ -57,7 +57,8 @@ auto _signal(sd_bus_message* m, void* data, sd_bus_error* e) noexcept
 Manager::Manager(sdbusplus::bus::bus&& bus, const char* busname,
                  const char* root, const char* iface) :
     ServerObject<ManagerIface>(bus, root),
-    _shutdown(false), _root(root), _bus(std::move(bus)), _manager(_bus, root)
+    _shutdown(false), _root(root), _bus(std::move(bus)), _manager(_bus, root),
+    _busName(busname)
 {
     for (auto& group : _events)
     {
@@ -98,19 +99,8 @@ void Manager::shutdown() noexcept
 
 void Manager::run() noexcept
 {
+    bool startup = true;
     sdbusplus::message::message unusedMsg{nullptr};
-
-    // Run startup events.
-    for (auto& group : _events)
-    {
-        for (auto pEvent : std::get<std::vector<EventBasePtr>>(group))
-        {
-            if (pEvent->type == Event::Type::STARTUP)
-            {
-                handleEvent(unusedMsg, *pEvent, group);
-            }
-        }
-    }
 
     while (!_shutdown)
     {
@@ -118,6 +108,27 @@ void Manager::run() noexcept
         {
             _bus.process_discard();
             _bus.wait((5000000us).count());
+
+            // Inventory manager will not service a mapper lookup to itself
+            // until after the 5sec wait. Happens when no `service` is defined
+            // in the startup event. Providing inventory manager's service name
+            // allows the event to process.
+            if (startup)
+            {
+                // Run startup events.
+                for (auto& group : _events)
+                {
+                    for (auto pEvent :
+                         std::get<std::vector<EventBasePtr>>(group))
+                    {
+                        if (pEvent->type == Event::Type::STARTUP)
+                        {
+                            handleEvent(unusedMsg, *pEvent, group);
+                        }
+                    }
+                }
+                startup = false;
+            }
         }
         catch (const std::exception& e)
         {
