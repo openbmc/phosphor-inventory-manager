@@ -78,8 +78,19 @@ events:
 
     - name: startup event example
       description: >
-          Create /createme3 at startup.
+          Create /createme3 at startup if ExampleProperty1 on /changeme
+          equals changed.
       type: startup
+      filters:
+          - name: propertyIs
+            path: /changeme
+            interface: xyz.openbmc_project.Example.Iface1
+            property: ExampleProperty1
+            value:
+                value: changed
+                type: string
+            dbusMember: "sdbusplus::xyz::openbmc_project::Example::\
+                server::Iface1"
       actions:
           - name: createObjects
             objs:
