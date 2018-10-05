@@ -26,6 +26,10 @@ from sdbusplus.namedelement import NamedElement
 from sdbusplus.renderer import Renderer
 
 
+# Global busname for use within classes where necessary
+busname = "xyz.openbmc_project.Inventory.Manager"
+
+
 def cppTypeName(yaml_type):
     ''' Convert yaml types to cpp types.'''
     return sdbusplus.property.Property(type=yaml_type).cppTypeName
@@ -269,6 +273,14 @@ class PathCondition(MethodCall):
         super(PathCondition, self).__init__(**kw)
 
 
+class GetProperty(MethodCall):
+    '''Convenience type for getting inventory properties'''
+
+    def __init__(self, **kw):
+        kw['name'] = 'make_get_property'
+        super(GetProperty, self).__init__(**kw)
+
+
 class CreateObjects(MethodCall):
     '''Assemble a createObjects functor.'''
 
@@ -388,8 +400,10 @@ class PropertyIs(MethodCall):
             path = TrivialArgument(value=path, type='string')
 
         args.append(path)
-        args.append(TrivialArgument(value=kw.pop('interface'), type='string'))
-        args.append(TrivialArgument(value=kw.pop('property'), type='string'))
+        iface = TrivialArgument(value=kw.pop('interface'), type='string')
+        args.append(iface)
+        prop = TrivialArgument(value=kw.pop('property'), type='string')
+        args.append(prop)
         args.append(TrivialArgument(
             decorators=[
                 Literal(kw['value'].get('type', None))], **kw.pop('value')))
@@ -397,6 +411,34 @@ class PropertyIs(MethodCall):
         service = kw.pop('service', None)
         if service:
             args.append(TrivialArgument(value=service, type='string'))
+
+        dbusMember = kw.pop('dbusMember', None)
+        if dbusMember:
+            # Inventory manager's service name is required
+            if not service or service != busname:
+                args.append(TrivialArgument(value=busname, type='string'))
+
+            gpArgs = []
+            gpArgs.append(path)
+            gpArgs.append(iface)
+            # Prepend '&' and append 'getPropertyByName' function on dbusMember
+            gpArgs.append(TrivialArgument(
+                value='&'+dbusMember+'::getPropertyByName'))
+            gpArgs.append(prop)
+            fArg = MethodCall(
+                name='getProperty',
+                namespace=['functor'],
+                templates=[Template(
+                    name=dbusMember,
+                    namespace=[])],
+                args=gpArgs)
+
+            # Append getProperty functor
+            args.append(GetProperty(
+                templates=[Template(
+                    name=dbusMember+'::PropertiesVariant',
+                    namespace=[])],
+                    args=[fArg]))
 
         kw['args'] = args
         kw['namespace'] = ['functor']
@@ -505,6 +547,8 @@ class Everything(Renderer):
                 os.path.join(args.inputdir, 'extra_interfaces.d'))
         interface_composite.update(extra_interface_composite)
         interface_composite = InterfaceComposite(interface_composite)
+        # Update busname if configured differenly than the default
+        busname = args.busname
 
         return Everything(
             *events,
@@ -612,6 +656,10 @@ if __name__ == '__main__':
         '-d', '--dir', dest='inputdir',
         default=os.path.join(script_dir, 'example'),
         help='Location of files to process.')
+    parser.add_argument(
+        '-b', '--bus-name', dest='busname',
+        default='xyz.openbmc_project.Inventory.Manager',
+        help='Inventory manager busname.')
     parser.add_argument(
         'command', metavar='COMMAND', type=str,
         choices=valid_commands.keys(),
