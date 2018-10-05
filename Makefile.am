@@ -43,11 +43,12 @@ endif
 
 generated.cpp:
 	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/pimgen.py $(PIMGEN_ARGS) -d \
-		$(base_yamldir) -o $(builddir) generate-cpp
+		$(base_yamldir) -o $(builddir) -b $(BUSNAME) generate-cpp
 
 gen_serialization.hpp:
 	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/pimgen.py $(PIMGEN_ARGS) -d \
-		$(base_yamldir) -o $(builddir) generate-serialization
+		$(base_yamldir) -o $(builddir) -b $(BUSNAME) \
+		generate-serialization
 
 SUBDIRS = . test
 
