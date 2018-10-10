@@ -123,11 +123,8 @@ auto setProperty(std::vector<const char*>&& paths,
     // Bind the path, interface, interface member function pointer,
     // and value to a lambda.  When it is called, forward the
     // path, interface and value on to the manager member function.
-    return [
-        paths, conditions = conditions, iface, member,
-        value = std::forward<V>(value)
-    ](auto& b, auto& m)
-    {
+    return [paths, conditions = conditions, iface, member,
+            value = std::forward<V>(value)](auto& b, auto& m) {
         for (auto p : paths)
         {
             if (callArrayWithStatus(conditions, p, b, m))
@@ -309,8 +306,7 @@ struct PropertyCondition final : public PropertyConditionBase
 template <typename T>
 auto propertyChangedTo(const char* iface, const char* property, T&& val)
 {
-    auto condition = [val = std::forward<T>(val)](T && arg)
-    {
+    auto condition = [val = std::forward<T>(val)](T&& arg) {
         return arg == val;
     };
     using U = decltype(condition);
@@ -323,8 +319,7 @@ template <typename T>
 auto propertyIs(const char* path, const char* iface, const char* property,
                 T&& val, const char* service = nullptr)
 {
-    auto condition = [val = std::forward<T>(val)](T && arg)
-    {
+    auto condition = [val = std::forward<T>(val)](T&& arg) {
         return arg == val;
     };
     using U = decltype(condition);
