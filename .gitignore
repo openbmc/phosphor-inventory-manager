@@ -4,6 +4,8 @@
 *.sw*
 phosphor-inventory
 generated.cpp
+gen_serialization.hpp
+test/gen_serialization.hpp
 xyz.openbmc_project.Example.*.cpp
 xyz/openbmc_project/Example/
 Makefile
