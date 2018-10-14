@@ -1,10 +1,10 @@
 #pragma once
 
-#include <map>
-#include <string>
-#include <sdbusplus/message.hpp>
 #include <experimental/any>
 #include <functional>
+#include <map>
+#include <sdbusplus/message.hpp>
+#include <string>
 
 namespace phosphor
 {
@@ -20,7 +20,8 @@ namespace any_ns = std::experimental;
 using InterfaceVariantType =
     sdbusplus::message::variant<bool, int64_t, std::string>;
 
-template <typename T> using InterfaceType = std::map<std::string, T>;
+template <typename T>
+using InterfaceType = std::map<std::string, T>;
 
 template <typename T>
 using ObjectType = std::map<std::string, InterfaceType<T>>;

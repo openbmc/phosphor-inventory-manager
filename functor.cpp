@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 #include "functor.hpp"
+
 #include <sdbusplus/bus.hpp>
 
 namespace phosphor

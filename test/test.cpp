@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "manager.hpp"
 #include "config.h"
-#include <cassert>
-#include <iostream>
-#include <algorithm>
-#include <thread>
-#include <chrono>
+
+#include "manager.hpp"
 #include "xyz/openbmc_project/Example/Iface1/server.hpp"
 #include "xyz/openbmc_project/Example/Iface2/server.hpp"
+
+#include <algorithm>
+#include <cassert>
+#include <chrono>
+#include <iostream>
+#include <thread>
 
 using namespace std::literals::chrono_literals;
 using namespace std::literals::string_literals;

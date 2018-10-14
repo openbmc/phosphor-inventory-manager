@@ -11,7 +11,8 @@ namespace manager
  *
  *  @tparam V - The desired variant type.
  */
-template <typename V> struct MakeVariantVisitor
+template <typename V>
+struct MakeVariantVisitor
 {
     /** @struct Make
      *  @brief Return variant visitor.
@@ -20,7 +21,8 @@ template <typename V> struct MakeVariantVisitor
      *  @tparam Arg - The type being visited in the source variant.
      *  @tparam Enable - Overload resolution removal.
      */
-    template <typename T, typename Arg, typename Enable = void> struct Make
+    template <typename T, typename Arg, typename Enable = void>
+    struct Make
     {
         static auto make(Arg&& arg)
         {
@@ -47,7 +49,8 @@ template <typename V> struct MakeVariantVisitor
     };
 
     /** @brief Make variant visitor.  */
-    template <typename Arg> auto operator()(Arg&& arg) const
+    template <typename Arg>
+    auto operator()(Arg&& arg) const
     {
         return Make<V, Arg>::make(arg);
     }
@@ -61,7 +64,8 @@ template <typename V> struct MakeVariantVisitor
  *  @param[in] v - The source variant.
  *  @returns - The converted variant.
  */
-template <typename V, typename Arg> auto convertVariant(Arg&& v)
+template <typename V, typename Arg>
+auto convertVariant(Arg&& v)
 {
     return sdbusplus::message::variant_ns::apply_visitor(
         MakeVariantVisitor<V>(), v);
@@ -75,7 +79,8 @@ template <typename V, typename Arg> auto convertVariant(Arg&& v)
  *
  *  @tparam Compare - The function object type being adapted.
  */
-template <typename Compare> struct CompareFirst
+template <typename Compare>
+struct CompareFirst
 {
     /** @brief Construct a CompareFirst adapter.
      *
@@ -143,7 +148,8 @@ template <typename Compare> struct CompareFirst
 };
 
 /* @brief Implicit template instantation wrapper for CompareFirst. */
-template <typename Compare> CompareFirst<Compare> compareFirst(Compare&& c)
+template <typename Compare>
+CompareFirst<Compare> compareFirst(Compare&& c)
 {
     return CompareFirst<Compare>(std::forward<Compare>(c));
 }

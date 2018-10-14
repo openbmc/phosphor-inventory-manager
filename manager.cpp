@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <iostream>
-#include <exception>
-#include <chrono>
-#include <algorithm>
-#include <phosphor-logging/log.hpp>
-#include <experimental/filesystem>
 #include "manager.hpp"
+
 #include "errors.hpp"
+
+#include <algorithm>
+#include <chrono>
+#include <exception>
+#include <experimental/filesystem>
+#include <iostream>
+#include <phosphor-logging/log.hpp>
 
 using namespace std::literals::chrono_literals;
 

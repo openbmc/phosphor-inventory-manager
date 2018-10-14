@@ -1,10 +1,10 @@
 #pragma once
 
+#include "config.h"
+
 #include <cereal/archives/json.hpp>
 #include <experimental/filesystem>
 #include <fstream>
-#include "config.h"
-
 #include <phosphor-logging/log.hpp>
 
 namespace cereal

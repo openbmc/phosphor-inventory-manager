@@ -1,15 +1,16 @@
 #pragma once
 
-#include <map>
-#include <memory>
-#include <string>
-#include <vector>
-#include <sdbusplus/server.hpp>
-#include <xyz/openbmc_project/Inventory/Manager/server.hpp>
 #include "events.hpp"
 #include "functor.hpp"
-#include "types.hpp"
 #include "serialize.hpp"
+#include "types.hpp"
+
+#include <map>
+#include <memory>
+#include <sdbusplus/server.hpp>
+#include <string>
+#include <vector>
+#include <xyz/openbmc_project/Inventory/Manager/server.hpp>
 
 namespace phosphor
 {
@@ -18,7 +19,8 @@ namespace inventory
 namespace manager
 {
 
-template <typename T> using ServerObject = T;
+template <typename T>
+using ServerObject = T;
 
 using ManagerIface =
     sdbusplus::xyz::openbmc_project::Inventory::server::Manager;
@@ -32,7 +34,8 @@ using ManagerIface =
  *
  *  @tparam T - The sdbusplus server binding type.
  */
-template <typename T, typename Enable = void> struct PropertiesVariant
+template <typename T, typename Enable = void>
+struct PropertiesVariant
 {
 };
 
@@ -46,7 +49,8 @@ struct PropertiesVariant<
 template <typename T>
 using PropertiesVariantType = typename PropertiesVariant<T>::Type;
 
-template <typename T, typename U = int> struct HasProperties : std::false_type
+template <typename T, typename U = int>
+struct HasProperties : std::false_type
 {
 };
 
@@ -133,7 +137,8 @@ void propDeSerialize(const std::string& path, const std::string& iface,
  *  @tparam T - The type of the interface being adapted.
  */
 
-template <typename T> struct MakeInterface
+template <typename T>
+struct MakeInterface
 {
     static any_ns::any make(sdbusplus::bus::bus& bus, const char* path,
                             const Interface& props)

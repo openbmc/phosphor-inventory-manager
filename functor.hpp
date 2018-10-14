@@ -1,10 +1,11 @@
 #pragma once
 
-#include <utility>
+#include "types.hpp"
+#include "utils.hpp"
+
 #include <memory>
 #include <sdbusplus/bus.hpp>
-#include "utils.hpp"
-#include "types.hpp"
+#include <utility>
 
 namespace phosphor
 {
@@ -24,7 +25,8 @@ class Manager;
  *
  *  @tparam T - The type of the action being adapted.
  */
-template <typename T> auto make_action(T&& action)
+template <typename T>
+auto make_action(T&& action)
 {
     return Action(std::forward<T>(action));
 }
@@ -38,7 +40,8 @@ template <typename T> auto make_action(T&& action)
  *
  *  @tparam T - The type of the filter being adapted.
  */
-template <typename T> auto make_filter(T&& filter)
+template <typename T>
+auto make_filter(T&& filter)
 {
     return Filter(std::forward<T>(filter));
 }
@@ -52,7 +55,8 @@ template <typename T> auto make_filter(T&& filter)
  *
  *  @tparam T - The type of the functor being adapted.
  */
-template <typename T> auto make_path_condition(T&& condition)
+template <typename T>
+auto make_path_condition(T&& condition)
 {
     return PathCondition(std::forward<T>(condition));
 }
@@ -123,11 +127,8 @@ auto setProperty(std::vector<const char*>&& paths,
     // Bind the path, interface, interface member function pointer,
     // and value to a lambda.  When it is called, forward the
     // path, interface and value on to the manager member function.
-    return [
-        paths, conditions = conditions, iface, member,
-        value = std::forward<V>(value)
-    ](auto& b, auto& m)
-    {
+    return [paths, conditions = conditions, iface, member,
+            value = std::forward<V>(value)](auto& b, auto& m) {
         for (auto p : paths)
         {
             if (callArrayWithStatus(conditions, p, b, m))
@@ -144,7 +145,8 @@ auto setProperty(std::vector<const char*>&& paths,
  *  @tparam T - The type of the property being tested.
  *  @tparam U - The type of the condition checking functor.
  */
-template <typename T, typename U> struct PropertyChangedCondition
+template <typename T, typename U>
+struct PropertyChangedCondition
 {
     PropertyChangedCondition() = delete;
     ~PropertyChangedCondition() = default;
@@ -309,8 +311,7 @@ struct PropertyCondition final : public PropertyConditionBase
 template <typename T>
 auto propertyChangedTo(const char* iface, const char* property, T&& val)
 {
-    auto condition = [val = std::forward<T>(val)](T && arg)
-    {
+    auto condition = [val = std::forward<T>(val)](T&& arg) {
         return arg == val;
     };
     using U = decltype(condition);
@@ -323,8 +324,7 @@ template <typename T>
 auto propertyIs(const char* path, const char* iface, const char* property,
                 T&& val, const char* service = nullptr)
 {
-    auto condition = [val = std::forward<T>(val)](T && arg)
-    {
+    auto condition = [val = std::forward<T>(val)](T&& arg) {
         return arg == val;
     };
     using U = decltype(condition);
