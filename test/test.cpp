@@ -425,7 +425,8 @@ b.call(m);
             sig.read(sigInterface);
             assert(sigInterface == "xyz.openbmc_project.Example.Iface1");
             sig.read(sigProperties);
-            assert(sigProperties["ExampleProperty1"] == "changed");
+            assert(sdbusplus::message::variant_ns::get<std::string>(
+                       sigProperties["ExampleProperty1"]) == "changed");
         }
     }
 }

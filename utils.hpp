@@ -26,8 +26,8 @@ struct MakeVariantVisitor
     {
         static auto make(Arg&& arg)
         {
-            throw sdbusplus::message::variant_ns::bad_variant_access(
-                "in MakeVariantVisitor");
+            throw std::runtime_error(
+                "Invalid conversion in MakeVariantVisitor");
             return T();
         }
     };
@@ -67,8 +67,7 @@ struct MakeVariantVisitor
 template <typename V, typename Arg>
 auto convertVariant(Arg&& v)
 {
-    return sdbusplus::message::variant_ns::apply_visitor(
-        MakeVariantVisitor<V>(), v);
+    return sdbusplus::message::variant_ns::visit(MakeVariantVisitor<V>(), v);
 }
 
 /** @struct CompareFirst
