@@ -280,15 +280,14 @@ void Manager::createObjects(
     updateObjects(objs);
 }
 
-any_ns::any& Manager::getInterfaceHolder(const char* path,
-                                         const char* interface)
+std::any& Manager::getInterfaceHolder(const char* path, const char* interface)
 {
-    return const_cast<any_ns::any&>(
+    return const_cast<std::any&>(
         const_cast<const Manager*>(this)->getInterfaceHolder(path, interface));
 }
 
-const any_ns::any& Manager::getInterfaceHolder(const char* path,
-                                               const char* interface) const
+const std::any& Manager::getInterfaceHolder(const char* path,
+                                            const char* interface) const
 {
     std::string p{path};
     auto oit = _refs.find(_root + p);

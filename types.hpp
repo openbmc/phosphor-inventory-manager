@@ -1,6 +1,5 @@
 #pragma once
 
-#include <experimental/any>
 #include <functional>
 #include <map>
 #include <sdbusplus/message.hpp>
@@ -14,7 +13,6 @@ namespace manager
 {
 
 class Manager;
-namespace any_ns = std::experimental;
 
 /** @brief Inventory manager supported property types. */
 using InterfaceVariantType =

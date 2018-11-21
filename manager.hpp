@@ -5,6 +5,7 @@
 #include "serialize.hpp"
 #include "types.hpp"
 
+#include <any>
 #include <map>
 #include <memory>
 #include <sdbusplus/server.hpp>
@@ -62,8 +63,8 @@ struct HasProperties<
 };
 
 template <typename T, std::enable_if_t<HasProperties<T>::value, bool> = true>
-any_ns::any propMake(sdbusplus::bus::bus& bus, const char* path,
-                     const Interface& props)
+std::any propMake(sdbusplus::bus::bus& bus, const char* path,
+                  const Interface& props)
 {
     using InterfaceVariant = std::map<std::string, PropertiesVariantType<T>>;
 
@@ -73,20 +74,20 @@ any_ns::any propMake(sdbusplus::bus::bus& bus, const char* path,
         v.emplace(p.first, convertVariant<PropertiesVariantType<T>>(p.second));
     }
 
-    return any_ns::any(std::make_shared<T>(bus, path, v));
+    return std::any(std::make_shared<T>(bus, path, v));
 }
 
 template <typename T, std::enable_if_t<!HasProperties<T>::value, bool> = false>
-any_ns::any propMake(sdbusplus::bus::bus& bus, const char* path,
-                     const Interface& props)
+std::any propMake(sdbusplus::bus::bus& bus, const char* path,
+                  const Interface& props)
 {
-    return any_ns::any(std::make_shared<T>(bus, path));
+    return std::any(std::make_shared<T>(bus, path));
 }
 
 template <typename T, std::enable_if_t<HasProperties<T>::value, bool> = true>
-void propAssign(const Interface& props, any_ns::any& holder)
+void propAssign(const Interface& props, std::any& holder)
 {
-    auto& iface = *any_ns::any_cast<std::shared_ptr<T>&>(holder);
+    auto& iface = *std::any_cast<std::shared_ptr<T>&>(holder);
     for (const auto& p : props)
     {
         iface.setPropertyByName(
@@ -95,36 +96,36 @@ void propAssign(const Interface& props, any_ns::any& holder)
 }
 
 template <typename T, std::enable_if_t<!HasProperties<T>::value, bool> = false>
-void propAssign(const Interface& props, any_ns::any& holder)
+void propAssign(const Interface& props, std::any& holder)
 {
 }
 
 template <typename T, std::enable_if_t<HasProperties<T>::value, bool> = true>
 void propSerialize(const std::string& path, const std::string& iface,
-                   const any_ns::any& holder)
+                   const std::any& holder)
 {
-    const auto& object = *any_ns::any_cast<const std::shared_ptr<T>&>(holder);
+    const auto& object = *std::any_cast<const std::shared_ptr<T>&>(holder);
     cereal::serialize(path, iface, object);
 }
 
 template <typename T, std::enable_if_t<!HasProperties<T>::value, bool> = false>
 void propSerialize(const std::string& path, const std::string& iface,
-                   const any_ns::any& holder)
+                   const std::any& holder)
 {
     cereal::serialize(path, iface);
 }
 
 template <typename T, std::enable_if_t<HasProperties<T>::value, bool> = true>
 void propDeSerialize(const std::string& path, const std::string& iface,
-                     any_ns::any& holder)
+                     std::any& holder)
 {
-    auto& object = *any_ns::any_cast<std::shared_ptr<T>&>(holder);
+    auto& object = *std::any_cast<std::shared_ptr<T>&>(holder);
     cereal::deserialize(path, iface, object);
 }
 
 template <typename T, std::enable_if_t<!HasProperties<T>::value, bool> = false>
 void propDeSerialize(const std::string& path, const std::string& iface,
-                     any_ns::any& holder)
+                     std::any& holder)
 {
 }
 
@@ -140,25 +141,25 @@ void propDeSerialize(const std::string& path, const std::string& iface,
 template <typename T>
 struct MakeInterface
 {
-    static any_ns::any make(sdbusplus::bus::bus& bus, const char* path,
-                            const Interface& props)
+    static std::any make(sdbusplus::bus::bus& bus, const char* path,
+                         const Interface& props)
     {
         return propMake<T>(bus, path, props);
     }
 
-    static void assign(const Interface& props, any_ns::any& holder)
+    static void assign(const Interface& props, std::any& holder)
     {
         propAssign<T>(props, holder);
     }
 
     static void serialize(const std::string& path, const std::string& iface,
-                          const any_ns::any& holder)
+                          const std::any& holder)
     {
         propSerialize<T>(path, iface, holder);
     }
 
     static void deserialize(const std::string& path, const std::string& iface,
-                            any_ns::any& holder)
+                            std::any& holder)
     {
         propDeSerialize<T>(path, iface, holder);
     }
@@ -253,7 +254,7 @@ class Manager final : public ServerObject<ManagerIface>
     using SigArg = SigArgs::value_type::element_type;
 
   private:
-    using InterfaceComposite = std::map<std::string, any_ns::any>;
+    using InterfaceComposite = std::map<std::string, std::any>;
     using ObjectReferences = std::map<std::string, InterfaceComposite>;
     using Events = std::vector<EventInfo>;
 
@@ -282,8 +283,8 @@ class Manager final : public ServerObject<ManagerIface>
      *
      *  @returns A weak reference to the holder instance.
      */
-    const any_ns::any& getInterfaceHolder(const char*, const char*) const;
-    any_ns::any& getInterfaceHolder(const char*, const char*);
+    const std::any& getInterfaceHolder(const char*, const char*) const;
+    std::any& getInterfaceHolder(const char*, const char*);
 
     /** @brief Provides weak references to interface holders.
      *
@@ -299,13 +300,13 @@ class Manager final : public ServerObject<ManagerIface>
     auto& getInterface(const char* path, const char* interface)
     {
         auto& holder = getInterfaceHolder(path, interface);
-        return *any_ns::any_cast<std::shared_ptr<T>&>(holder);
+        return *std::any_cast<std::shared_ptr<T>&>(holder);
     }
     template <typename T>
     auto& getInterface(const char* path, const char* interface) const
     {
         auto& holder = getInterfaceHolder(path, interface);
-        return *any_ns::any_cast<T>(holder);
+        return *std::any_cast<T>(holder);
     }
 
     /** @brief Add or update interfaces on DBus. */
