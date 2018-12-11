@@ -2,6 +2,8 @@
 
 #include "types.hpp"
 
+#include <memory>
+
 namespace phosphor
 {
 namespace inventory

@@ -1,9 +1,22 @@
 #pragma once
 
+#include <cstdint>
 #include <functional>
 #include <map>
-#include <sdbusplus/message.hpp>
+#include <sdbusplus/message/types.hpp>
 #include <string>
+
+namespace sdbusplus
+{
+namespace message
+{
+class message;
+}
+namespace bus
+{
+class bus;
+}
+} // namespace sdbusplus
 
 namespace phosphor
 {
@@ -16,7 +29,7 @@ class Manager;
 
 /** @brief Inventory manager supported property types. */
 using InterfaceVariantType =
-    sdbusplus::message::variant<bool, int64_t, std::string>;
+    sdbusplus::message::variant_ns::variant<bool, int64_t, std::string>;
 
 template <typename T>
 using InterfaceType = std::map<std::string, T>;
