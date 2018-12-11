@@ -7,6 +7,8 @@ check_PROGRAMS =
 noinst_PROGRAMS = phosphor-inventory-test
 noinst_LTLIBRARIES = libtest.la
 
+TESTS = ${check_PROGRAMS}
+
 extra_yamldir=$(top_srcdir)/example/extra_interfaces.d
 
 phosphor_inventory_test_SOURCES = test.cpp
