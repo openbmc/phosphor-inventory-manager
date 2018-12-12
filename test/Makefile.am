@@ -27,6 +27,12 @@ serialize_test_LDADD = ${GTEST_LIBS} ${GMOCK_LIBS}
 serialize_test_LDFLAGS = ${OESDK_TESTCASE_FLAGS}
 check_PROGRAMS += serialize-test
 
+interface_ops_test_SOURCES = interface_ops_test.cpp
+interface_ops_test_CFLAGS = ${GTEST_CFLAGS} ${GMOCK_CFLAGS}
+interface_ops_test_LDADD = ${GTEST_LIBS} ${GMOCK_LIBS}
+interface_ops_test_LDFLAGS = ${OESDK_TESTCASE_FLAGS}
+check_PROGRAMS += interface-ops-test
+
 extra_yamldir=$(top_srcdir)/example/extra_interfaces.d
 
 phosphor_inventory_test_SOURCES = test.cpp
