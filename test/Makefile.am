@@ -15,6 +15,12 @@ types_test_LDADD = ${GTEST_LIBS} ${GMOCK_LIBS}
 types_test_LDFLAGS = ${OESDK_TESTCASE_FLAGS}
 check_PROGRAMS += types-test
 
+utils_test_SOURCES = utils_test.cpp
+utils_test_CFLAGS = ${GTEST_CFLAGS} ${GMOCK_CFLAGS}
+utils_test_LDADD = ${GTEST_LIBS} ${GMOCK_LIBS}
+utils_test_LDFLAGS = ${OESDK_TESTCASE_FLAGS}
+check_PROGRAMS += utils-test
+
 extra_yamldir=$(top_srcdir)/example/extra_interfaces.d
 
 phosphor_inventory_test_SOURCES = test.cpp
