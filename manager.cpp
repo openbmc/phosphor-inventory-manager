@@ -161,7 +161,7 @@ void Manager::updateInterfaces(const sdbusplus::message::object_path& path,
             if (refaceit == refaces.end() || refaceit->first != ifaceit->first)
             {
                 // Add the new interface.
-                auto& ctor = std::get<MakerType>(opsit->second);
+                auto& ctor = std::get<MakeInterfaceType>(opsit->second);
                 refaceit = refaces.insert(
                     refaceit,
                     std::make_pair(ifaceit->first, ctor(_bus, path.str.c_str(),
@@ -171,17 +171,20 @@ void Manager::updateInterfaces(const sdbusplus::message::object_path& path,
             else
             {
                 // Set the new property values.
-                auto& assign = std::get<AssignerType>(opsit->second);
+                auto& assign = std::get<AssignInterfaceType>(opsit->second);
                 assign(ifaceit->second, refaceit->second);
             }
             if (!restoreFromCache)
             {
-                auto& serialize = std::get<SerializerType>(opsit->second);
+                auto& serialize =
+                    std::get<SerializeInterfaceType<SerialOps>>(opsit->second);
                 serialize(path, ifaceit->first, refaceit->second);
             }
             else
             {
-                auto& deserialize = std::get<DeserializerType>(opsit->second);
+                auto& deserialize =
+                    std::get<DeserializeInterfaceType<SerialOps>>(
+                        opsit->second);
                 deserialize(path, ifaceit->first, refaceit->second);
             }
         }
