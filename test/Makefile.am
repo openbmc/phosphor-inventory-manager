@@ -33,6 +33,12 @@ interface_ops_test_LDADD = ${GTEST_LIBS} ${GMOCK_LIBS}
 interface_ops_test_LDFLAGS = ${OESDK_TESTCASE_FLAGS}
 check_PROGRAMS += interface-ops-test
 
+manager_test_SOURCES = manager_test.cpp
+manager_test_CFLAGS = ${GTEST_CFLAGS} ${GMOCK_CFLAGS}
+manager_test_LDADD = ${GTEST_LIBS} ${GMOCK_LIBS}
+manager_test_LDFLAGS = ${OESDK_TESTCASE_FLAGS}
+check_PROGRAMS += manager-test
+
 extra_yamldir=$(top_srcdir)/example/extra_interfaces.d
 
 phosphor_inventory_test_SOURCES = test.cpp
