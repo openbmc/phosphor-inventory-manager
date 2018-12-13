@@ -105,14 +105,14 @@ void propSerialize(const std::string& path, const std::string& iface,
                    const std::any& holder)
 {
     const auto& object = *std::any_cast<const std::shared_ptr<T>&>(holder);
-    cereal::serialize(path, iface, object);
+    SerialOps::serialize(path, iface, object);
 }
 
 template <typename T, std::enable_if_t<!HasProperties<T>::value, bool> = false>
 void propSerialize(const std::string& path, const std::string& iface,
                    const std::any& holder)
 {
-    cereal::serialize(path, iface);
+    SerialOps::serialize(path, iface);
 }
 
 template <typename T, std::enable_if_t<HasProperties<T>::value, bool> = true>
@@ -120,13 +120,14 @@ void propDeSerialize(const std::string& path, const std::string& iface,
                      std::any& holder)
 {
     auto& object = *std::any_cast<std::shared_ptr<T>&>(holder);
-    cereal::deserialize(path, iface, object);
+    SerialOps::deserialize(path, iface, object);
 }
 
 template <typename T, std::enable_if_t<!HasProperties<T>::value, bool> = false>
 void propDeSerialize(const std::string& path, const std::string& iface,
                      std::any& holder)
 {
+    SerialOps::deserialize(path, iface);
 }
 
 /** @struct MakeInterface
