@@ -9,6 +9,12 @@ noinst_LTLIBRARIES = libtest.la
 
 TESTS = ${check_PROGRAMS}
 
+types_test_SOURCES = types_test.cpp
+types_test_CFLAGS = ${GTEST_CFLAGS} ${GMOCK_CFLAGS}
+types_test_LDADD = ${GTEST_LIBS} ${GMOCK_LIBS}
+types_test_LDFLAGS = ${OESDK_TESTCASE_FLAGS}
+check_PROGRAMS += types-test
+
 extra_yamldir=$(top_srcdir)/example/extra_interfaces.d
 
 phosphor_inventory_test_SOURCES = test.cpp
