@@ -7,38 +7,6 @@ check_PROGRAMS =
 noinst_PROGRAMS = phosphor-inventory-test
 noinst_LTLIBRARIES = libtest.la
 
-TESTS = ${check_PROGRAMS}
-
-types_test_SOURCES = types_test.cpp
-types_test_CFLAGS = ${GTEST_CFLAGS} ${GMOCK_CFLAGS}
-types_test_LDADD = ${GTEST_LIBS} ${GMOCK_LIBS}
-types_test_LDFLAGS = ${OESDK_TESTCASE_FLAGS}
-check_PROGRAMS += types-test
-
-utils_test_SOURCES = utils_test.cpp
-utils_test_CFLAGS = ${GTEST_CFLAGS} ${GMOCK_CFLAGS}
-utils_test_LDADD = ${GTEST_LIBS} ${GMOCK_LIBS}
-utils_test_LDFLAGS = ${OESDK_TESTCASE_FLAGS}
-check_PROGRAMS += utils-test
-
-serialize_test_SOURCES = serialize_test.cpp
-serialize_test_CFLAGS = ${GTEST_CFLAGS} ${GMOCK_CFLAGS}
-serialize_test_LDADD = ${GTEST_LIBS} ${GMOCK_LIBS}
-serialize_test_LDFLAGS = ${OESDK_TESTCASE_FLAGS}
-check_PROGRAMS += serialize-test
-
-interface_ops_test_SOURCES = interface_ops_test.cpp
-interface_ops_test_CFLAGS = ${GTEST_CFLAGS} ${GMOCK_CFLAGS}
-interface_ops_test_LDADD = ${GTEST_LIBS} ${GMOCK_LIBS}
-interface_ops_test_LDFLAGS = ${OESDK_TESTCASE_FLAGS}
-check_PROGRAMS += interface-ops-test
-
-manager_test_SOURCES = manager_test.cpp
-manager_test_CFLAGS = ${GTEST_CFLAGS} ${GMOCK_CFLAGS}
-manager_test_LDADD = ${GTEST_LIBS} ${GMOCK_LIBS}
-manager_test_LDFLAGS = ${OESDK_TESTCASE_FLAGS}
-check_PROGRAMS += manager-test
-
 extra_yamldir=$(top_srcdir)/example/extra_interfaces.d
 
 phosphor_inventory_test_SOURCES = test.cpp
