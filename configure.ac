@@ -41,7 +41,7 @@ LT_INIT # Removes 'unrecognized options: --with-libtool-sysroot'
 AC_ARG_ENABLE([tests], [Whether we should build test cases])
 
 # Check/set gtest specific functions.
-AS_IF([test "x$enable_tests" != "xno"], [
+AS_IF([test "x$enable_tests" = "xyes"], [
     PKG_CHECK_MODULES([GMOCK], [gtest_main],,)
     PKG_CHECK_MODULES([GTEST], [gmock],,)
     AX_PTHREAD
