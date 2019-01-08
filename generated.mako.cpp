@@ -25,16 +25,16 @@ const Manager::Makers Manager::_makers{
         std::make_tuple(
             MakeInterface<
                 ServerObject<
-                    ${i.namespace()}>>::op,
-            AssignInterface<
+                    ${i.namespace()}>>::make,
+            MakeInterface<
                 ServerObject<
-                    ${i.namespace()}>>::op,
-            SerializeInterface<
+                    ${i.namespace()}>>::assign,
+            MakeInterface<
                 ServerObject<
-                    ${i.namespace()}>, SerialOps>::op,
-            DeserializeInterface<
+                    ${i.namespace()}>>::serialize,
+            MakeInterface<
                 ServerObject<
-                    ${i.namespace()}>, SerialOps>::op
+                    ${i.namespace()}>>::deserialize
         )
     },
 % endfor

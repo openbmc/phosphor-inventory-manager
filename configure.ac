@@ -35,16 +35,9 @@ AC_CHECK_HEADER(sdbusplus/server.hpp, ,[AC_MSG_ERROR([Could not find sdbusplus/s
 
 # Checks for library functions.
 LT_INIT # Removes 'unrecognized options: --with-libtool-sysroot'
-
-# Make it possible for users to choose if they want test support
-# explicitly or not at all
-AC_ARG_ENABLE([tests], [Whether we should build test cases])
-
 # Check/set gtest specific functions.
-AS_IF([test "x$enable_tests" = "xyes"], [
-    PKG_CHECK_MODULES([GMOCK], [gtest_main],,)
-    PKG_CHECK_MODULES([GTEST], [gmock],,)
-])
+PKG_CHECK_MODULES([GMOCK], [gtest_main],,)
+PKG_CHECK_MODULES([GTEST], [gmock],,)
 AX_PTHREAD
 
 AC_ARG_ENABLE([oe-sdk],
