@@ -2,7 +2,6 @@
 
 #include "events.hpp"
 #include "functor.hpp"
-#include "interface_ops.hpp"
 #include "serialize.hpp"
 #include "types.hpp"
 
@@ -14,13 +13,6 @@
 #include <vector>
 #include <xyz/openbmc_project/Inventory/Manager/server.hpp>
 
-namespace sdbusplus
-{
-namespace bus
-{
-class bus;
-}
-} // namespace sdbusplus
 namespace phosphor
 {
 namespace inventory
@@ -33,6 +25,145 @@ using ServerObject = T;
 
 using ManagerIface =
     sdbusplus::xyz::openbmc_project::Inventory::server::Manager;
+
+/** @struct PropertiesVariant
+ *  @brief Wrapper for sdbusplus PropertiesVariant.
+ *
+ *  A wrapper is useful since MakeInterface is instantiated with 'int'
+ *  to deduce the return type of its methods, which does not depend
+ *  on T.
+ *
+ *  @tparam T - The sdbusplus server binding type.
+ */
+template <typename T, typename Enable = void>
+struct PropertiesVariant
+{
+};
+
+template <typename T>
+struct PropertiesVariant<
+    T, typename std::enable_if<std::is_object<T>::value>::type>
+{
+    using Type = typename T::PropertiesVariant;
+};
+
+template <typename T>
+using PropertiesVariantType = typename PropertiesVariant<T>::Type;
+
+template <typename T, typename U = int>
+struct HasProperties : std::false_type
+{
+};
+
+template <typename T>
+struct HasProperties<
+    T, decltype((void)std::declval<typename T::PropertiesVariant>(), 0)>
+    : std::true_type
+{
+};
+
+template <typename T, std::enable_if_t<HasProperties<T>::value, bool> = true>
+std::any propMake(sdbusplus::bus::bus& bus, const char* path,
+                  const Interface& props)
+{
+    using InterfaceVariant = std::map<std::string, PropertiesVariantType<T>>;
+
+    InterfaceVariant v;
+    for (const auto& p : props)
+    {
+        v.emplace(p.first, convertVariant<PropertiesVariantType<T>>(p.second));
+    }
+
+    return std::any(std::make_shared<T>(bus, path, v));
+}
+
+template <typename T, std::enable_if_t<!HasProperties<T>::value, bool> = false>
+std::any propMake(sdbusplus::bus::bus& bus, const char* path,
+                  const Interface& props)
+{
+    return std::any(std::make_shared<T>(bus, path));
+}
+
+template <typename T, std::enable_if_t<HasProperties<T>::value, bool> = true>
+void propAssign(const Interface& props, std::any& holder)
+{
+    auto& iface = *std::any_cast<std::shared_ptr<T>&>(holder);
+    for (const auto& p : props)
+    {
+        iface.setPropertyByName(
+            p.first, convertVariant<PropertiesVariantType<T>>(p.second));
+    }
+}
+
+template <typename T, std::enable_if_t<!HasProperties<T>::value, bool> = false>
+void propAssign(const Interface& props, std::any& holder)
+{
+}
+
+template <typename T, std::enable_if_t<HasProperties<T>::value, bool> = true>
+void propSerialize(const std::string& path, const std::string& iface,
+                   const std::any& holder)
+{
+    const auto& object = *std::any_cast<const std::shared_ptr<T>&>(holder);
+    cereal::serialize(path, iface, object);
+}
+
+template <typename T, std::enable_if_t<!HasProperties<T>::value, bool> = false>
+void propSerialize(const std::string& path, const std::string& iface,
+                   const std::any& holder)
+{
+    cereal::serialize(path, iface);
+}
+
+template <typename T, std::enable_if_t<HasProperties<T>::value, bool> = true>
+void propDeSerialize(const std::string& path, const std::string& iface,
+                     std::any& holder)
+{
+    auto& object = *std::any_cast<std::shared_ptr<T>&>(holder);
+    cereal::deserialize(path, iface, object);
+}
+
+template <typename T, std::enable_if_t<!HasProperties<T>::value, bool> = false>
+void propDeSerialize(const std::string& path, const std::string& iface,
+                     std::any& holder)
+{
+}
+
+/** @struct MakeInterface
+ *  @brief Adapt an sdbusplus interface proxy.
+ *
+ *  Template instances are builder functions that create
+ *  adapted sdbusplus interface proxy interface objects.
+ *
+ *  @tparam T - The type of the interface being adapted.
+ */
+
+template <typename T>
+struct MakeInterface
+{
+    static std::any make(sdbusplus::bus::bus& bus, const char* path,
+                         const Interface& props)
+    {
+        return propMake<T>(bus, path, props);
+    }
+
+    static void assign(const Interface& props, std::any& holder)
+    {
+        propAssign<T>(props, holder);
+    }
+
+    static void serialize(const std::string& path, const std::string& iface,
+                          const std::any& holder)
+    {
+        propSerialize<T>(path, iface, holder);
+    }
+
+    static void deserialize(const std::string& path, const std::string& iface,
+                            std::any& holder)
+    {
+        propDeSerialize<T>(path, iface, holder);
+    }
+};
 
 /** @class Manager
  *  @brief OpenBMC inventory manager implementation.
@@ -129,10 +260,16 @@ class Manager final : public ServerObject<ManagerIface>
 
     // The int instantiations are safe since the signature of these
     // functions don't change from one instantiation to the next.
+    using MakerType = std::add_pointer_t<decltype(MakeInterface<int>::make)>;
+    using AssignerType =
+        std::add_pointer_t<decltype(MakeInterface<int>::assign)>;
+    using SerializerType =
+        std::add_pointer_t<decltype(MakeInterface<int>::serialize)>;
+    using DeserializerType =
+        std::add_pointer_t<decltype(MakeInterface<int>::deserialize)>;
     using Makers =
-        std::map<std::string, std::tuple<MakeInterfaceType, AssignInterfaceType,
-                                         SerializeInterfaceType<SerialOps>,
-                                         DeserializeInterfaceType<SerialOps>>>;
+        std::map<std::string, std::tuple<MakerType, AssignerType,
+                                         SerializerType, DeserializerType>>;
 
     /** @brief Provides weak references to interface holders.
      *
