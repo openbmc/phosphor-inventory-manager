@@ -559,6 +559,12 @@ class Everything(Renderer):
     def get_interfaces(targetdir):
         '''Scan the interfaces directory for interfaces that PIM can create.'''
 
+        # list of interfaces files to be skipped from parsing
+        extra_iface_list = [
+            "Common/UUID.interface.yaml",
+            "State/Decorator/OperationalStatus.interface.yaml",
+            "Software/Version.interface.yaml"
+        ]
         yaml_files = []
         interfaces = []
         interface_composite = {}
@@ -578,6 +584,12 @@ class Everything(Renderer):
             # parse only phosphor dbus related interface files
             if not y.startswith('xyz'):
                 continue
+            # skip processing unwanted interface files
+            if not (y.startswith('xyz/openbmc_project/Inventory')):
+                if not (y.startswith('xyz/openbmc_project/Example')):
+                    if not (filter(lambda x: (y.endswith(x) == True),
+                            extra_iface_list)):
+                        continue
             with open(os.path.join(targetdir, y)) as fd:
                 i = y.replace('.interface.yaml', '').replace(os.sep, '.')
 
