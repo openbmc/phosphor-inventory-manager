@@ -21,9 +21,9 @@ AM_PATH_PYTHON([2.7],
 
 # Checks for libraries.
 PKG_CHECK_MODULES([SYSTEMD], [libsystemd >= 221])
-PKG_CHECK_MODULES([SDBUSPLUS], [sdbusplus],, AC_MSG_ERROR(["Requires sdbusplus package."]))
-PKG_CHECK_MODULES([PHOSPHOR_DBUS_INTERFACES], [phosphor-dbus-interfaces],, AC_MSG_ERROR(["Requires phosphor-dbus-interfaces package."]))
-PKG_CHECK_MODULES([PHOSPHOR_LOGGING], [phosphor-logging],, AC_MSG_ERROR(["Requires phosphor-logging."]))
+PKG_CHECK_MODULES([SDBUSPLUS], [sdbusplus])
+PKG_CHECK_MODULES([PHOSPHOR_DBUS_INTERFACES], [phosphor-dbus-interfaces])
+PKG_CHECK_MODULES([PHOSPHOR_LOGGING], [phosphor-logging])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AX_CXX_COMPILE_STDCXX_17([noext])
