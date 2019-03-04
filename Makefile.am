@@ -1,4 +1,7 @@
-BUILT_SOURCES=generated.cpp extra_ifaces.cpp gen_serialization.hpp
+BUILT_SOURCES = \
+	generated.cpp extra_ifaces.cpp gen_serialization.hpp \
+	org/openbmc/Associations/server.cpp \
+	org/openbmc/Associations/server.hpp
 
 CLEANFILES=$(BUILT_SOURCES)
 
@@ -27,6 +30,9 @@ libmanagercommon_la_CXXFLAGS = \
 	$(PHOSPHOR_DBUS_INTERACES_CFLAGS) \
 	$(PHOSPHOR_LOGGING_CFLAGS)
 
+nodist_libmanagercommon_la_SOURCES = \
+	org/openbmc/Associations/server.cpp
+
 libmanager_la_LDFLAGS = -static
 libmanager_la_SOURCES = \
 	extra_ifaces.cpp \
@@ -49,6 +55,14 @@ gen_serialization.hpp:
 	$(AM_V_GEN)$(PYTHON) $(top_srcdir)/pimgen.py $(PIMGEN_ARGS) -d \
 		$(base_yamldir) -o $(builddir) -b $(BUSNAME) \
 		generate-serialization
+
+org/openbmc/Associations/server.cpp: org/openbmc/Associations.interface.yaml
+	@mkdir -p `dirname $@`
+	$(SDBUSPLUSPLUS) -r $(srcdir) interface server-cpp org.openbmc.Associations > $@
+
+org/openbmc/Associations/server.hpp: org/openbmc/Associations.interface.yaml
+	@mkdir -p `dirname $@`
+	$(SDBUSPLUSPLUS) -r $(srcdir) interface server-header org.openbmc.Associations > $@
 
 SUBDIRS = . test
 
