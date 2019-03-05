@@ -134,9 +134,84 @@ parameter is supported.
 Supported arguments for the createObjects action are:
 * objs - A dictionary of objects to create.
 
+----
+## Creating Associations
+PIM can create [associations][1] between inventory items and other D-Bus objects.
+
+To do so, the associations to create should be defined in a JSON file which is
+specified by the `ASSOCIATIONS_FILE_PATH` configure variable.  This file is
+processed at runtime.  This functionality is optional, so if this file doesn't
+exist, PIM will just skip trying to make any associations.
+
+An example of this JSON is:
+```
+[
+    {
+        "path": "system/chassis/motherboard/cpu0/core1",
+        "endpoints":
+        [
+            {
+                "types":
+                {
+                    "fType": "sensors",
+                    "rType": "inventory"
+                },
+                "paths":
+                [
+                    "/xyz/openbmc_project/sensors/temperature/p0_core0_temp"
+                ]
+            }
+        ]
+    }
+]
+```
+
+Then, when/if PIM creates the
+`xyz/openbmc_project/system/chassis/motherboard/cpu0/core1` inventory object,
+if the `/xyz/openbmc_project/sensors/temperature/p0_core0_temp` path exists on
+D-Bus, it will add an `xyz.openbmc_project.Associations` interface on it
+such that the object mapper creates the 2 association objects:
+
+```
+    /xyz/openbmc_project/inventory/system/chassis/motherboard/cpu0/core1/sensors
+       endpoints property:
+       ['/xyz/openbmc_project/sensors/temperature/p0_core0_temp']
+
+    /xyz/openbmc_project/sensors/temperature/p0_core0_temp/inventory
+       endpoints property:
+       ['/xyz/openbmc_project/inventory/system/chassis/motherboard/cpu0/core1']
+```
+
+If the endpoint path doesn't exist on D-Bus at that time, then PIM will wait
+until it does before creating the associations.
+
+The stucture of that entry is:
+```
+[
+    {
+        "path": "The relative path of the inventory object to create the
+                 org.openbmc.Associations interface on."
+        "endpoints":
+        [
+            {
+                "types":
+                {
+                    "fType": "The forward association type."
+                    "rType": "The reverse association type."
+                },
+                "paths":
+                [
+                    "The list of association endpoints for this inventory path
+                     and association type."
+                ]
+            }
+        ]
+    }
+]
+
+```
 
 ----
-
 ## Building
 After running pimgen.py, build PIM using the following steps:
 
@@ -151,3 +226,4 @@ To clean the repository run:
 ```
  ./bootstrap.sh clean
 ```
+[1]: https://github.com/openbmc/docs/blob/master/object-mapper.md#associations
