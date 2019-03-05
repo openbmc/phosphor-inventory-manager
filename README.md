@@ -1,8 +1,8 @@
 Phosphor Inventory Manager (PIM) is an implementation of the
 xyz.openbmc_project.Inventory.Manager DBus interface, and supporting tools.
-PIM uses a combination of build-time YAML files and run-time calls to the
-Notify method of the Manager interface to provide a generalized inventory
-state management solution.
+PIM uses a combination of build-time YAML files, run-time calls to the Notify
+method of the Manager interface, and association definition JSON files to
+provide a generalized inventory state management solution.
 
 ## YAML
 PIM includes a YAML parser (pimgen.py).  For PIM to do anything useful, a
@@ -134,9 +134,83 @@ parameter is supported.
 Supported arguments for the createObjects action are:
 * objs - A dictionary of objects to create.
 
+----
+## Creating Associations
+PIM can create [associations][1] between inventory items and other D-Bus objects.
+
+This functionality is optional and is controlled with the
+`--enable-associations` configure option.  It defaults to disabled.
+
+To use this, the associations to create should be defined in a JSON file which
+is specified by the `ASSOCIATIONS_FILE_PATH` configure variable, which defaults
+to `/usr/share/phosphor-inventory-manager/associations.json`.  This file is
+processed at runtime.
+
+An example of this JSON is:
+```
+[
+    {
+        "path": "system/chassis/motherboard/cpu0/core1",
+        "endpoints":
+        [
+            {
+                "types":
+                {
+                    "fType": "sensors",
+                    "rType": "inventory"
+                },
+                "paths":
+                [
+                    "/xyz/openbmc_project/sensors/temperature/p0_core0_temp"
+                ]
+            }
+        ]
+    }
+]
+```
+
+Then, when/if PIM creates the
+`xyz/openbmc_project/system/chassis/motherboard/cpu0/core1` inventory object,
+it will add an `xyz.openbmc_project.Association.Definitions` interface on it
+such that the object mapper creates the 2 association objects:
+
+```
+    /xyz/openbmc_project/inventory/system/chassis/motherboard/cpu0/core1/sensors
+       endpoints property:
+       ['/xyz/openbmc_project/sensors/temperature/p0_core0_temp']
+
+    /xyz/openbmc_project/sensors/temperature/p0_core0_temp/inventory
+       endpoints property:
+       ['/xyz/openbmc_project/inventory/system/chassis/motherboard/cpu0/core1']
+```
+
+The JSON description is:
+```
+[
+    {
+        "path": "The relative path of the inventory object to create the
+                 xyz.openbmc_project.Association.Definitions interface on."
+        "endpoints":
+        [
+            {
+                "types":
+                {
+                    "fType": "The forward association type."
+                    "rType": "The reverse association type."
+                },
+                "paths":
+                [
+                    "The list of association endpoints for this inventory path
+                     and association type."
+                ]
+            }
+        ]
+    }
+]
+
+```
 
 ----
-
 ## Building
 After running pimgen.py, build PIM using the following steps:
 
@@ -151,3 +225,4 @@ To clean the repository run:
 ```
  ./bootstrap.sh clean
 ```
+[1]: https://github.com/openbmc/docs/blob/master/object-mapper.md#associations
