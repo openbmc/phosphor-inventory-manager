@@ -2,7 +2,7 @@
 
 #include "config.h"
 
-#include <sdbusplus/bus.hpp>
+#include <xyz/openbmc_project/Association/Definitions/server.hpp>
 
 namespace phosphor
 {
@@ -23,6 +23,12 @@ static constexpr auto pathsPos = 1;
 using EndpointsEntry = std::vector<std::tuple<Types, Paths>>;
 
 using AssociationMap = std::map<std::string, EndpointsEntry>;
+
+using AssociationObject = sdbusplus::server::object::object<
+    sdbusplus::xyz::openbmc_project::Association::server::Definitions>;
+
+using AssociationIfaceMap =
+    std::map<std::string, std::unique_ptr<AssociationObject>>;
 
 /**
  * @class Manager
@@ -97,11 +103,31 @@ class Manager
     void load();
 
     /**
+     * @brief Creates an instance of an org.openbmc.Associations
+     *        interface using the passed in properties.
+     *
+     * @param[in] forwardPath - the path of the forward association
+     * @param[in] forwardType - the type of the forward association
+     * @param[in] reversePath - the path of the reverse association
+     * @param[in] reverseType - the type of the reverse association
+     */
+    void createAssociation(const std::string& forwardPath,
+                           const std::string& forwardType,
+                           const std::string& reversePath,
+                           const std::string& reverseType);
+
+    /**
      * @brief The map of association data that is loaded from its
      *        JSON definition.  Association D-Bus objects will be
      *        created from this data.
      */
     AssociationMap _associations;
+
+    /**
+     * @brief The map of org.openbmc_project.Associations D-Bus
+     *        interfaces objects based on their object path.
+     */
+    AssociationIfaceMap _associationIfaces;
 
     /**
      * @brief The sdbusplus bus object.
@@ -112,6 +138,11 @@ class Manager
      * @brief The path to the associations JSON File.
      */
     const std::string _jsonFile;
+
+    /**
+     * A list of the inventory association paths that have already been handled.
+     */
+    std::vector<std::string> _handled;
 };
 
 } // namespace associations
