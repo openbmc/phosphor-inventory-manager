@@ -13,6 +13,17 @@ namespace manager
 namespace associations
 {
 
+static constexpr auto forwardTypePos = 0;
+static constexpr auto reverseTypePos = 1;
+using Types = std::tuple<std::string, std::string>;
+using Paths = std::vector<std::string>;
+
+static constexpr auto typesPos = 0;
+static constexpr auto pathsPos = 1;
+using EndpointsEntry = std::vector<std::tuple<Types, Paths>>;
+
+using AssociationMap = std::map<std::string, EndpointsEntry>;
+
 /**
  * @class Manager
  *
@@ -66,7 +77,32 @@ class Manager
      */
     void createAssociations(const std::string& objectPath);
 
+    /**
+     * @brief Returned the association configuration.
+     *        Used for testing.
+     *
+     * @return AssociationMap& - the association config
+     */
+    const AssociationMap& getAssociationsConfig()
+    {
+        return _associations;
+    }
+
   private:
+    /**
+     *  @brief Loads the association YAML into the _associations data
+     *         structure.  This file is optional, so if it doesn't exist
+     *         it will just not load anything.
+     */
+    void load();
+
+    /**
+     * @brief The map of association data that is loaded from its
+     *        JSON definition.  Association D-Bus objects will be
+     *        created from this data.
+     */
+    AssociationMap _associations;
+
     /**
      * @brief The sdbusplus bus object.
      */

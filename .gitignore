@@ -31,3 +31,13 @@ missing
 stamp-h1
 Makefile.extra
 extra_ifaces.cpp
+test-driver
+*.log
+*.trs
+*-libtool
+associations-test
+interface-ops-test
+manager-test
+serialize-test
+types-test
+utils-test
