@@ -17,6 +17,7 @@ phosphor_inventory_CXXFLAGS = $(SDBUSPLUS_CFLAGS) -flto
 
 libmanagercommon_la_LDFLAGS = -static
 libmanagercommon_la_SOURCES = \
+	association_manager.cpp \
 	errors.cpp \
 	functor.cpp \
 	manager.cpp
