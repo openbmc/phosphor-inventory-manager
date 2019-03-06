@@ -2,7 +2,7 @@
 
 #include "config.h"
 
-#include <sdbusplus/bus.hpp>
+#include "org/openbmc/Associations/server.hpp"
 
 namespace phosphor
 {
@@ -23,6 +23,12 @@ static constexpr auto pathsPos = 1;
 using EndpointsEntry = std::vector<std::tuple<Types, Paths>>;
 
 using AssociationMap = std::map<std::string, EndpointsEntry>;
+
+using AssociationObject = sdbusplus::server::object::object<
+    sdbusplus::org::openbmc::server::Associations>;
+
+using AssociationIfaceMap =
+    std::map<std::string, std::unique_ptr<AssociationObject>>;
 
 /**
  * @class Manager
@@ -101,11 +107,65 @@ class Manager
     void load();
 
     /**
+     * @brief Checks if the passed in object path exists on D-Bus.
+     *
+     * @param[in] objectPath - the D-Bus object path to check
+     *
+     * @return bool - true if it exists, else false
+     */
+    bool exists(const std::string& objectPath);
+
+    /**
+     * @brief Creates an instance of an org.openbmc.Associations
+     *        interface using the passed in properties.
+     *
+     * @param[in] forwardPath - the path of the forward association
+     * @param[in] forwardType - the type of the forward association
+     * @param[in] reversePath - the path of the reverse association
+     * @param[in] reverseType - the type of the reverse association
+     */
+    void createAssociation(const std::string& forwardPath,
+                           const std::string& forwardType,
+                           const std::string& reversePath,
+                           const std::string& reverseType);
+
+    /**
+     * @brief Creates an sdbusplus match object to watch for an
+     *        interfacesAdded signal on the object path passed in
+     *        and adds it to the _addMatches map.
+     *
+     * @param[in] objectPath - the path to watch
+     */
+    void ifacesAddedWatch(const std::string& objectPath);
+
+    /**
+     * @brief The callback function for the interfacesAdded
+     *        signal that was created for the object path
+     *        on the far end of the association.  Now that it is
+     *        present, an association will be created.
+     *
+     * @param[in] msg - the sdbusplus message from the signal
+     */
+    void interfaceAdded(sdbusplus::message::message& msg);
+
+    /**
      * @brief The map of association data that is loaded from its
      *        JSON definition.  Association D-Bus objects will be
      *        created from this data.
      */
     AssociationMap _associations;
+
+    /**
+     * @brief The map of org.openbmc_project.Associations D-Bus
+     *        interfaces objects based on their object path.
+     */
+    AssociationIfaceMap _associationIfaces;
+
+    /**
+     * @brief The map of outstanding intefacesAdded signal match objects
+     *        based on their object path.
+     */
+    std::map<std::string, std::unique_ptr<sdbusplus::bus::match_t>> _addMatches;
 
     /**
      * @brief The sdbusplus bus object.
@@ -116,6 +176,11 @@ class Manager
      * @brief The path to the associations JSON File.
      */
     const std::string _jsonFile;
+
+    /**
+     * A list of the inventory association paths that have already been handled.
+     */
+    std::vector<std::string> _handled;
 };
 
 } // namespace associations
