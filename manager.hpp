@@ -5,6 +5,9 @@
 #include "interface_ops.hpp"
 #include "serialize.hpp"
 #include "types.hpp"
+#ifdef CREATE_ASSOCIATIONS
+#include "association_manager.hpp"
+#endif
 
 #include <any>
 #include <map>
@@ -205,6 +208,11 @@ class Manager final : public ServerObject<ManagerIface>
 
     /** @brief A container of pimgen generated factory methods.  */
     static const Makers _makers;
+
+    /** @brief Handles creating mapper associations for inventory objects */
+#ifdef CREATE_ASSOCIATIONS
+    associations::Manager _associations;
+#endif
 };
 
 } // namespace manager

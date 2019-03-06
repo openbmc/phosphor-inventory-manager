@@ -17,6 +17,11 @@ libmanagercommon_la_SOURCES = \
 	errors.cpp \
 	functor.cpp \
 	manager.cpp
+
+if CREATE_INV_ASSOCIATIONS
+libmanagercommon_la_SOURCES += association_manager.cpp
+endif
+
 libmanagercommon_la_LIBADD = \
 	$(SDBUSPLUS_LIBS) \
 	$(PHOSPHOR_DBUS_INTERFACES_LIBS) \
