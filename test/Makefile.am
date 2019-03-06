@@ -39,6 +39,16 @@ manager_test_LDADD = ${GTEST_LIBS} ${GMOCK_LIBS}
 manager_test_LDFLAGS = ${OESDK_TESTCASE_FLAGS}
 check_PROGRAMS += manager-test
 
+associations_test_SOURCES = associations_test.cpp
+associations_test_CFLAGS = ${GTEST_CFLAGS} ${GMOCK_CFLAGS} $(SDBUSPLUS_CFLAGS)
+associations_test_LDADD = \
+	${GTEST_LIBS} ${GMOCK_LIBS} ${SDBUSPLUS_LIBS} -lstdc++fs \
+	$(top_builddir)/association_manager.o \
+	$(top_builddir)/org/openbmc/Associations/server.o
+
+associations_test_LDFLAGS = ${OESDK_TESTCASE_FLAGS}
+check_PROGRAMS += associations-test
+
 extra_yamldir=$(top_srcdir)/example/extra_interfaces.d
 
 phosphor_inventory_test_SOURCES = test.cpp
