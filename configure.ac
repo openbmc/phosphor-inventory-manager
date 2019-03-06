@@ -90,6 +90,23 @@ AS_IF([test "x$PIM_PERSIST_PATH" == "x"], \
 AC_DEFINE_UNQUOTED([PIM_PERSIST_PATH], ["$PIM_PERSIST_PATH"], \
     [Path of directory housing persisted inventory])
 
+AC_ARG_ENABLE([associations],
+    AS_HELP_STRING([--enable-associations], [Enable creating D-Bus associations from a JSON definition.])
+)
+
+AC_ARG_VAR(CREATE_ASSOCIATIONS, [If associations should be created from a JSON definition.])
+
+AS_IF([test "x$enable_associations" == "xyes"],
+    [CREATE_ASSOCIATIONS="yes"]
+    AC_DEFINE_UNQUOTED([CREATE_ASSOCIATIONS], ["$CREATE_ASSOCIATIONS"],
+                         [If associations should be created from a JSON definition.])
+)
+AC_ARG_VAR(ASSOCIATIONS_FILE_PATH, [Path of associations JSON file.])
+AS_IF([test "x$ASSOCIATIONS_FILE_PATH" == "x"], \
+    [ASSOCIATIONS_FILE_PATH="/usr/share/phosphor-inventory-manager/associations.json"])
+AC_DEFINE_UNQUOTED([ASSOCIATIONS_FILE_PATH], ["$ASSOCIATIONS_FILE_PATH"], \
+    [Path of associations JSON file])
+
 AC_ARG_VAR(CLASS_VERSION, [Class version to register with Cereal])
 AS_IF([test "x$CLASS_VERSION" == "x"], [CLASS_VERSION=1])
 AC_DEFINE_UNQUOTED([CLASS_VERSION], [$CLASS_VERSION], [Class version to register with Cereal])
