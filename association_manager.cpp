@@ -80,7 +80,63 @@ void Manager::load()
 
 void Manager::createAssociations(const std::string& objectPath)
 {
-    // TODO
+    auto endpoints = _associations.find(objectPath);
+    if (endpoints == _associations.end())
+    {
+        return;
+    }
+
+    if (std::find(_handled.begin(), _handled.end(), objectPath) !=
+        _handled.end())
+    {
+        return;
+    }
+
+    _handled.push_back(objectPath);
+
+    for (const auto& endpoint : endpoints->second)
+    {
+        const auto& types = std::get<typesPos>(endpoint);
+        const auto& paths = std::get<pathsPos>(endpoint);
+
+        for (const auto& endpointPath : paths)
+        {
+            const auto& forwardType = std::get<forwardTypePos>(types);
+            const auto& reverseType = std::get<reverseTypePos>(types);
+
+            createAssociation(objectPath, forwardType, endpointPath,
+                              reverseType);
+        }
+    }
+}
+
+void Manager::createAssociation(const std::string& forwardPath,
+                                const std::string& forwardType,
+                                const std::string& reversePath,
+                                const std::string& reverseType)
+{
+    auto object = _associationIfaces.find(forwardPath);
+    if (object == _associationIfaces.end())
+    {
+        auto a = std::make_unique<AssociationObject>(_bus, forwardPath.c_str(),
+                                                     true);
+
+        using AssociationProperty =
+            std::vector<std::tuple<std::string, std::string, std::string>>;
+        AssociationProperty prop;
+
+        prop.emplace_back(forwardType, reverseType, reversePath);
+        a->associations(std::move(prop));
+        a->emit_object_added();
+        _associationIfaces.emplace(forwardPath, std::move(a));
+    }
+    else
+    {
+        // Interface exists, just update the property
+        auto prop = object->second->associations();
+        prop.emplace_back(forwardType, reverseType, reversePath);
+        object->second->associations(std::move(prop));
+    }
 }
 } // namespace associations
 } // namespace manager
