@@ -34,3 +34,12 @@ Makefile.extra
 extra_ifaces.cpp
 org/openbmc/Associations/
 test-driver
+*.log
+*.trs
+*-libtool
+associations-test
+interface-ops-test
+manager-test
+serialize-test
+types-test
+utils-test
