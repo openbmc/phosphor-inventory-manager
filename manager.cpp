@@ -60,6 +60,10 @@ Manager::Manager(sdbusplus::bus::bus&& bus, const char* busname,
                  const char* root, const char* iface) :
     ServerObject<ManagerIface>(bus, root),
     _shutdown(false), _root(root), _bus(std::move(bus)), _manager(_bus, root)
+#ifdef CREATE_ASSOCIATIONS
+    ,
+    _associations(_bus)
+#endif
 {
     for (auto& group : _events)
     {
@@ -237,6 +241,12 @@ void Manager::updateObjects(
 
         updateInterfaces(absPath, objit->second, refit, newObj,
                          restoreFromCache);
+#ifdef CREATE_ASSOCIATIONS
+        if (newObj)
+        {
+            _associations.createAssociations(absPath);
+        }
+#endif
         ++objit;
     }
 }
