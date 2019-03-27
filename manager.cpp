@@ -87,10 +87,12 @@ Manager::Manager(sdbusplus::bus::bus&& bus, const char* busname,
         }
     }
 
-    _bus.request_name(busname);
-
     // Restore any persistent inventory
     restore();
+
+    // Must acquire name afterwards since restore() could block dbus calls
+    // from being processed.
+    _bus.request_name(busname);
 }
 
 void Manager::shutdown() noexcept
