@@ -3,7 +3,7 @@
 #include "config.h"
 
 #include <cereal/archives/json.hpp>
-#include <experimental/filesystem>
+#include <filesystem>
 #include <fstream>
 #include <phosphor-logging/log.hpp>
 
@@ -14,7 +14,7 @@ namespace inventory
 namespace manager
 {
 
-namespace fs = std::experimental::filesystem;
+namespace fs = std::filesystem;
 
 struct SerialOps
 {
