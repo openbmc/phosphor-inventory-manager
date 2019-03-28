@@ -2,7 +2,7 @@ BUILT_SOURCES=generated.cpp extra_ifaces.cpp gen_serialization.hpp
 
 CLEANFILES=$(BUILT_SOURCES)
 
-sbin_PROGRAMS = phosphor-inventory
+bin_PROGRAMS = phosphor-inventory
 noinst_LTLIBRARIES = libmanagercommon.la libmanager.la
 
 extra_yamldir=$(YAML_PATH)/extra_interfaces.d
