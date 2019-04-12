@@ -3,6 +3,7 @@
 // This file was auto generated.  Do not edit.
 
 #include <cereal/types/string.hpp>
+#include <cereal/types/tuple.hpp>
 #include <cereal/types/vector.hpp>
 #include "config.h"
 % for iface in interfaces:
