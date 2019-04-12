@@ -41,16 +41,13 @@ class InterfaceComposite(object):
     def __init__(self, dict):
         self.dict = dict
 
-    def properties(self, interface):
-        return self.dict[interface]
-
     def interfaces(self):
         return self.dict.keys()
 
     def names(self, interface):
         names = []
         if self.dict[interface]:
-            names = [x["name"] for x in self.dict[interface]]
+            names = [NamedElement(name=x["name"]) for x in self.dict[interface]]
         return names
 
 

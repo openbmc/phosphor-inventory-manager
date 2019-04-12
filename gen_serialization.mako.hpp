@@ -25,7 +25,7 @@ void save(Archive& a,
           const std::uint32_t version)
 {
 <%
-    props = ["object." + p[:1].lower() + p[1:] + "()" for p in properties]
+    props = ["object." + p.camelCase + "()" for p in properties]
     props = ', '.join(props)
 %>\
     a(${props});
@@ -38,15 +38,15 @@ void load(Archive& a,
           const std::uint32_t version)
 {
 % for p in properties:
-<% t = "object." + p[:1].lower() + p[1:] + "()" %>\
-    decltype(${t}) ${p}{};
+<% t = "object." + p.camelCase + "()" %>\
+    decltype(${t}) ${p.CamelCase}{};
 % endfor
 <%
-    props = ', '.join(properties)
+    props = ', '.join([p.CamelCase for p in properties])
 %>\
     a(${props});
 % for p in properties:
-<% t = "object." + p[:1].lower() + p[1:] + "(" + p + ")" %>\
+<% t = "object." + p.camelCase + "(" + p.CamelCase + ")" %>\
     ${t};
 % endfor
 }
