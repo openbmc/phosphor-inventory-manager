@@ -23,7 +23,7 @@ check_PROGRAMS += utils-test
 
 serialize_test_SOURCES = serialize_test.cpp
 serialize_test_CFLAGS = ${GTEST_CFLAGS} ${GMOCK_CFLAGS}
-serialize_test_LDADD = ${GTEST_LIBS} ${GMOCK_LIBS}
+serialize_test_LDADD = ${GTEST_LIBS} ${GMOCK_LIBS} -lstdc++fs
 serialize_test_LDFLAGS = ${OESDK_TESTCASE_FLAGS}
 check_PROGRAMS += serialize-test
 

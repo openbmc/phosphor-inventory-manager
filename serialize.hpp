@@ -16,6 +16,18 @@ namespace manager
 
 namespace fs = std::filesystem;
 
+namespace detail
+{
+inline fs::path getStoragePath(const std::string& path,
+                               const std::string& iface)
+{
+    auto p = fs::path(PIM_PERSIST_PATH);
+    p /= fs::path(path).relative_path();
+    p /= fs::path(iface).relative_path();
+    return p;
+}
+} // namespace detail
+
 struct SerialOps
 {
     /** @brief Serialize inventory item path
@@ -26,10 +38,8 @@ struct SerialOps
      */
     static void serialize(const std::string& path, const std::string& iface)
     {
-        fs::path p(PIM_PERSIST_PATH);
-        p /= path;
-        fs::create_directories(p);
-        p /= iface;
+        auto p = detail::getStoragePath(path, iface);
+        fs::create_directories(p.parent_path());
         std::ofstream os(p, std::ios::binary);
     }
 
@@ -43,10 +53,8 @@ struct SerialOps
     static void serialize(const std::string& path, const std::string& iface,
                           const T& object)
     {
-        fs::path p(PIM_PERSIST_PATH);
-        p /= path;
-        fs::create_directories(p);
-        p /= iface;
+        auto p = detail::getStoragePath(path, iface);
+        fs::create_directories(p.parent_path());
         std::ofstream os(p, std::ios::binary);
         cereal::JSONOutputArchive oarchive(os);
         oarchive(object);
