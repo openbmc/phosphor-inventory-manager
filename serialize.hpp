@@ -75,9 +75,7 @@ struct SerialOps
     static void deserialize(const std::string& path, const std::string& iface,
                             T& object)
     {
-        fs::path p(PIM_PERSIST_PATH);
-        p /= path;
-        p /= iface;
+        auto p = detail::getStoragePath(path, iface);
         try
         {
             if (fs::exists(p))
