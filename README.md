@@ -225,4 +225,4 @@ To clean the repository run:
 ```
  ./bootstrap.sh clean
 ```
-[1]: https://github.com/openbmc/docs/blob/master/object-mapper.md#associations
+[1]: https://github.com/openbmc/docs/blob/master/architecture/object-mapper.md#associations
