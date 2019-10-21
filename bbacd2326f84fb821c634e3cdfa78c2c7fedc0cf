@@ -1,0 +1,9 @@
+Ok-To-Test+1: Jenkins <openbmc-ci-admin@ozlabs.org>
+Code-Review+1: MARRI DEVENDER RAO <devenrao@in.ibm.com>
+Code-Review+2: Brad Bishop <bradleyb@fuzziesquirrel.com>
+Verified+1: Brad Bishop <bradleyb@fuzziesquirrel.com>
+Submitted-by: Brad Bishop <bradleyb@fuzziesquirrel.com>
+Submitted-at: Mon, 21 Oct 2019 17:38:53 +0000
+Reviewed-on: https://gerrit.openbmc-project.xyz/c/openbmc/phosphor-inventory-manager/+/26256
+Project: openbmc/phosphor-inventory-manager
+Branch: refs/heads/master
