@@ -91,10 +91,10 @@ Manager::Manager(sdbusplus::bus::bus&& bus, const char* busname,
         }
     }
 
-    _bus.request_name(busname);
-
     // Restore any persistent inventory
     restore();
+
+    _bus.request_name(busname);
 }
 
 void Manager::shutdown() noexcept
