@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''Phosphor Inventory Manager YAML parser and code generator.
 
@@ -42,7 +42,7 @@ class InterfaceComposite(object):
         self.dict = dict
 
     def interfaces(self):
-        return self.dict.keys()
+        return list(self.dict.keys())
 
     def names(self, interface):
         names = []
@@ -204,7 +204,7 @@ class DbusSignature(Argument):
     '''DBus signature arguments.'''
 
     def __init__(self, **kw):
-        self.sig = {x: y for x, y in kw.iteritems()}
+        self.sig = {x: y for x, y in kw.items()}
         kw.clear()
         super(DbusSignature, self).__init__(**kw)
 
@@ -284,18 +284,18 @@ class CreateObjects(MethodCall):
     def __init__(self, **kw):
         objs = []
 
-        for path, interfaces in kw.pop('objs').iteritems():
+        for path, interfaces in kw.pop('objs').items():
             key_o = TrivialArgument(
                 value=path,
                 type='string',
                 decorators=[Literal('string')])
             value_i = []
 
-            for interface, properties, in interfaces.iteritems():
+            for interface, properties, in interfaces.items():
                 key_i = TrivialArgument(value=interface, type='string')
                 value_p = []
                 if properties:
-                    for prop, value in properties.iteritems():
+                    for prop, value in properties.items():
                         key_p = TrivialArgument(value=prop, type='string')
                         value_v = TrivialArgument(
                             decorators=[Literal(value.get('type', None))],
@@ -528,9 +528,8 @@ class Everything(Renderer):
         events_dir = os.path.join(args.inputdir, 'events.d')
 
         if os.path.exists(events_dir):
-            yaml_files = filter(
-                lambda x: x.endswith('.yaml'),
-                os.listdir(events_dir))
+            yaml_files = [x for x in os.listdir(events_dir) if
+                    x.endswith('.yaml')]
 
             for x in yaml_files:
                 with open(os.path.join(events_dir, x), 'r') as fd:
@@ -565,11 +564,10 @@ class Everything(Renderer):
                 if not files:
                     continue
 
-                yaml_files += map(
-                    lambda f: os.path.relpath(
+                yaml_files += [os.path.relpath(
                         os.path.join(directory, f),
-                        targetdir),
-                    filter(lambda f: f.endswith('.interface.yaml'), files))
+                        targetdir) for f in [f for f in files if
+                                f.endswith('.interface.yaml')]]
 
         for y in yaml_files:
             # parse only phosphor dbus related interface files
@@ -659,8 +657,8 @@ if __name__ == '__main__':
         help='Inventory manager busname.')
     parser.add_argument(
         'command', metavar='COMMAND', type=str,
-        choices=valid_commands.keys(),
-        help='%s.' % " | ".join(valid_commands.keys()))
+        choices=list(valid_commands.keys()),
+        help='%s.' % " | ".join(list(valid_commands.keys())))
 
     args = parser.parse_args()
 

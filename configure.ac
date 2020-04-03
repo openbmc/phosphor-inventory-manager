@@ -15,9 +15,9 @@ AC_PROG_AWK
 AC_CHECK_PROG([FIND], find, find)
 AC_CHECK_PROG([BASENAME], basename, basename)
 AC_CHECK_PROG([DIRNAME], dirname, dirname)
-AM_PATH_PYTHON([2.7],
+AM_PATH_PYTHON([3],
     [AC_SUBST([PYTHON], [echo "$PYTHON"])],
-    [AC_MSG_ERROR([Could not find python-2.7 installed...python-2.7 is required])])
+    [AC_MSG_ERROR([Could not find python-3 installed...python-3 is required])])
 
 # Checks for libraries.
 PKG_CHECK_MODULES([SYSTEMD], [libsystemd >= 221])
