@@ -236,7 +236,7 @@ void runTests()
     auto m = set(trigger4.str);
     m.append("xyz.openbmc_project.Example.Iface2");
     m.append("ExampleProperty2");
-    m.append(sdbusplus::message::variant<std::string>("123"));
+    m.append(std::variant<std::string>("123"));
     b.call(m);
     auto sig{queue.pop()};
     assert(!sig);
@@ -250,7 +250,7 @@ void runTests()
     auto m = set(trigger4.str);
     m.append("xyz.openbmc_project.Example.Iface2");
     m.append("ExampleProperty2");
-    m.append(sdbusplus::message::variant<std::string>("xyz"));
+    m.append(std::variant<std::string>("xyz"));
     b.call(m);
     auto sig{queue.pop()};
     assert(!sig);
@@ -261,7 +261,7 @@ void runTests()
     auto m = set(trigger4.str);
     m.append("xyz.openbmc_project.Example.Iface2");
     m.append("ExampleProperty3");
-    m.append(sdbusplus::message::variant<int64_t>(99));
+    m.append(std::variant<int64_t>(99));
     b.call(m);
     auto sig{queue.pop()};
     assert(!sig);
@@ -271,7 +271,7 @@ void runTests()
     auto m = set(trigger4.str);
     m.append("xyz.openbmc_project.Example.Iface2");
     m.append("ExampleProperty2");
-    m.append(sdbusplus::message::variant<std::string>("123"));
+    m.append(std::variant<std::string>("123"));
     b.call(m);
 
     sdbusplus::message::object_path sigpath;
@@ -312,7 +312,7 @@ b.call(m);
     auto m = set(trigger1.str);
     m.append("xyz.openbmc_project.Example.Iface2");
     m.append("ExampleProperty2");
-    m.append(sdbusplus::message::variant<std::string>("abc123"));
+    m.append(std::variant<std::string>("abc123"));
     b.call(m);
     auto sig{queue.pop()};
     assert(!sig);
@@ -322,7 +322,7 @@ b.call(m);
     auto m = set(trigger3.str);
     m.append("xyz.openbmc_project.Example.Iface2");
     m.append("ExampleProperty3");
-    m.append(sdbusplus::message::variant<int64_t>(11));
+    m.append(std::variant<int64_t>(11));
     b.call(m);
     auto sig{queue.pop()};
     assert(!sig);
@@ -335,7 +335,7 @@ b.call(m);
     auto m = set(trigger1.str);
     m.append("xyz.openbmc_project.Example.Iface2");
     m.append("ExampleProperty2");
-    m.append(sdbusplus::message::variant<std::string>("xxxyyy"));
+    m.append(std::variant<std::string>("xxxyyy"));
     b.call(m);
 
     sdbusplus::message::object_path sigpath;
@@ -372,7 +372,7 @@ b.call(m);
     auto m = set(trigger3.str);
     m.append("xyz.openbmc_project.Example.Iface2");
     m.append("ExampleProperty3");
-    m.append(sdbusplus::message::variant<int64_t>(10));
+    m.append(std::variant<int64_t>(10));
     b.call(m);
 
     sdbusplus::message::object_path sigpath;
@@ -413,12 +413,11 @@ b.call(m);
         auto m = set(trigger2.str);
         m.append("xyz.openbmc_project.Example.Iface2");
         m.append("ExampleProperty2");
-        m.append(sdbusplus::message::variant<std::string>("yyyxxx"));
+        m.append(std::variant<std::string>("yyyxxx"));
         b.call(m);
 
         std::string sigInterface;
-        std::map<std::string, sdbusplus::message::variant<std::string>>
-            sigProperties;
+        std::map<std::string, std::variant<std::string>> sigProperties;
         {
             std::vector<std::string> interfaces;
             auto sig{queue.pop()};
@@ -448,7 +447,7 @@ b.call(m);
         auto m = set(trigger5.str);
         m.append("xyz.openbmc_project.Example.Iface2");
         m.append("ExampleProperty2");
-        m.append(sdbusplus::message::variant<std::string>("abc123"));
+        m.append(std::variant<std::string>("abc123"));
         b.call(m);
         {
             auto sig{queue.pop()};

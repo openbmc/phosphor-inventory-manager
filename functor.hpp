@@ -211,7 +211,7 @@ struct PropertyChangedCondition
     bool operator()(sdbusplus::bus::bus&, sdbusplus::message::message& msg,
                     Manager&) const
     {
-        std::map<std::string, sdbusplus::message::variant<T>> properties;
+        std::map<std::string, std::variant<T>> properties;
         const char* iface = nullptr;
 
         msg.read(iface);
@@ -351,7 +351,7 @@ struct PropertyCondition final : public PropertyConditionBase
      */
     bool eval(sdbusplus::message::message& msg) const override
     {
-        sdbusplus::message::variant<T> value;
+        std::variant<T> value;
         msg.read(value);
         return _condition(std::forward<T>(std::get<T>(value)));
     }
