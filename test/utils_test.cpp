@@ -2,18 +2,18 @@
 
 #include <gtest/gtest.h>
 
-using namespace sdbusplus::message::variant_ns;
 using namespace phosphor::inventory::manager;
 using namespace std::string_literals;
 
 TEST(UtilsTest, TestVariantVisitor)
 {
-    variant<int, std::string> ib1(100);
-    auto converted1 = convertVariant<variant<int>>(ib1);
-    EXPECT_TRUE(get<int>(converted1) == 100);
+    std::variant<int, std::string> ib1(100);
+    auto converted1 = convertVariant<std::variant<int>>(ib1);
+    EXPECT_TRUE(std::get<int>(converted1) == 100);
 
-    variant<int, std::string> ib2(100);
-    EXPECT_THROW(convertVariant<variant<std::string>>(ib2), std::runtime_error);
+    std::variant<int, std::string> ib2(100);
+    EXPECT_THROW(convertVariant<std::variant<std::string>>(ib2),
+                 std::runtime_error);
 }
 
 TEST(UtilsTest, TestCompareFirst)

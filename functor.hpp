@@ -227,8 +227,7 @@ struct PropertyChangedCondition
             return false;
         }
 
-        return _condition(std::forward<T>(
-            sdbusplus::message::variant_ns::get<T>(it->second)));
+        return _condition(std::forward<T>(std::get<T>(it->second)));
     }
 
   private:
@@ -354,8 +353,7 @@ struct PropertyCondition final : public PropertyConditionBase
     {
         sdbusplus::message::variant<T> value;
         msg.read(value);
-        return _condition(
-            std::forward<T>(sdbusplus::message::variant_ns::get<T>(value)));
+        return _condition(std::forward<T>(std::get<T>(value)));
     }
 
     /** @brief Retrieve a property value from inventory and test it.
@@ -369,7 +367,7 @@ struct PropertyCondition final : public PropertyConditionBase
         if (_getProperty)
         {
             auto variant = _getProperty(mgr);
-            auto value = sdbusplus::message::variant_ns::get<T>(variant);
+            auto value = std::get<T>(variant);
             return _condition(std::forward<T>(value));
         }
         return false;
