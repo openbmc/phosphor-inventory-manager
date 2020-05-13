@@ -74,7 +74,7 @@ struct MakeVariantVisitor
 template <typename V, typename Arg>
 auto convertVariant(Arg&& v)
 {
-    return sdbusplus::message::variant_ns::visit(MakeVariantVisitor<V>(), v);
+    return std::visit(MakeVariantVisitor<V>(), v);
 }
 
 /** @struct CompareFirst
