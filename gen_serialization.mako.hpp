@@ -5,6 +5,7 @@
 #include <cereal/types/string.hpp>
 #include <cereal/types/tuple.hpp>
 #include <cereal/types/vector.hpp>
+#include <cereal/types/map.hpp>
 #include "config.h"
 % for iface in interfaces:
 #include <${iface.header()}>
