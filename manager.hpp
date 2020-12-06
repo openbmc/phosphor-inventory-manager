@@ -179,9 +179,8 @@ class Manager final : public ServerObject<ManagerIface>
     /** @brief Add or update interfaces on DBus. */
     void updateInterfaces(const sdbusplus::message::object_path& path,
                           const Object& interfaces,
-                          ObjectReferences::iterator pos,
-                          bool emitSignals = true,
-                          bool restoreFromCache = false);
+                          ObjectReferences::iterator pos, bool emitSignals,
+                          bool restoreFromCache);
 
     /** @brief Provided for testing only. */
     volatile bool _shutdown;
