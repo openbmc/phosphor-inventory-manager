@@ -78,8 +78,7 @@ template <typename T, typename Enable = void>
 struct AssignInterface
 {
     static void op(const Interface&, std::any&)
-    {
-    }
+    {}
 };
 
 template <typename T>
@@ -139,8 +138,7 @@ struct DeserializeInterface<T, Ops, std::enable_if_t<HasProperties<T>::value>>
 };
 
 struct DummyInterface
-{
-};
+{};
 using MakeInterfaceType =
     std::add_pointer_t<decltype(MakeInterface<DummyInterface>::op)>;
 using AssignInterfaceType =

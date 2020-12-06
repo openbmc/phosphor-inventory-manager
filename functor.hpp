@@ -3,8 +3,9 @@
 #include "types.hpp"
 #include "utils.hpp"
 
-#include <memory>
 #include <sdbusplus/bus.hpp>
+
+#include <memory>
 #include <utility>
 
 namespace phosphor
@@ -200,8 +201,7 @@ struct PropertyChangedCondition
                              U&& condition) :
         _iface(iface),
         _property(property), _condition(std::forward<U>(condition))
-    {
-    }
+    {}
 
     /** @brief Test a property value.
      *
@@ -269,8 +269,7 @@ struct PropertyConditionBase
                           const char* property, const char* service) :
         _path(path ? path : std::string()),
         _iface(iface), _property(property), _service(service)
-    {
-    }
+    {}
 
     /** @brief Forward comparison to type specific implementation. */
     virtual bool eval(sdbusplus::message::message&) const = 0;
@@ -342,8 +341,7 @@ struct PropertyCondition final : public PropertyConditionBase
         PropertyConditionBase(path, iface, property, service),
         _condition(std::forward<decltype(condition)>(condition)),
         _getProperty(getProperty)
-    {
-    }
+    {}
 
     /** @brief Test a property value.
      *

@@ -69,8 +69,7 @@ class Manager
      */
     explicit Manager(sdbusplus::bus::bus& bus) :
         Manager(bus, ASSOCIATIONS_FILE_PATH)
-    {
-    }
+    {}
 
     /**
      * @brief Creates any association D-Bus interfaces required based on

@@ -1,9 +1,10 @@
 #include "association_manager.hpp"
 
-#include <filesystem>
-#include <fstream>
 #include <nlohmann/json.hpp>
 #include <phosphor-logging/log.hpp>
+
+#include <filesystem>
+#include <fstream>
 
 namespace phosphor
 {

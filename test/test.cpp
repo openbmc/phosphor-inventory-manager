@@ -113,8 +113,7 @@ class SignalQueue
     explicit SignalQueue(const std::string& match) :
         _bus(sdbusplus::bus::new_default()),
         _match(_bus, match.c_str(), &callback, this), _next(nullptr)
-    {
-    }
+    {}
 
     auto&& pop(unsigned timeout = 1000000)
     {

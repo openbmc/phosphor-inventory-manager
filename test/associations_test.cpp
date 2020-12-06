@@ -142,8 +142,7 @@ class AssocsTest : public ::testing::Test
 {
   protected:
     AssocsTest() : ::testing::Test(), bus(sdbusplus::bus::new_default())
-    {
-    }
+    {}
 
     fs::path jsonDir;
     sdbusplus::bus::bus bus;
@@ -179,8 +178,7 @@ TEST_F(AssocsTest, TEST_NO_JSON)
         EXPECT_TRUE(false);
     }
     catch (std::exception& e)
-    {
-    }
+    {}
 }
 
 TEST_F(AssocsTest, TEST_GOOD_JSON)
@@ -252,8 +250,7 @@ TEST_F(AssocsTest, TEST_BAD_JSON0)
         EXPECT_TRUE(false);
     }
     catch (std::exception& e)
-    {
-    }
+    {}
 }
 
 TEST_F(AssocsTest, TEST_BAD_JSON1)
@@ -267,8 +264,7 @@ TEST_F(AssocsTest, TEST_BAD_JSON1)
         EXPECT_TRUE(false);
     }
     catch (std::exception& e)
-    {
-    }
+    {}
 }
 
 TEST_F(AssocsTest, TEST_BAD_JSON2)
@@ -282,8 +278,7 @@ TEST_F(AssocsTest, TEST_BAD_JSON2)
         EXPECT_TRUE(false);
     }
     catch (std::exception& e)
-    {
-    }
+    {}
 }
 
 TEST_F(AssocsTest, TEST_BAD_JSON3)
@@ -297,6 +292,5 @@ TEST_F(AssocsTest, TEST_BAD_JSON3)
         EXPECT_TRUE(false);
     }
     catch (std::exception& e)
-    {
-    }
+    {}
 }

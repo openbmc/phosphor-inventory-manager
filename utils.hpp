@@ -1,7 +1,8 @@
 #pragma once
 
-#include <cstring>
 #include <sdbusplus/message/types.hpp>
+
+#include <cstring>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -93,8 +94,7 @@ struct CompareFirst
      *  @param[in] c - The function object being adapted.
      */
     explicit CompareFirst(Compare&& c) : compare(std::forward<Compare>(c))
-    {
-    }
+    {}
 
     /** @brief Compare two pairs adapter.
      *
@@ -170,8 +170,7 @@ struct RelPathCompare
      *  @param[in] p - The prefix to check for and remove.
      */
     explicit RelPathCompare(const char* p) : prefix(p)
-    {
-    }
+    {}
 
     /** @brief Check for the prefix and remove if found.
      *

@@ -1,9 +1,10 @@
 #pragma once
 
+#include <sdbusplus/message/types.hpp>
+
 #include <cstdint>
 #include <functional>
 #include <map>
-#include <sdbusplus/message/types.hpp>
 #include <string>
 
 namespace sdbusplus

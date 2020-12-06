@@ -32,8 +32,7 @@ class InterfaceError final : public std::invalid_argument
      */
     InterfaceError(const char* msg, const std::string& iface) :
         std::invalid_argument(msg), interface(iface)
-    {
-    }
+    {}
 
     /** @brief Log the exception message to the systemd journal. */
     void log() const;

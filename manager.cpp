@@ -17,12 +17,13 @@
 
 #include "errors.hpp"
 
+#include <phosphor-logging/log.hpp>
+
 #include <algorithm>
 #include <chrono>
 #include <exception>
 #include <filesystem>
 #include <iostream>
-#include <phosphor-logging/log.hpp>
 
 using namespace std::literals::chrono_literals;
 

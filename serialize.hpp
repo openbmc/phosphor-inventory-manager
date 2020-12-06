@@ -3,9 +3,10 @@
 #include "config.h"
 
 #include <cereal/archives/json.hpp>
+#include <phosphor-logging/log.hpp>
+
 #include <filesystem>
 #include <fstream>
-#include <phosphor-logging/log.hpp>
 
 namespace phosphor
 {

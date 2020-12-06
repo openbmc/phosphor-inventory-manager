@@ -9,13 +9,14 @@
 #include "association_manager.hpp"
 #endif
 
+#include <sdbusplus/server.hpp>
+#include <xyz/openbmc_project/Inventory/Manager/server.hpp>
+
 #include <any>
 #include <map>
 #include <memory>
-#include <sdbusplus/server.hpp>
 #include <string>
 #include <vector>
-#include <xyz/openbmc_project/Inventory/Manager/server.hpp>
 
 namespace sdbusplus
 {

@@ -17,10 +17,11 @@
 
 #include "manager.hpp"
 
+#include <sdbusplus/bus.hpp>
+
 #include <cstdlib>
 #include <exception>
 #include <iostream>
-#include <sdbusplus/bus.hpp>
 
 int main(int argc, char* argv[])
 {
