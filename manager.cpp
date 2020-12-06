@@ -243,7 +243,7 @@ void Manager::updateObjects(
 #ifdef CREATE_ASSOCIATIONS
         if (newObj)
         {
-            _associations.createAssociations(absPath);
+            _associations.createAssociations(absPath, false);
         }
 #endif
         ++objit;

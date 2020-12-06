@@ -79,8 +79,10 @@ class Manager
      * Called after PIM creates a new inventory D-Bus interface on objectPath.
      *
      * @param[in] objectPath - the D-Bus object path to check for associations
+     * @param[in] deferSignal - whether or not to send a Properties or
+     *                          ObjectManager signal
      */
-    void createAssociations(const std::string& objectPath);
+    void createAssociations(const std::string& objectPath, bool deferSignal);
 
     /**
      * @brief Returned the association configuration.
@@ -109,11 +111,13 @@ class Manager
      * @param[in] forwardType - the type of the forward association
      * @param[in] reversePath - the path of the reverse association
      * @param[in] reverseType - the type of the reverse association
+     * @param[in] deferSignal - whether or not to send a Properties or
+     *                          ObjectManager signal
      */
     void createAssociation(const std::string& forwardPath,
                            const std::string& forwardType,
                            const std::string& reversePath,
-                           const std::string& reverseType);
+                           const std::string& reverseType, bool deferSignal);
 
     /**
      * @brief The map of association data that is loaded from its

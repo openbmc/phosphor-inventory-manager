@@ -79,7 +79,8 @@ void Manager::load()
     }
 }
 
-void Manager::createAssociations(const std::string& objectPath)
+void Manager::createAssociations(const std::string& objectPath,
+                                 bool deferSignal)
 {
     auto endpoints = _associations.find(objectPath);
     if (endpoints == _associations.end())
@@ -106,7 +107,7 @@ void Manager::createAssociations(const std::string& objectPath)
             const auto& reverseType = std::get<reverseTypePos>(types);
 
             createAssociation(objectPath, forwardType, endpointPath,
-                              reverseType);
+                              reverseType, deferSignal);
         }
     }
 }
@@ -114,7 +115,8 @@ void Manager::createAssociations(const std::string& objectPath)
 void Manager::createAssociation(const std::string& forwardPath,
                                 const std::string& forwardType,
                                 const std::string& reversePath,
-                                const std::string& reverseType)
+                                const std::string& reverseType,
+                                bool deferSignal)
 {
     auto object = _associationIfaces.find(forwardPath);
     if (object == _associationIfaces.end())
@@ -128,7 +130,10 @@ void Manager::createAssociation(const std::string& forwardPath,
 
         prop.emplace_back(forwardType, reverseType, reversePath);
         a->associations(std::move(prop));
-        a->emit_object_added();
+        if (!deferSignal)
+        {
+            a->emit_object_added();
+        }
         _associationIfaces.emplace(forwardPath, std::move(a));
     }
     else
@@ -136,7 +141,7 @@ void Manager::createAssociation(const std::string& forwardPath,
         // Interface exists, just update the property
         auto prop = object->second->associations();
         prop.emplace_back(forwardType, reverseType, reversePath);
-        object->second->associations(std::move(prop));
+        object->second->associations(std::move(prop), deferSignal);
     }
 }
 } // namespace associations
