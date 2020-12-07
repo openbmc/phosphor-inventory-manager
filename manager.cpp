@@ -58,7 +58,7 @@ auto _signal(sd_bus_message* m, void* data, sd_bus_error* e) noexcept
 }
 
 Manager::Manager(sdbusplus::bus::bus&& bus, const char* busname,
-                 const char* root, const char* iface) :
+                 const char* root) :
     ServerObject<ManagerIface>(bus, root),
     _shutdown(false), _root(root), _bus(std::move(bus)), _manager(_bus, root)
 #ifdef CREATE_ASSOCIATIONS

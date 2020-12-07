@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
     try
     {
         phosphor::inventory::manager::Manager manager(
-            sdbusplus::bus::new_system(), BUSNAME, INVENTORY_ROOT, IFACE);
+            sdbusplus::bus::new_system(), BUSNAME, INVENTORY_ROOT);
         manager.run();
         exit(EXIT_SUCCESS);
     }

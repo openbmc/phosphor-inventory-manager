@@ -471,8 +471,8 @@ b.call(m);
 
 int main()
 {
-    phosphor::inventory::manager::Manager mgr(
-        sdbusplus::bus::new_default(), MGR_SERVICE, MGR_ROOT, MGR_INTERFACE);
+    phosphor::inventory::manager::Manager mgr(sdbusplus::bus::new_default(),
+                                              MGR_SERVICE, MGR_ROOT);
     ExampleService d;
 
     auto f1 = [](auto mgr) { mgr->run(); };

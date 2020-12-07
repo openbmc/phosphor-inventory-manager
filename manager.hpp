@@ -60,9 +60,8 @@ class Manager final : public ServerObject<ManagerIface>
      *  @param[in] busname - The DBus busname to own.
      *  @param[in] root - The DBus path on which to implement
      *      an inventory manager.
-     *  @param[in] iface - The DBus inventory interface to implement.
      */
-    Manager(sdbusplus::bus::bus&&, const char*, const char*, const char*);
+    Manager(sdbusplus::bus::bus&&, const char*, const char*);
 
     using EventInfo =
         std::tuple<std::vector<EventBasePtr>, std::vector<Action>>;
