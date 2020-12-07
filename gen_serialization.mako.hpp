@@ -16,6 +16,10 @@
 CEREAL_CLASS_VERSION(${iface.namespace()}, CLASS_VERSION);
 % endfor
 
+// Emitting signals prior to claiming a well known DBus service name causes
+// un-necessary DBus traffic and wakeups.  De-serialization only happens prior
+// to claiming a well known name, so don't emit signals.
+static constexpr auto skipSignals = true;
 namespace cereal
 {
 
@@ -48,7 +52,7 @@ void load(Archive& a,
 %>\
     a(${props});
 % for p in properties:
-<% t = "object." + p.camelCase + "(" + p.CamelCase + ")" %>\
+<% t = "object." + p.camelCase + "(" + p.CamelCase + ", skipSignals)" %>\
     ${t};
 % endfor
 }
