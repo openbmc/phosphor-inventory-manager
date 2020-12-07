@@ -58,12 +58,12 @@ auto _signal(sd_bus_message* m, void* data, sd_bus_error* e) noexcept
 }
 
 Manager::Manager(sdbusplus::bus::bus&& bus, const char* root) :
-    ServerObject<ManagerIface>(bus, root), _shutdown(false), _root(root),
-    _bus(std::move(bus)), _manager(_bus, root)
+    ServerObject<ManagerIface>(bus, root), _root(root), _bus(std::move(bus)),
+    _manager(_bus, root),
 #ifdef CREATE_ASSOCIATIONS
-    ,
-    _associations(_bus)
+    _associations(_bus),
 #endif
+    _status(ManagerStatus::STARTING)
 {
     for (auto& group : _events)
     {
@@ -97,7 +97,7 @@ Manager::Manager(sdbusplus::bus::bus&& bus, const char* root) :
 
 void Manager::shutdown() noexcept
 {
-    _shutdown = true;
+    _status = ManagerStatus::STOPPING;
 }
 
 void Manager::run(const char* busname)
@@ -116,8 +116,10 @@ void Manager::run(const char* busname)
         }
     }
 
+    _status = ManagerStatus::RUNNING;
     _bus.request_name(busname);
-    while (!_shutdown)
+
+    while (_status != ManagerStatus::STOPPING)
     {
         try
         {

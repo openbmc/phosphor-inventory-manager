@@ -183,9 +183,6 @@ class Manager final : public ServerObject<ManagerIface>
                           ObjectReferences::iterator pos, bool emitSignals,
                           bool restoreFromCache);
 
-    /** @brief Provided for testing only. */
-    volatile bool _shutdown;
-
     /** @brief Path prefix applied to any relative paths. */
     const char* _root;
 
@@ -214,6 +211,9 @@ class Manager final : public ServerObject<ManagerIface>
 #ifdef CREATE_ASSOCIATIONS
     associations::Manager _associations;
 #endif
+
+    /** @brief Manager status indicator */
+    volatile enum class ManagerStatus { STARTING, RUNNING, STOPPING } _status;
 };
 
 } // namespace manager
