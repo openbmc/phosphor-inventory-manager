@@ -167,17 +167,21 @@ void Manager::updateInterfaces(const sdbusplus::message::object_path& path,
             {
                 // Add the new interface.
                 auto& ctor = std::get<MakeInterfaceType>(opsit->second);
+                // skipSignal = true here to avoid getting PropertiesChanged
+                // signals while the interface is constructed.  We'll emit an
+                // ObjectManager signal for this interface below.
                 refaceit = refaces.insert(
                     refaceit, std::make_pair(ifaceit->first,
                                              ctor(_bus, path.str.c_str(),
-                                                  ifaceit->second, false)));
+                                                  ifaceit->second, true)));
                 signals.push_back(ifaceit->first);
             }
             else
             {
                 // Set the new property values.
                 auto& assign = std::get<AssignInterfaceType>(opsit->second);
-                assign(ifaceit->second, refaceit->second, false);
+                assign(ifaceit->second, refaceit->second,
+                       _status != ManagerStatus::RUNNING);
             }
             if (!restoreFromCache)
             {
@@ -204,13 +208,16 @@ void Manager::updateInterfaces(const sdbusplus::message::object_path& path,
         ++ifaceit;
     }
 
-    if (newObject)
+    if (_status == ManagerStatus::RUNNING)
     {
-        _bus.emit_object_added(path.str.c_str());
-    }
-    else if (!signals.empty())
-    {
-        _bus.emit_interfaces_added(path.str.c_str(), signals);
+        if (newObject)
+        {
+            _bus.emit_object_added(path.str.c_str());
+        }
+        else if (!signals.empty())
+        {
+            _bus.emit_interfaces_added(path.str.c_str(), signals);
+        }
     }
 }
 
@@ -245,7 +252,8 @@ void Manager::updateObjects(
 #ifdef CREATE_ASSOCIATIONS
         if (newObj)
         {
-            _associations.createAssociations(absPath, false);
+            _associations.createAssociations(absPath,
+                                             state != ManagerStatus::RUNNING);
         }
 #endif
         ++objit;
