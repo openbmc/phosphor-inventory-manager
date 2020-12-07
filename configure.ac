@@ -69,20 +69,15 @@ AC_PATH_PROG([SDBUSPLUSPLUS], [sdbus++])
 AS_IF([test "x$SDBUSPLUSPLUS" == "x"],
     AC_MSG_ERROR([Cannot find sdbus++]))
 
-AC_ARG_VAR(BUSNAME, [The DBus busname to own.])
-AC_ARG_VAR(INVENTORY_ROOT, [The DBus inventory namespace root.])
-AC_ARG_VAR(IFACE, [The manager DBus interface.])
+AC_SUBST(BUSNAME, ["xyz.openbmc_project.Inventory.Manager"])
 AC_ARG_VAR(YAML_PATH, [The path to the yaml config files.])
 AC_ARG_VAR(IFACES_PATH, [The path to the interfaces PIM can create.])
-AS_IF([test "x$BUSNAME" == "x"], [BUSNAME="xyz.openbmc_project.Inventory.Manager"])
-AS_IF([test "x$INVENTORY_ROOT" == "x"], [INVENTORY_ROOT="/xyz/openbmc_project/inventory"])
-AS_IF([test "x$IFACE" == "x"], [IFACE="xyz.openbmc_project.Inventory.Manager"])
 AS_IF([test "x$YAML_PATH" == "x"], [YAML_PATH="$srcdir/example"])
 AM_CONDITIONAL(IFACES_PATH, [test x"$IFACES_PATH" != "x"])
 
 AC_DEFINE_UNQUOTED([BUSNAME], ["$BUSNAME"], [The DBus busname to own.])
-AC_DEFINE_UNQUOTED([INVENTORY_ROOT], ["$INVENTORY_ROOT"], [The DBus inventory namespace root.])
-AC_DEFINE_UNQUOTED([IFACE], ["$IFACE"], [The manager DBus interface.])
+AC_DEFINE_UNQUOTED([INVENTORY_ROOT], ["/xyz/openbmc_project/inventory"], [The DBus inventory namespace root.])
+AC_DEFINE_UNQUOTED([IFACE], ["xyz.openbmc_project.Inventory.Manager"], [The manager DBus interface.])
 
 AC_ARG_VAR(PIM_PERSIST_PATH, [Path of directory housing persisted inventory.])
 AS_IF([test "x$PIM_PERSIST_PATH" == "x"], \
