@@ -166,16 +166,16 @@ void Manager::updateInterfaces(const sdbusplus::message::object_path& path,
                 // Add the new interface.
                 auto& ctor = std::get<MakeInterfaceType>(opsit->second);
                 refaceit = refaces.insert(
-                    refaceit,
-                    std::make_pair(ifaceit->first, ctor(_bus, path.str.c_str(),
-                                                        ifaceit->second)));
+                    refaceit, std::make_pair(ifaceit->first,
+                                             ctor(_bus, path.str.c_str(),
+                                                  ifaceit->second, false)));
                 signals.push_back(ifaceit->first);
             }
             else
             {
                 // Set the new property values.
                 auto& assign = std::get<AssignInterfaceType>(opsit->second);
-                assign(ifaceit->second, refaceit->second);
+                assign(ifaceit->second, refaceit->second, false);
             }
             if (!restoreFromCache)
             {

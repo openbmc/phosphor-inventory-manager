@@ -33,10 +33,10 @@ struct MockInterface
     MockInterface& operator=(MockInterface&&) = delete;
 
     // We'll be getting calls proxyed through other objects.
-    MOCK_METHOD2(constructWithProperties,
-                 void(const char*, const InterfaceVariant& i));
+    MOCK_METHOD3(constructWithProperties,
+                 void(const char*, const InterfaceVariant& i, bool));
     MOCK_METHOD1(constructWithoutProperties, void(const char*));
-    MOCK_METHOD2(setPropertyByName, void(std::string, FakeVariantType));
+    MOCK_METHOD3(setPropertyByName, void(std::string, FakeVariantType, bool));
 
     MOCK_METHOD2(serializeTwoArgs,
                  void(const std::string&, const std::string&));
@@ -63,14 +63,15 @@ struct DummyInterfaceWithProperties
     using PropertiesVariant = FakeVariantType;
 
     DummyInterfaceWithProperties(sdbusplus::bus::bus&, const char* name,
-                                 const InterfaceVariant& i)
+                                 const InterfaceVariant& i, bool skipSignal)
     {
-        g_currentMock->constructWithProperties(name, i);
+        g_currentMock->constructWithProperties(name, i, skipSignal);
     }
 
-    void setPropertyByName(std::string name, PropertiesVariant val)
+    void setPropertyByName(std::string name, PropertiesVariant val,
+                           bool skipSignal)
     {
-        g_currentMock->setPropertyByName(name, val);
+        g_currentMock->setPropertyByName(name, val, skipSignal);
     }
 };
 
@@ -116,10 +117,11 @@ TEST(InterfaceOpsTest, TestMakePropertylessInterfaceWithoutArguments)
     sdbusplus::SdBusMock interface;
 
     EXPECT_CALL(mock, constructWithoutProperties("foo")).Times(1);
-    EXPECT_CALL(mock, constructWithProperties(_, _)).Times(0);
+    EXPECT_CALL(mock, constructWithProperties(_, _, _)).Times(0);
 
     auto b = sdbusplus::get_mocked_new(&interface);
-    auto r = MakeInterface<DummyInterfaceWithoutProperties>::op(b, "foo", i);
+    auto r =
+        MakeInterface<DummyInterfaceWithoutProperties>::op(b, "foo", i, false);
 
     EXPECT_NO_THROW(
         std::any_cast<std::shared_ptr<DummyInterfaceWithoutProperties>>(r));
@@ -132,10 +134,11 @@ TEST(InterfaceOpsTest, TestMakePropertylessInterfaceWithOneArgument)
     sdbusplus::SdBusMock interface;
 
     EXPECT_CALL(mock, constructWithoutProperties("foo")).Times(1);
-    EXPECT_CALL(mock, constructWithProperties(_, _)).Times(0);
+    EXPECT_CALL(mock, constructWithProperties(_, _, _)).Times(0);
 
     auto b = sdbusplus::get_mocked_new(&interface);
-    auto r = MakeInterface<DummyInterfaceWithoutProperties>::op(b, "foo", i);
+    auto r =
+        MakeInterface<DummyInterfaceWithoutProperties>::op(b, "foo", i, false);
 
     EXPECT_NO_THROW(
         std::any_cast<std::shared_ptr<DummyInterfaceWithoutProperties>>(r));
@@ -148,10 +151,11 @@ TEST(InterfaceOpsTest, TestMakeInterfaceWithWithoutArguments)
     sdbusplus::SdBusMock interface;
 
     EXPECT_CALL(mock, constructWithoutProperties(_)).Times(0);
-    EXPECT_CALL(mock, constructWithProperties("bar", _)).Times(1);
+    EXPECT_CALL(mock, constructWithProperties("bar", _, _)).Times(1);
 
     auto b = sdbusplus::get_mocked_new(&interface);
-    auto r = MakeInterface<DummyInterfaceWithProperties>::op(b, "bar", i);
+    auto r =
+        MakeInterface<DummyInterfaceWithProperties>::op(b, "bar", i, false);
 
     EXPECT_NO_THROW(
         std::any_cast<std::shared_ptr<DummyInterfaceWithProperties>>(r));
@@ -164,10 +168,11 @@ TEST(InterfaceOpsTest, TestMakeInterfaceWithOneArgument)
     sdbusplus::SdBusMock interface;
 
     EXPECT_CALL(mock, constructWithoutProperties(_)).Times(0);
-    EXPECT_CALL(mock, constructWithProperties("foo", _)).Times(1);
+    EXPECT_CALL(mock, constructWithProperties("foo", _, _)).Times(1);
 
     auto b = sdbusplus::get_mocked_new(&interface);
-    auto r = MakeInterface<DummyInterfaceWithProperties>::op(b, "foo", i);
+    auto r =
+        MakeInterface<DummyInterfaceWithProperties>::op(b, "foo", i, false);
 
     EXPECT_NO_THROW(
         std::any_cast<std::shared_ptr<DummyInterfaceWithProperties>>(r));
@@ -179,12 +184,13 @@ TEST(InterfaceOpsTest, TestAssignPropertylessInterfaceWithoutArguments)
     Interface i;
     sdbusplus::SdBusMock interface;
 
-    EXPECT_CALL(mock, setPropertyByName(_, _)).Times(0);
+    EXPECT_CALL(mock, setPropertyByName(_, _, _)).Times(0);
 
     auto b = sdbusplus::get_mocked_new(&interface);
-    auto r = MakeInterface<DummyInterfaceWithoutProperties>::op(b, "foo", i);
+    auto r =
+        MakeInterface<DummyInterfaceWithoutProperties>::op(b, "foo", i, false);
 
-    AssignInterface<DummyInterfaceWithoutProperties>::op(i, r);
+    AssignInterface<DummyInterfaceWithoutProperties>::op(i, r, false);
 }
 
 TEST(InterfaceOpsTest, TestAssignPropertylessInterfaceWithOneArgument)
@@ -193,12 +199,13 @@ TEST(InterfaceOpsTest, TestAssignPropertylessInterfaceWithOneArgument)
     Interface i{{"foo"s, static_cast<int64_t>(1ll)}};
     sdbusplus::SdBusMock interface;
 
-    EXPECT_CALL(mock, setPropertyByName(_, _)).Times(0);
+    EXPECT_CALL(mock, setPropertyByName(_, _, _)).Times(0);
 
     auto b = sdbusplus::get_mocked_new(&interface);
-    auto r = MakeInterface<DummyInterfaceWithoutProperties>::op(b, "foo", i);
+    auto r =
+        MakeInterface<DummyInterfaceWithoutProperties>::op(b, "foo", i, false);
 
-    AssignInterface<DummyInterfaceWithoutProperties>::op(i, r);
+    AssignInterface<DummyInterfaceWithoutProperties>::op(i, r, false);
 }
 
 TEST(InterfaceOpsTest, TestAssignInterfaceWithoutArguments)
@@ -207,12 +214,13 @@ TEST(InterfaceOpsTest, TestAssignInterfaceWithoutArguments)
     Interface i;
     sdbusplus::SdBusMock interface;
 
-    EXPECT_CALL(mock, setPropertyByName(_, _)).Times(0);
+    EXPECT_CALL(mock, setPropertyByName(_, _, _)).Times(0);
 
     auto b = sdbusplus::get_mocked_new(&interface);
-    auto r = MakeInterface<DummyInterfaceWithProperties>::op(b, "foo", i);
+    auto r =
+        MakeInterface<DummyInterfaceWithProperties>::op(b, "foo", i, false);
 
-    AssignInterface<DummyInterfaceWithProperties>::op(i, r);
+    AssignInterface<DummyInterfaceWithProperties>::op(i, r, false);
 }
 
 TEST(InterfaceOpsTest, TestAssignInterfaceWithOneArgument)
@@ -221,12 +229,13 @@ TEST(InterfaceOpsTest, TestAssignInterfaceWithOneArgument)
     Interface i{{"foo"s, static_cast<int64_t>(1ll)}};
     sdbusplus::SdBusMock interface;
 
-    EXPECT_CALL(mock, setPropertyByName("foo"s, 1ll)).Times(1);
+    EXPECT_CALL(mock, setPropertyByName("foo"s, 1ll, _)).Times(1);
 
     auto b = sdbusplus::get_mocked_new(&interface);
-    auto r = MakeInterface<DummyInterfaceWithProperties>::op(b, "bar", i);
+    auto r =
+        MakeInterface<DummyInterfaceWithProperties>::op(b, "bar", i, false);
 
-    AssignInterface<DummyInterfaceWithProperties>::op(i, r);
+    AssignInterface<DummyInterfaceWithProperties>::op(i, r, false);
 }
 
 TEST(InterfaceOpsTest, TestSerializePropertylessInterfaceWithoutArguments)
@@ -236,7 +245,8 @@ TEST(InterfaceOpsTest, TestSerializePropertylessInterfaceWithoutArguments)
     sdbusplus::SdBusMock interface;
 
     auto b = sdbusplus::get_mocked_new(&interface);
-    auto r = MakeInterface<DummyInterfaceWithoutProperties>::op(b, "foo", i);
+    auto r =
+        MakeInterface<DummyInterfaceWithoutProperties>::op(b, "foo", i, false);
 
     EXPECT_CALL(mock, serializeTwoArgs("/foo"s, "bar"s)).Times(1);
 
@@ -251,7 +261,8 @@ TEST(InterfaceOpsTest, TestSerializePropertylessInterfaceWithOneArgument)
     sdbusplus::SdBusMock interface;
 
     auto b = sdbusplus::get_mocked_new(&interface);
-    auto r = MakeInterface<DummyInterfaceWithoutProperties>::op(b, "foo", i);
+    auto r =
+        MakeInterface<DummyInterfaceWithoutProperties>::op(b, "foo", i, false);
 
     EXPECT_CALL(mock, serializeTwoArgs("/foo"s, "bar"s)).Times(1);
 
@@ -266,7 +277,8 @@ TEST(InterfaceOpsTest, TestSerializeInterfaceWithNoArguments)
     sdbusplus::SdBusMock interface;
 
     auto b = sdbusplus::get_mocked_new(&interface);
-    auto r = MakeInterface<DummyInterfaceWithProperties>::op(b, "foo", i);
+    auto r =
+        MakeInterface<DummyInterfaceWithProperties>::op(b, "foo", i, false);
 
     EXPECT_CALL(mock, serializeThreeArgs("/foo"s, "bar"s, _)).Times(1);
 
@@ -281,7 +293,8 @@ TEST(InterfaceOpsTest, TestSerializeInterfaceWithOneArgument)
     sdbusplus::SdBusMock interface;
 
     auto b = sdbusplus::get_mocked_new(&interface);
-    auto r = MakeInterface<DummyInterfaceWithProperties>::op(b, "foo", i);
+    auto r =
+        MakeInterface<DummyInterfaceWithProperties>::op(b, "foo", i, false);
 
     EXPECT_CALL(mock, serializeThreeArgs("/foo"s, "bar"s, _)).Times(1);
 
@@ -296,7 +309,8 @@ TEST(InterfaceOpsTest, TestDeserializePropertylessInterfaceWithoutArguments)
     sdbusplus::SdBusMock interface;
 
     auto b = sdbusplus::get_mocked_new(&interface);
-    auto r = MakeInterface<DummyInterfaceWithoutProperties>::op(b, "foo", i);
+    auto r =
+        MakeInterface<DummyInterfaceWithoutProperties>::op(b, "foo", i, false);
 
     EXPECT_CALL(mock, deserializeNoop()).Times(1);
 
@@ -311,7 +325,8 @@ TEST(InterfaceOpsTest, TestDeserializePropertylessInterfaceWithOneArgument)
     sdbusplus::SdBusMock interface;
 
     auto b = sdbusplus::get_mocked_new(&interface);
-    auto r = MakeInterface<DummyInterfaceWithoutProperties>::op(b, "foo", i);
+    auto r =
+        MakeInterface<DummyInterfaceWithoutProperties>::op(b, "foo", i, false);
 
     EXPECT_CALL(mock, deserializeNoop()).Times(1);
 
@@ -326,7 +341,8 @@ TEST(InterfaceOpsTest, TestDeserializeInterfaceWithNoArguments)
     sdbusplus::SdBusMock interface;
 
     auto b = sdbusplus::get_mocked_new(&interface);
-    auto r = MakeInterface<DummyInterfaceWithProperties>::op(b, "foo", i);
+    auto r =
+        MakeInterface<DummyInterfaceWithProperties>::op(b, "foo", i, false);
 
     EXPECT_CALL(mock, deserializeThreeArgs("/foo"s, "bar"s, _)).Times(1);
 
@@ -341,7 +357,8 @@ TEST(InterfaceOpsTest, TestDeserializeInterfaceWithOneArgument)
     sdbusplus::SdBusMock interface;
 
     auto b = sdbusplus::get_mocked_new(&interface);
-    auto r = MakeInterface<DummyInterfaceWithProperties>::op(b, "foo", i);
+    auto r =
+        MakeInterface<DummyInterfaceWithProperties>::op(b, "foo", i, false);
 
     EXPECT_CALL(mock, deserializeThreeArgs("/foo"s, "bar"s, _)).Times(1);
 
