@@ -472,10 +472,10 @@ b.call(m);
 int main()
 {
     phosphor::inventory::manager::Manager mgr(sdbusplus::bus::new_default(),
-                                              MGR_SERVICE, MGR_ROOT);
+                                              MGR_ROOT);
     ExampleService d;
 
-    auto f1 = [](auto mgr) { mgr->run(); };
+    auto f1 = [](auto mgr) { mgr->run(MGR_SERVICE); };
     auto f2 = [](auto d) { d->run(); };
 
     auto t1 = std::thread(f1, &mgr);

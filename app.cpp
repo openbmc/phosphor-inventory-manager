@@ -28,8 +28,8 @@ int main(int argc, char* argv[])
     try
     {
         phosphor::inventory::manager::Manager manager(
-            sdbusplus::bus::new_system(), BUSNAME, INVENTORY_ROOT);
-        manager.run();
+            sdbusplus::bus::new_system(), INVENTORY_ROOT);
+        manager.run(BUSNAME);
         exit(EXIT_SUCCESS);
     }
     catch (const std::exception& e)

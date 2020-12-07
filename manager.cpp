@@ -57,10 +57,9 @@ auto _signal(sd_bus_message* m, void* data, sd_bus_error* e) noexcept
     return 0;
 }
 
-Manager::Manager(sdbusplus::bus::bus&& bus, const char* busname,
-                 const char* root) :
-    ServerObject<ManagerIface>(bus, root),
-    _shutdown(false), _root(root), _bus(std::move(bus)), _manager(_bus, root)
+Manager::Manager(sdbusplus::bus::bus&& bus, const char* root) :
+    ServerObject<ManagerIface>(bus, root), _shutdown(false), _root(root),
+    _bus(std::move(bus)), _manager(_bus, root)
 #ifdef CREATE_ASSOCIATIONS
     ,
     _associations(_bus)
@@ -94,8 +93,6 @@ Manager::Manager(sdbusplus::bus::bus&& bus, const char* busname,
 
     // Restore any persistent inventory
     restore();
-
-    _bus.request_name(busname);
 }
 
 void Manager::shutdown() noexcept
@@ -103,7 +100,7 @@ void Manager::shutdown() noexcept
     _shutdown = true;
 }
 
-void Manager::run() noexcept
+void Manager::run(const char* busname)
 {
     sdbusplus::message::message unusedMsg{nullptr};
 
@@ -119,6 +116,7 @@ void Manager::run() noexcept
         }
     }
 
+    _bus.request_name(busname);
     while (!_shutdown)
     {
         try
