@@ -253,7 +253,7 @@ void Manager::updateObjects(
         if (newObj)
         {
             _associations.createAssociations(absPath,
-                                             state != ManagerStatus::RUNNING);
+                                             _status != ManagerStatus::RUNNING);
         }
 #endif
         ++objit;
