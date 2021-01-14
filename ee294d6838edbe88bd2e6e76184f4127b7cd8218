@@ -1,0 +1,10 @@
+Code-Review+2: Brad Bishop <bradleyb@fuzziesquirrel.com>
+Code-Review+1: Matt Spinler <spinler@us.ibm.com>
+Code-Review+1: Andrew Geissler <geissonator@yahoo.com>
+Ok-To-Test+1: OpenBMC CI <openbmcbump-ci@yahoo.com>
+Verified+1: OpenBMC CI <openbmcbump-ci@yahoo.com>
+Submitted-by: Brad Bishop <bradleyb@fuzziesquirrel.com>
+Submitted-at: Thu, 14 Jan 2021 15:57:10 +0000
+Reviewed-on: https://gerrit.openbmc-project.xyz/c/openbmc/phosphor-inventory-manager/+/39688
+Project: openbmc/phosphor-inventory-manager
+Branch: refs/heads/master
