@@ -75,6 +75,28 @@ struct MakeInterface<T, std::enable_if_t<HasProperties<T>::value>>
 };
 
 template <typename T, typename Enable = void>
+struct GetPropertyValue
+{
+    static InterfaceVariantType op(const std::string propertyName,
+                                   std::any& holder)
+    {
+        return InterfaceVariantType{};
+    }
+};
+
+template <typename T>
+struct GetPropertyValue<T, std::enable_if_t<HasProperties<T>::value>>
+{
+    static InterfaceVariantType op(const std::string propertyName,
+                                   std::any& holder)
+    {
+        auto& iface = *std::any_cast<std::shared_ptr<T>&>(holder);
+        auto property = iface.getPropertyByName(propertyName);
+        return convertVariant<InterfaceVariantType>(property);
+    }
+};
+
+template <typename T, typename Enable = void>
 struct AssignInterface
 {
     static void op(const Interface&, std::any&, bool)
@@ -150,6 +172,8 @@ using SerializeInterfaceType =
 template <typename Ops>
 using DeserializeInterfaceType =
     std::add_pointer_t<decltype(DeserializeInterface<DummyInterface, Ops>::op)>;
+using GetPropertyValueType =
+    std::add_pointer_t<decltype(GetPropertyValue<DummyInterface>::op)>;
 
 } // namespace manager
 } // namespace inventory

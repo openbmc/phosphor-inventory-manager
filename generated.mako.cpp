@@ -1,6 +1,7 @@
 ## This file is a template.  The comment below is emitted
 ## into the rendered file; feel free to edit this file.
 // This file was auto generated.  Do not edit.
+#include "config.h"
 #include "manager.hpp"
 #include "utils.hpp"
 #include "functor.hpp"
@@ -35,6 +36,11 @@ const Manager::Makers Manager::_makers{
             DeserializeInterface<
                 ServerObject<
                     ${i.namespace()}>, SerialOps>::op
+#ifdef CREATE_ASSOCIATIONS
+            , GetPropertyValue<
+                ServerObject<
+                    ${i.namespace()}>>::op
+#endif
         )
     },
 % endfor

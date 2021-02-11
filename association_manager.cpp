@@ -1,6 +1,5 @@
 #include "association_manager.hpp"
 
-#include <nlohmann/json.hpp>
 #include <phosphor-logging/log.hpp>
 
 #include <filesystem>
@@ -16,11 +15,22 @@ namespace associations
 {
 using namespace phosphor::logging;
 using sdbusplus::exception::SdBusError;
+namespace fs = std::filesystem;
 
 Manager::Manager(sdbusplus::bus::bus& bus, const std::string& jsonPath) :
     _bus(bus), _jsonFile(jsonPath)
 {
-    load();
+    // If there aren't any conditional associations files, look for
+    // that default nonconditional one.
+    if (!loadConditions())
+    {
+        if (fs::exists(_jsonFile))
+        {
+            std::ifstream file{_jsonFile};
+            auto json = nlohmann::json::parse(file, nullptr, true);
+            load(json);
+        }
+    }
 }
 
 /**
@@ -37,15 +47,175 @@ void throwIfZero(int num)
     }
 }
 
-void Manager::load()
+bool Manager::loadConditions()
 {
-    // Load the contents of _jsonFile into _associations and throw
-    // an exception on any problem.
+    auto dir = _jsonFile.parent_path();
 
-    std::ifstream file{_jsonFile};
+    for (const auto& dirent : fs::recursive_directory_iterator(dir))
+    {
+        const auto& path = dirent.path();
+        if (path.extension() == ".json")
+        {
+            std::ifstream file{path};
+            auto json = nlohmann::json::parse(file, nullptr, true);
 
-    auto json = nlohmann::json::parse(file, nullptr, true);
+            if (json.is_object() && json.contains("condition"))
+            {
+                const auto& conditionJSON = json.at("condition");
+                if (!conditionJSON.contains("path") ||
+                    !conditionJSON.contains("interface") ||
+                    !conditionJSON.contains("property") ||
+                    !conditionJSON.contains("values"))
+                {
+                    std::string msg =
+                        "Invalid JSON in associations condition entry in " +
+                        path.string() + ". Skipping file.";
+                    log<level::ERR>(msg.c_str());
+                    continue;
+                }
 
+                Condition c;
+                c.file = path;
+                c.path = conditionJSON["path"].get<std::string>();
+                if (c.path.front() != '/')
+                {
+                    c.path = '/' + c.path;
+                }
+                fprintf(stderr, "found conditions file %s\n", c.file.c_str());
+                c.interface = conditionJSON["interface"].get<std::string>();
+                c.property = conditionJSON["property"].get<std::string>();
+
+                // The values are in an array, and need to be
+                // converted to an InterfaceVariantType.
+                for (const auto& value : conditionJSON["values"])
+                {
+                    if (value.is_array())
+                    {
+                        std::vector<uint8_t> variantValue;
+                        for (const auto& v : value)
+                        {
+                            variantValue.push_back(v.get<uint8_t>());
+                        }
+                        c.values.push_back(variantValue);
+                        continue;
+                    }
+
+                    // Try the remaining types
+                    auto s = value.get_ptr<const std::string*>();
+                    auto i = value.get_ptr<const int64_t*>();
+                    auto b = value.get_ptr<const bool*>();
+                    if (s)
+                    {
+                        c.values.push_back(*s);
+                    }
+                    else if (i)
+                    {
+                        c.values.push_back(*i);
+                    }
+                    else if (b)
+                    {
+                        c.values.push_back(*b);
+                    }
+                    else
+                    {
+                        std::stringstream ss;
+                        ss << "Invalid condition property value in " << c.file
+                           << ": " << value;
+                        log<level::ERR>(ss.str().c_str());
+                        throw std::runtime_error(ss.str());
+                    }
+                }
+
+                _conditions.push_back(std::move(c));
+            }
+        }
+    }
+
+    return !_conditions.empty();
+}
+
+bool Manager::conditionMatch(const sdbusplus::message::object_path& objectPath,
+                             const Object& object)
+{
+    fs::path foundPath;
+    for (const auto& condition : _conditions)
+    {
+        if (condition.path != objectPath)
+        {
+            continue;
+        }
+
+        auto interface = std::find_if(object.begin(), object.end(),
+                                      [&condition](const auto& i) {
+                                          return i.first == condition.interface;
+                                      });
+        if (interface == object.end())
+        {
+            continue;
+        }
+
+        auto property =
+            std::find_if(interface->second.begin(), interface->second.end(),
+                         [&condition](const auto& p) {
+                             return condition.property == p.first;
+                         });
+        if (property == interface->second.end())
+        {
+            continue;
+        }
+
+        auto match = std::find(condition.values.begin(), condition.values.end(),
+                               property->second);
+        if (match != condition.values.end())
+        {
+            foundPath = condition.file;
+            break;
+        }
+    }
+
+    if (!foundPath.empty())
+    {
+        std::ifstream file{foundPath};
+        auto json = nlohmann::json::parse(file, nullptr, true);
+        load(json["associations"]);
+        _conditions.clear();
+        return true;
+    }
+
+    return false;
+}
+
+bool Manager::conditionMatch()
+{
+    fs::path foundPath;
+
+    for (const auto& condition : _conditions)
+    {
+        // Compare the actualValue field against the values in the
+        // values vector to see if there is a condition match.
+        auto found = std::find(condition.values.begin(), condition.values.end(),
+                               condition.actualValue);
+        if (found != condition.values.end())
+        {
+            foundPath = condition.file;
+            break;
+        }
+    }
+
+    if (!foundPath.empty())
+    {
+        std::ifstream file{foundPath};
+        auto json = nlohmann::json::parse(file, nullptr, true);
+        load(json["associations"]);
+        _conditions.clear();
+        return true;
+    }
+
+    return false;
+}
+
+void Manager::load(const nlohmann::json& json)
+{
     const std::string root{INVENTORY_ROOT};
 
     for (const auto& jsonAssoc : json)

@@ -250,10 +250,22 @@ void Manager::updateObjects(
         updateInterfaces(absPath, objit->second, refit, newObj,
                          restoreFromCache);
 #ifdef CREATE_ASSOCIATIONS
-        if (newObj)
+        if (!_associations.pendingCondition() && newObj)
         {
             _associations.createAssociations(absPath,
                                              _status != ManagerStatus::RUNNING);
+        }
+        else if (!restoreFromCache &&
+                 _associations.conditionMatch(objit->first, objit->second))
+        {
+            // The objit path/interface/property matched a pending condition.
+            // Now the associations are valid so attempt to create them against
+            // all existing objects.  If this was the restoreFromCache path,
+            // objit doesn't contain property values so don't bother checking.
+            std::for_each(_refs.begin(), _refs.end(), [this](const auto& ref) {
+                _associations.createAssociations(
+                    ref.first, _status != ManagerStatus::RUNNING);
+            });
         }
 #endif
         ++objit;
@@ -365,6 +377,55 @@ void Manager::restore()
     {
         auto restoreFromCache = true;
         updateObjects(objects, restoreFromCache);
+
+#ifdef CREATE_ASSOCIATIONS
+        // There may be conditional associations waiting to be loaded
+        // based on certain path/interface/property values.  Now that
+        // _refs contains all objects with their property values, check
+        // which property values the conditions need and set them in the
+        // condition structure entries, using the actualValue field.  Then
+        // the associations manager can check if the conditions are met.
+        if (_associations.pendingCondition())
+        {
+            ObjectReferences::iterator refIt;
+            InterfaceComposite::iterator ifaceIt;
+
+            auto& conditions = _associations.getConditions();
+            for (auto& condition : conditions)
+            {
+                refIt = _refs.find(_root + condition.path);
+                if (refIt != _refs.end())
+                {
+                    ifaceIt = refIt->second.find(condition.interface);
+                }
+
+                if ((refIt != _refs.end()) && (ifaceIt != refIt->second.end()))
+                {
+                    const auto& maker = _makers.find(condition.interface);
+                    if (maker != _makers.end())
+                    {
+                        auto& getProperty =
+                            std::get<GetPropertyValueType>(maker->second);
+
+                        condition.actualValue =
+                            getProperty(condition.property, ifaceIt->second);
+                    }
+                }
+            }
+
+            // Check if a property value in a condition matches an
+            // actual property value just saved.  If one did, now the
+            // associations file is valid so create its associations.
+            if (_associations.conditionMatch())
+            {
+                std::for_each(
+                    _refs.begin(), _refs.end(), [this](const auto& ref) {
+                        _associations.createAssociations(
+                            ref.first, _status != ManagerStatus::RUNNING);
+                    });
+            }
+        }
+#endif
     }
 }
 
