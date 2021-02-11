@@ -210,6 +210,61 @@ The JSON description is:
 
 ```
 
+In the case where different systems that require different associations reside
+in the same flash image, multiple JSON files must be used.  These files must be
+in the same directory as the default associations file would go, but it does
+not matter what they are named as long as the name ends in '.json'.  Each file
+then contains a 'condition' entry that specifies an inventory path, interface,
+property, and list of values.  If the actual value of that property is in the
+list of values, then the condition is met and those associations are activated.
+
+If a file with a conditions section is found, then the default associations
+file is ignored.
+
+An example is:
+
+```
+{
+    "condition":
+    {
+        "path": "system/chassis/motherboard",
+        "interface": "xyz.openbmc_project.Inventory.Decorator.Asset",
+        "property": "Model",
+        "values": [
+            "ModelA",
+            "ModelB"
+        ]
+    },
+    "associations":
+    [
+        {
+            "path": "system/chassis/motherboard/cpu0/core1",
+            "endpoints":
+            [
+                {
+                    "types":
+                    {
+                        "fType": "sensors",
+                        "rType": "inventory"
+                    },
+                    "paths":
+                    [
+                        "/xyz/openbmc_project/sensors/temperature/p0_core0_temp"
+                    ]
+                }
+            ]
+        }
+    ]
+}
+```
+
+This states that these associations are valid if the system/chassis/motherboard
+inventory object has a Model property with a value of either ModelA or
+ModelB.
+
+The values field supports the same types as in the inventory, so either a 'bool'
+(true/false), 'int64\_t,' 'string', or 'std::vector<uint8_t>'([1, 2]).
+
 ----
 ## Building
 After running pimgen.py, build PIM using the following steps:
