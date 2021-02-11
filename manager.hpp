@@ -137,7 +137,12 @@ class Manager final : public ServerObject<ManagerIface>
     using Makers =
         std::map<std::string, std::tuple<MakeInterfaceType, AssignInterfaceType,
                                          SerializeInterfaceType<SerialOps>,
-                                         DeserializeInterfaceType<SerialOps>>>;
+                                         DeserializeInterfaceType<SerialOps>
+#ifdef CREATE_ASSOCIATIONS
+                                         ,
+                                         GetPropertyValueType
+#endif
+                                         >>;
 
     /** @brief Provides weak references to interface holders.
      *
