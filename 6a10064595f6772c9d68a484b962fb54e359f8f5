@@ -99,6 +99,74 @@
       "revId": "6a10064595f6772c9d68a484b962fb54e359f8f5",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "68313272_8434d1f5",
+        "filename": "README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 214,
+      "author": {
+        "id": 1000014
+      },
+      "writtenOn": "2021-02-18T17:41:36Z",
+      "side": 1,
+      "message": "can be used or must be used ?\n\nAlso if the file can be _any_ json, how can the association file be differentiated from other files ?",
+      "revId": "6a10064595f6772c9d68a484b962fb54e359f8f5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5e58195f_6b2ad1be",
+        "filename": "README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 218,
+      "author": {
+        "id": 1000014
+      },
+      "writtenOn": "2021-02-18T17:41:36Z",
+      "side": 1,
+      "message": "should this be IBMCompatibility instead ?",
+      "revId": "6a10064595f6772c9d68a484b962fb54e359f8f5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a1ca8b83_030a2a71",
+        "filename": "README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 232,
+      "author": {
+        "id": 1000014
+      },
+      "writtenOn": "2021-02-18T17:41:36Z",
+      "side": 1,
+      "message": "So, we will put the Model of Rainier_2s4u / Rainier_2s2u / Everest all in this file with 3 different conditions ? OR do different models needing different associations need different json ?",
+      "revId": "6a10064595f6772c9d68a484b962fb54e359f8f5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f9a8bc7c_d5093000",
+        "filename": "README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 240,
+      "author": {
+        "id": 1000014
+      },
+      "writtenOn": "2021-02-18T17:41:36Z",
+      "side": 1,
+      "message": "may be an explicit example helps for completeness.",
+      "revId": "6a10064595f6772c9d68a484b962fb54e359f8f5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
     }
   ]
 }
