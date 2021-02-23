@@ -42,7 +42,6 @@ Description of section entries:
 START OF MAINTAINERS LIST
 -------------------------
 
-M:  Brad Bishop <bradleyb@fuzziesquirrel.com> <radsquirrel!>
-R:  Brad Bishop <bradleyb@fuzziesquirrel.com> <radsquirrel!>
-R:  Deepak Kodihalli <dkodihal@in.ibm.com> <dkodihal!>
-R:  Marri Devender Rao <devenrao@in.ibm.com> <devenrao!>
+M:  Matt Spinler <spinler@us.ibm.com> <mspinler[m]!>
+M:  Santosh Puranik <santosh.puranik@in.ibm.com> <puranik!>
+M:  Marri Devender Rao <devenrao@in.ibm.com> <devenrao!>
