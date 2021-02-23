@@ -119,6 +119,24 @@
     },
     {
       "key": {
+        "uuid": "e65428e8_e9bfd9f4",
+        "filename": "README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 214,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2021-02-23T14:36:56Z",
+      "side": 1,
+      "message": "technically must.\n\nI\u0027m not sure I follow your question?  This describes how the associations are triggered based on a condition entry inside that file, so the name of the file itself doesn\u0027t matter and can be anything.",
+      "parentUuid": "68313272_8434d1f5",
+      "revId": "6a10064595f6772c9d68a484b962fb54e359f8f5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "5e58195f_6b2ad1be",
         "filename": "README.md",
         "patchSetId": 1
@@ -130,6 +148,24 @@
       "writtenOn": "2021-02-18T17:41:36Z",
       "side": 1,
       "message": "should this be IBMCompatibility instead ?",
+      "revId": "6a10064595f6772c9d68a484b962fb54e359f8f5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "54f383d7_83aa9894",
+        "filename": "README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 218,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2021-02-23T14:36:56Z",
+      "side": 1,
+      "message": "No.  In IBM\u0027s case, that property is set based on property values inside of PIM anyway.  Also, this doesn\u0027t go to D-Bus to get property values, it uses PIM\u0027s own objects.",
+      "parentUuid": "5e58195f_6b2ad1be",
       "revId": "6a10064595f6772c9d68a484b962fb54e359f8f5",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
@@ -167,6 +203,24 @@
       "revId": "6a10064595f6772c9d68a484b962fb54e359f8f5",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "92d454ef_8eaa8cc5",
+        "filename": "README.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 240,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2021-02-23T14:36:56Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "f9a8bc7c_d5093000",
+      "revId": "6a10064595f6772c9d68a484b962fb54e359f8f5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": false
     }
   ]
 }
