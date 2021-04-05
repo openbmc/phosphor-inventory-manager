@@ -30,7 +30,7 @@ class Manager;
 
 /** @brief Inventory manager supported property types. */
 using InterfaceVariantType =
-    std::variant<bool, int64_t, std::string, std::vector<uint8_t>>;
+    std::variant<bool, uint32_t, int64_t, std::string, std::vector<uint8_t>>;
 
 template <typename T>
 using InterfaceType = std::map<std::string, T>;
