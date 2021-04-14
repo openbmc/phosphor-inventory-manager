@@ -4,15 +4,15 @@ yaml_top=$1
 toplevel_dirs=xyz
 interfaces=
 
-if [ -d $yaml_top/$toplevel_dirs ]; then
-    cd $yaml_top
-    interfaces=`find $toplevel_dirs -name "*.interface.yaml"`
+if [ -d "$yaml_top/$toplevel_dirs" ]; then
+    cd "$yaml_top" || exit 1
+    interfaces=$(find $toplevel_dirs -name "*.interface.yaml")
 fi
 
 for i in ${interfaces};
 do
-    iface_path=`dirname $i`/`basename $i .interface.yaml`
-    iface=`echo $iface_path | sed 's/\//./g'`
+    iface_path="$(dirname "$i")/$(basename "$i" .interface.yaml)"
+    iface="$(echo "$iface_path" | sed 's/\//./g')"
     cat <<MAKEFILE
 ${i%.interface.yaml}/server.cpp: \$(extra_yamldir)/${i} ${i%.interface.yaml}/server.hpp
 	@mkdir -p \`dirname \$@\`
