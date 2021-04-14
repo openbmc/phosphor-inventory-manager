@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "aab7c5c1_37a95b35",
+        "filename": "bootstrap.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2021-04-14T09:15:45Z",
+      "side": 1,
+      "message": "do we need this line here?",
+      "revId": "ffa2b7ec19d7721295e8a05d202c7c0ca38a912f",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    }
+  ]
+}
