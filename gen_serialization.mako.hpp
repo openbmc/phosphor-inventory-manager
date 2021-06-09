@@ -22,6 +22,8 @@ CEREAL_CLASS_VERSION(${iface.namespace()}, CLASS_VERSION);
 static constexpr auto skipSignals = true;
 namespace cereal
 {
+// The version we started using cereal NVP from
+static constexpr size_t CLASS_VERSION_WITH_NVP = 2;
 
 % for iface in interfaces:
 <% properties = interface_composite.names(str(iface)) %>\
@@ -30,31 +32,78 @@ void save(Archive& a,
           const ${iface.namespace()}& object,
           const std::uint32_t version)
 {
+    if (version < CLASS_VERSION_WITH_NVP)
+    {
 <%
-    props = ["object." + p.camelCase + "()" for p in properties]
-    props = ', '.join(props)
+        props = ["object." + p.camelCase + "()" for p in properties]
+        props = ', '.join(props)
 %>\
-    a(${props});
+        a(${props});
+    }
+    else
+    {
+% for p in properties:
+<% t = "cereal::make_nvp(\"" + p.camelCase + "\", object." + p.camelCase + "())"
+%>\
+        a(${t});
+% endfor
+    }
 }
-
 
 template<class Archive>
 void load(Archive& a,
           ${iface.namespace()}& object,
           const std::uint32_t version)
 {
+#if (CLASS_VERSION < CLASS_VERSION_WITH_NVP)
+    if (version < CLASS_VERSION_WITH_NVP)
+    {
 % for p in properties:
 <% t = "object." + p.camelCase + "()" %>\
-    decltype(${t}) ${p.CamelCase}{};
+        decltype(${t}) ${p.CamelCase}{};
 % endfor
 <%
     props = ', '.join([p.CamelCase for p in properties])
 %>\
-    a(${props});
+        a(${props});
 % for p in properties:
 <% t = "object." + p.camelCase + "(" + p.CamelCase + ", skipSignals)" %>\
-    ${t};
+        ${t};
 % endfor
+    }
+    else
+    {
+        // Cannot load NVP JSONs if version less that 2.
+        throw Exception("Unsupported class version in archive");
+    }
+#else
+    if (version < CLASS_VERSION_WITH_NVP)
+    {
+        throw Exception("Unsupported class version in archive");
+    }
+    else
+    {
+% for p in properties:
+<% t = "object." + p.camelCase + "()" %>\
+        decltype(${t}) ${p.CamelCase}{};
+% endfor
+% for p in properties:
+<% t = "cereal::make_nvp(\"" + p.CamelCase + "\", " + p.CamelCase + ")" %>\
+        try
+        {
+            a(${t});
+        }
+        catch (Exception &e)
+        {
+            // Ignore any exceptions, property value stays default
+        }
+% endfor
+% for p in properties:
+<% t = "object." + p.camelCase + "(" + p.CamelCase + ", skipSignals)" %>\
+        ${t};
+% endfor
+    }
+#endif
 }
 
 % endfor
