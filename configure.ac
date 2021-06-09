@@ -108,7 +108,7 @@ AC_DEFINE_UNQUOTED([ASSOCIATIONS_FILE_PATH], ["$ASSOCIATIONS_FILE_PATH"], \
     [Path of associations JSON file])
 
 AC_ARG_VAR(CLASS_VERSION, [Class version to register with Cereal])
-AS_IF([test "x$CLASS_VERSION" == "x"], [CLASS_VERSION=1])
+AS_IF([test "x$CLASS_VERSION" == "x"], [CLASS_VERSION=2])
 AC_DEFINE_UNQUOTED([CLASS_VERSION], [$CLASS_VERSION], [Class version to register with Cereal])
 
 # Create configured output
