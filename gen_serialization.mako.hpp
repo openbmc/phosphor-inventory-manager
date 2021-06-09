@@ -22,6 +22,8 @@ CEREAL_CLASS_VERSION(${iface.namespace()}, CLASS_VERSION);
 static constexpr auto skipSignals = true;
 namespace cereal
 {
+// The version we started using cereal NVP from
+static constexpr size_t CLASS_VERSION_WITH_NVP = 2;
 
 % for iface in interfaces:
 <% properties = interface_composite.names(str(iface)) %>\
@@ -30,13 +32,12 @@ void save(Archive& a,
           const ${iface.namespace()}& object,
           const std::uint32_t version)
 {
-<%
-    props = ["object." + p.camelCase + "()" for p in properties]
-    props = ', '.join(props)
+% for p in properties:
+<% t = "cereal::make_nvp(\"" + p.CamelCase + "\", object." + p.camelCase + "())"
 %>\
-    a(${props});
+        a(${t});
+% endfor
 }
-
 
 template<class Archive>
 void load(Archive& a,
@@ -47,10 +48,27 @@ void load(Archive& a,
 <% t = "object." + p.camelCase + "()" %>\
     decltype(${t}) ${p.CamelCase}{};
 % endfor
+    if (version < CLASS_VERSION_WITH_NVP)
+    {
 <%
     props = ', '.join([p.CamelCase for p in properties])
 %>\
-    a(${props});
+        a(${props});
+    }
+    else
+    {
+% for p in properties:
+<% t = "cereal::make_nvp(\"" + p.CamelCase + "\", " + p.CamelCase + ")" %>\
+        try
+        {
+            a(${t});
+        }
+        catch (Exception &e)
+        {
+            // Ignore any exceptions, property value stays default
+        }
+% endfor
+    }
 % for p in properties:
 <% t = "object." + p.camelCase + "(" + p.CamelCase + ", skipSignals)" %>\
     ${t};
