@@ -46,6 +46,30 @@
       "revId": "645c229f9a89d5d4b5c5ff155a310ac911207bb5",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d45c0454_17e3749a",
+        "filename": "gen_serialization.mako.hpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2021-06-14T14:26:09Z",
+      "side": 1,
+      "message": "You\u0027re suggesting getting rid of the check in save(), right?  If so, I agree with that.",
+      "parentUuid": "e7658adf_46a35a6f",
+      "range": {
+        "startLine": 58,
+        "startChar": 0,
+        "endLine": 58,
+        "endChar": 23
+      },
+      "revId": "645c229f9a89d5d4b5c5ff155a310ac911207bb5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
     }
   ]
 }
