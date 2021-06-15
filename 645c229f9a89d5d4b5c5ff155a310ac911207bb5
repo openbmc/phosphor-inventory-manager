@@ -121,6 +121,30 @@
     },
     {
       "key": {
+        "uuid": "0be73b66_31aaada0",
+        "filename": "gen_serialization.mako.hpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1000338
+      },
+      "writtenOn": "2021-06-15T17:31:37Z",
+      "side": 1,
+      "message": "As discussed, we still need to be able to load the old version JSONs. So I\u0027ve updated load() accordingly. save() will always save with NVP now.",
+      "parentUuid": "8c785848_9457a877",
+      "range": {
+        "startLine": 58,
+        "startChar": 0,
+        "endLine": 58,
+        "endChar": 23
+      },
+      "revId": "645c229f9a89d5d4b5c5ff155a310ac911207bb5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "679dfa0c_20fd5e1b",
         "filename": "gen_serialization.mako.hpp",
         "patchSetId": 1
@@ -141,6 +165,30 @@
       "revId": "645c229f9a89d5d4b5c5ff155a310ac911207bb5",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0bdda6b9_c24ca254",
+        "filename": "gen_serialization.mako.hpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1000338
+      },
+      "writtenOn": "2021-06-15T17:31:37Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "679dfa0c_20fd5e1b",
+      "range": {
+        "startLine": 74,
+        "startChar": 0,
+        "endLine": 83,
+        "endChar": 5
+      },
+      "revId": "645c229f9a89d5d4b5c5ff155a310ac911207bb5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": false
     }
   ]
 }
