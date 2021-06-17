@@ -1,0 +1,8 @@
+Ok-To-Test+1: OpenBMC CI <openbmcbump-ci@yahoo.com>
+Verified+1: OpenBMC CI <openbmcbump-ci@yahoo.com>
+Code-Review+2: Matt Spinler <spinler@us.ibm.com>
+Submitted-by: Santosh Puranik <santosh.puranik@in.ibm.com>
+Submitted-at: Thu, 17 Jun 2021 12:42:02 +0000
+Reviewed-on: https://gerrit.openbmc-project.xyz/c/openbmc/phosphor-inventory-manager/+/43917
+Project: openbmc/phosphor-inventory-manager
+Branch: refs/heads/master
