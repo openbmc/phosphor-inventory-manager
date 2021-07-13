@@ -35,7 +35,8 @@ struct MakeVariantVisitor
         static auto make(Arg&& arg)
         {
             throw std::runtime_error(
-                "Invalid conversion in MakeVariantVisitor");
+                std::string("Invalid conversion in MakeVariantVisitor::") +
+                __PRETTY_FUNCTION__);
             return T();
         }
     };
