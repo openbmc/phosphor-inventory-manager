@@ -25,18 +25,12 @@
 
 int main(int argc, char* argv[])
 {
-    try
-    {
-        phosphor::inventory::manager::Manager manager(
-            sdbusplus::bus::new_system(), INVENTORY_ROOT);
-        manager.run(BUSNAME);
-        exit(EXIT_SUCCESS);
-    }
-    catch (const std::exception& e)
-    {
-        std::cerr << e.what() << std::endl;
-    }
-    exit(EXIT_FAILURE);
+    phosphor::inventory::manager::Manager manager(sdbusplus::bus::new_system(),
+                                                  INVENTORY_ROOT);
+    manager.run(BUSNAME);
+    exit(EXIT_SUCCESS);
+
+    return 0;
 }
 
 // vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
