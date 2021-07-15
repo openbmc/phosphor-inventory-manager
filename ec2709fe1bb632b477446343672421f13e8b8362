@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b99aa9ce_71651b0c",
+        "filename": "app.cpp",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1000524
+      },
+      "writtenOn": "2021-07-15T23:07:59Z",
+      "side": 1,
+      "message": "nit question - Is this just to stop a compiler warning?",
+      "revId": "ec2709fe1bb632b477446343672421f13e8b8362",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    }
+  ]
+}
