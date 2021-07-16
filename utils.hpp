@@ -1,6 +1,6 @@
 #pragma once
 
-#include <sdbusplus/message/types.hpp>
+#include <sdbusplus/message/native_types.hpp>
 
 #include <cstring>
 #include <stdexcept>
@@ -47,13 +47,58 @@ struct MakeVariantVisitor
      *  struct Make specialization if Arg is in T (int -> variant<int, char>).
      */
     template <typename T, typename Arg>
-    struct Make<
-        T, Arg,
-        typename std::enable_if<std::is_convertible<Arg, T>::value>::type>
+    struct Make<T, Arg,
+                typename std::enable_if_t<std::is_convertible_v<Arg, T>>>
     {
         static auto make(Arg&& arg)
         {
             return T(std::forward<Arg>(arg));
+        }
+    };
+
+    // SFINAE templates to determine if a type T has the sdbusplus function
+    // convert_from_string<T>().
+    template <typename T>
+    static auto has_convert_from_string_helper(T) -> decltype(
+        sdbusplus::message::convert_from_string<T>(std::declval<std::string>()),
+        std::true_type());
+    static auto has_convert_from_string_helper(...) -> std::false_type;
+
+    template <typename T>
+    static constexpr bool has_convert_from_string_v =
+        decltype(has_convert_from_string_helper(std::declval<T>()))::value;
+
+    /** @struct Make
+     *  @brief Return variant visitor.
+     *
+     *  struct Make specialization if Arg is a string, but not otherwise
+     *  directly convertable by C++ conversion constructors.  Strings might
+     *  be convertable using underlying sdbusplus routines, so give them an
+     *  attempt.
+     */
+    template <typename T, typename Arg>
+    struct Make<
+        T, Arg,
+        typename std::enable_if_t<
+            !std::is_convertible_v<Arg, T> &&
+            std::is_same_v<std::string,
+                           std::remove_cv_t<std::remove_reference_t<Arg>>> &&
+            has_convert_from_string_v<T>>>
+    {
+        static auto make(Arg&& arg) -> T
+        {
+            auto r = sdbusplus::message::convert_from_string<T>(
+                std::forward<Arg>(arg));
+            if (r)
+            {
+                return *r;
+            }
+
+            throw std::runtime_error(
+                std::string("Invalid conversion in MakeVariantVisitor::") +
+                __PRETTY_FUNCTION__);
+
+            return {};
         }
     };
 
