@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "d09c778b_5fd7d322",
+        "filename": "utils.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2021-07-21T20:05:01Z",
+      "side": 1,
+      "message": "There were test cases that ended up calling this function with an int.  I ended up writing a little helper template to determine if `sdbusplus::message::convert_from_string` exists for the type and if not it will use the default version from 33.  So similar to what you suggested of \u0027std::is_enum\u0027 but a little more robust.",
+      "parentUuid": "386f2a8b_cdcb676f",
+      "revId": "649ae66e90fcff7f5bd3ddef839ccddd39a81d70",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f7891959_4f2efd7f",
         "filename": "utils.hpp",
         "patchSetId": 2
