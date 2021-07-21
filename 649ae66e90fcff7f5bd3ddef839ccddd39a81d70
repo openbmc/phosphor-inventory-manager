@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "386f2a8b_cdcb676f",
+        "filename": "utils.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2021-07-21T18:47:16Z",
+      "side": 1,
+      "message": "I don\u0027t think the is_enum check is necessary.  In the future we could support additional conversions within sdbusplus and this code should automatically handle them.",
+      "parentUuid": "11480a1a_936bd91b",
+      "revId": "649ae66e90fcff7f5bd3ddef839ccddd39a81d70",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f7891959_4f2efd7f",
         "filename": "utils.hpp",
         "patchSetId": 2
@@ -30,6 +48,24 @@
       "writtenOn": "2021-07-19T10:14:55Z",
       "side": 1,
       "message": "Is this return needed?",
+      "revId": "649ae66e90fcff7f5bd3ddef839ccddd39a81d70",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "96c4e40c_57a419cf",
+        "filename": "utils.hpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2021-07-21T18:47:16Z",
+      "side": 1,
+      "message": "Yes, unfortunately.  Without it the compiler gets upset that the return type is different between 81 and 88 and fails to compile (cannot deduce \u0027auto\u0027 type).",
+      "parentUuid": "f7891959_4f2efd7f",
       "revId": "649ae66e90fcff7f5bd3ddef839ccddd39a81d70",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4",
       "unresolved": true
