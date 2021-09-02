@@ -14,7 +14,6 @@ namespace manager
 namespace associations
 {
 using namespace phosphor::logging;
-using sdbusplus::exception::SdBusError;
 namespace fs = std::filesystem;
 
 Manager::Manager(sdbusplus::bus::bus& bus, const std::string& jsonPath) :
