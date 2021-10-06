@@ -177,7 +177,7 @@ TEST_F(AssocsTest, TEST_NO_JSON)
         Manager m{bus};
         EXPECT_TRUE(false);
     }
-    catch (std::exception& e)
+    catch (const std::exception& e)
     {}
 }
 
@@ -249,7 +249,7 @@ TEST_F(AssocsTest, TEST_BAD_JSON0)
 
         EXPECT_TRUE(false);
     }
-    catch (std::exception& e)
+    catch (const std::exception& e)
     {}
 }
 
@@ -263,7 +263,7 @@ TEST_F(AssocsTest, TEST_BAD_JSON1)
 
         EXPECT_TRUE(false);
     }
-    catch (std::exception& e)
+    catch (const std::exception& e)
     {}
 }
 
@@ -277,7 +277,7 @@ TEST_F(AssocsTest, TEST_BAD_JSON2)
 
         EXPECT_TRUE(false);
     }
-    catch (std::exception& e)
+    catch (const std::exception& e)
     {}
 }
 
@@ -291,6 +291,6 @@ TEST_F(AssocsTest, TEST_BAD_JSON3)
 
         EXPECT_TRUE(false);
     }
-    catch (std::exception& e)
+    catch (const std::exception& e)
     {}
 }

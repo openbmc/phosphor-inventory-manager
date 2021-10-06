@@ -63,7 +63,7 @@ void load(Archive& a,
         {
             a(${t});
         }
-        catch (Exception &e)
+        catch (const Exception &e)
         {
             // Ignore any exceptions, property value stays default
         }

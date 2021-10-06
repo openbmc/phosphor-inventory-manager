@@ -86,7 +86,7 @@ struct SerialOps
                 iarchive(object);
             }
         }
-        catch (cereal::Exception& e)
+        catch (const cereal::Exception& e)
         {
             phosphor::logging::log<phosphor::logging::level::ERR>(e.what());
             fs::remove(p);
