@@ -272,9 +272,52 @@ void Manager::updateObjects(
     }
 }
 
+void Manager::deleteObjects(
+    const std::map<sdbusplus::message::object_path, Object>& objs,
+    bool & objToDelete)
+{
+    auto objItr = objs.cbegin();
+    auto refItr = _refs.begin();
+    std::string absPath;
+    bool objToDelete = false;
+
+    while (objItr != objs.cend())
+    {
+        // Find the insertion point or the object to DELETE.
+        refItr = std::lower_bound(refItr, _refs.end(), objItr->first,
+                                 compareFirst(RelPathCompare(_root)));
+
+        absPath.assign(_root);
+        absPath.append(objItr->first);
+
+        if (refItr == _refs.end() || refItr->first != absPath)
+        {
+            // requested object to delete not found
+        }
+	else
+	{
+	    //check if it has interfaces
+	    if(objItr->second.empty())
+	    {
+	        //then delete it's obj path also
+		_bus.emit_object_removed(objItr.first.c_str());
+                _refs.erase(objItr.first);
+		objToDelete = true;
+	    }
+        }
+	objItr++;
+    }
+
+}
+
 void Manager::notify(std::map<sdbusplus::message::object_path, Object> objs)
 {
-    updateObjects(objs);
+    bool objToDelete;
+    deleteObjects(objs, objToDelete);
+    if( ! objToDelete)
+    {
+        updateObjects(objs);
+    }
 }
 
 void Manager::handleEvent(sdbusplus::message::message& msg, const Event& event,
