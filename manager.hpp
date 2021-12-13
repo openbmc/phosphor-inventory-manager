@@ -94,6 +94,11 @@ class Manager final : public ServerObject<ManagerIface>
         const std::map<sdbusplus::message::object_path, Object>& objs,
         bool restoreFromCache = false);
 
+    /** @brief Delete objects on DBus.*/
+    void deleteObjects(
+        const std::map<sdbusplus::message::object_path, Object>& objs,
+        bool& objToDelete);
+
     /** @brief Restore persistent inventory items */
     void restore();
 
