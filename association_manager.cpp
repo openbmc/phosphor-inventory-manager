@@ -290,8 +290,8 @@ void Manager::createAssociation(const std::string& forwardPath,
     auto object = _associationIfaces.find(forwardPath);
     if (object == _associationIfaces.end())
     {
-        auto a = std::make_unique<AssociationObject>(_bus, forwardPath.c_str(),
-                                                     true);
+        auto a = std::make_unique<AssociationObject>(
+            _bus, forwardPath.c_str(), AssociationObject::action::defer_emit);
 
         using AssociationProperty =
             std::vector<std::tuple<std::string, std::string, std::string>>;
