@@ -77,8 +77,8 @@ struct MakeInterface<T, std::enable_if_t<HasProperties<T>::value>>
 template <typename T, typename Enable = void>
 struct GetPropertyValue
 {
-    static InterfaceVariantType op(const std::string propertyName,
-                                   std::any& holder)
+    static InterfaceVariantType op(const std::string /* propertyName */,
+                                   std::any& /* holder */)
     {
         return InterfaceVariantType{};
     }

@@ -88,7 +88,8 @@ struct SerialForwarder
         g_currentMock->serializeThreeArgs(path, iface, obj);
     }
 
-    static void deserialize(const std::string& path, const std::string& iface)
+    static void deserialize(const std::string& /* path */,
+                            const std::string& /* iface */)
     {
         g_currentMock->deserializeNoop();
     }
