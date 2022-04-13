@@ -23,7 +23,7 @@
 #include <exception>
 #include <iostream>
 
-int main(int argc, char* argv[])
+int main(int /* argc */, char** /* argv[] */)
 {
     phosphor::inventory::manager::Manager manager(sdbusplus::bus::new_system(),
                                                   INVENTORY_ROOT);
