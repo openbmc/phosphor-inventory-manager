@@ -38,7 +38,7 @@ namespace manager
  *  Extracts per-signal specific context and forwards the call to the manager
  *  instance.
  */
-auto _signal(sd_bus_message* m, void* data, sd_bus_error* e) noexcept
+auto _signal(sd_bus_message* m, void* data, sd_bus_error* /* e */) noexcept
 {
     try
     {

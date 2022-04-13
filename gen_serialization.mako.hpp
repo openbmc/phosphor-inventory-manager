@@ -30,7 +30,7 @@ static constexpr size_t CLASS_VERSION_WITH_NVP = 2;
 template<class Archive>
 void save(Archive& a,
           const ${iface.namespace()}& object,
-          const std::uint32_t version)
+          const std::uint32_t /* version */)
 {
 % for p in properties:
 <% t = "cereal::make_nvp(\"" + p.CamelCase + "\", object." + p.camelCase + "())"

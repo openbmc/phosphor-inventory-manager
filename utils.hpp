@@ -32,7 +32,7 @@ struct MakeVariantVisitor
     template <typename T, typename Arg, typename Enable = void>
     struct Make
     {
-        static auto make(Arg&& arg)
+        static auto make(Arg&& /* arg */)
         {
             throw std::runtime_error(
                 std::string("Invalid conversion in MakeVariantVisitor::") +
