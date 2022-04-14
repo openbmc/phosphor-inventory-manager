@@ -19,6 +19,7 @@
 
 #include "manager.hpp"
 
+#include <phosphor-logging/lg2.hpp>
 #include <sdbusplus/bus.hpp>
 
 namespace phosphor
@@ -56,14 +57,18 @@ bool PropertyConditionBase::operator()(const std::string& path,
         mapperCall.append(path);
         mapperCall.append(std::vector<std::string>({_iface}));
 
-        auto mapperResponseMsg = bus.call(mapperCall);
-        if (mapperResponseMsg.is_method_error())
+        std::map<std::string, std::vector<std::string>> mapperResponse;
+        try
         {
+            auto mapperResponseMsg = bus.call(mapperCall);
+            mapperResponseMsg.read(mapperResponse);
+        }
+        catch (const std::exception& e)
+        {
+            lg2::error("Failed to execute GetObject method: {EC}", "EC",
+                       e.what());
             return false;
         }
-
-        std::map<std::string, std::vector<std::string>> mapperResponse;
-        mapperResponseMsg.read(mapperResponse);
 
         if (mapperResponse.empty())
         {
@@ -95,13 +100,16 @@ bool PropertyConditionBase::operator()(const std::string& path,
     hostCall.append(_iface);
     hostCall.append(_property);
 
-    auto hostResponseMsg = bus.call(hostCall);
-    if (hostResponseMsg.is_method_error())
+    try
     {
+        auto hostResponseMsg = bus.call(hostCall);
+        return eval(hostResponseMsg);
+    }
+    catch (const std::exception& e)
+    {
+        lg2::error("Failed to execute Get method: {EC}", "EC", e.what());
         return false;
     }
-
-    return eval(hostResponseMsg);
 }
 
 } // namespace functor
