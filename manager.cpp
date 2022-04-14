@@ -121,6 +121,7 @@ void Manager::run(const char* busname)
 
     while (_status != ManagerStatus::STOPPING)
     {
+        std::cerr << "george: 222...\n";
         try
         {
             _bus.process_discard();
