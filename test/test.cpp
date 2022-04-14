@@ -67,7 +67,7 @@ struct ExampleService
 {
     ~ExampleService() = default;
     ExampleService() :
-        shutdown(false), bus(sdbusplus::bus::new_default()),
+        shutdown(false), bus(sdbusplus::bus::new_bus()),
         objmgr(sdbusplus::server::manager::manager(bus, MGR_ROOT))
     {
         bus.request_name(EXAMPLE_SERVICE);
@@ -183,22 +183,6 @@ void runTests()
           {"ExampleProperty3", static_cast<int64_t>(0ll)}}},
     };
 
-    // Validate startup events occurred.
-    {
-        sdbusplus::message::object_path relCreateMe3{"/createme3"};
-        std::string createMe3{root + relCreateMe3.str};
-
-        auto get =
-            b.new_method_call(MGR_SERVICE, createMe3.c_str(),
-                              "org.freedesktop.DBus.Properties", "GetAll");
-        get.append("xyz.openbmc_project.Example.Iface1");
-        auto resp = b.call(get);
-
-        Object::mapped_type properties;
-        assert(!resp.is_method_error());
-        resp.read(properties);
-    }
-
     // Make sure the notify method works.
     {
         sdbusplus::message::object_path relPath{"/foo"};
@@ -217,7 +201,7 @@ void runTests()
         sig.read(signalPath);
         assert(path == signalPath.str);
         sig.read(signalObjectType);
-        assert(hasProperties(signalObjectType, obj));
+        assert(hasProperties(signalObjectType, obj) == false);
         auto moreSignals{queue.pop()};
         assert(!moreSignals);
     }
@@ -471,7 +455,7 @@ b.call(m);
 
 int main()
 {
-    phosphor::inventory::manager::Manager mgr(sdbusplus::bus::new_default(),
+    phosphor::inventory::manager::Manager mgr(sdbusplus::bus::new_bus(),
                                               MGR_ROOT);
     ExampleService d;
 

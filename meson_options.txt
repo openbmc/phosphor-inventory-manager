@@ -1,4 +1,9 @@
 option(
+    'tests', type : 'feature',
+    description : 'Build tests'
+)
+
+option(
     'associations', type : 'feature',
     value: 'disabled',
     description : 'Enable creating D-Bus associations from a JSON definition'
