@@ -3,7 +3,7 @@
 #include "config.h"
 
 #include <cereal/archives/json.hpp>
-#include <phosphor-logging/log.hpp>
+#include <phosphor-logging/lg2.hpp>
 
 #include <filesystem>
 #include <fstream>
@@ -88,7 +88,7 @@ struct SerialOps
         }
         catch (const cereal::Exception& e)
         {
-            phosphor::logging::log<phosphor::logging::level::ERR>(e.what());
+            lg2::error("Deserialization failed: {ERROR}", "ERROR", e);
             fs::remove(p);
         }
     }
