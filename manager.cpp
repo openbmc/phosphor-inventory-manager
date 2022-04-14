@@ -17,8 +17,6 @@
 
 #include "errors.hpp"
 
-#include <phosphor-logging/log.hpp>
-
 #include <algorithm>
 #include <chrono>
 #include <exception>
