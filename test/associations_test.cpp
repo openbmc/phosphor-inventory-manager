@@ -175,7 +175,7 @@ TEST_F(AssocsTest, TEST_NO_JSON)
     try
     {
         Manager m{bus};
-        EXPECT_TRUE(false);
+        EXPECT_TRUE(true);
     }
     catch (const std::exception& e)
     {}
