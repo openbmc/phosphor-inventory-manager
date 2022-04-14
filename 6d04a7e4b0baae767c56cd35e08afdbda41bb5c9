@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "627ad36b_8fbe0752",
+        "filename": "subprojects/nlohmann.wrap",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2022-04-14T22:05:13Z",
+      "side": 1,
+      "message": "why not HEAD here?",
+      "revId": "6d04a7e4b0baae767c56cd35e08afdbda41bb5c9",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
