@@ -1,6 +1,6 @@
 #include "association_manager.hpp"
 
-#include <phosphor-logging/log.hpp>
+#include <phosphor-logging/lg2.hpp>
 
 #include <filesystem>
 #include <fstream>
@@ -13,7 +13,6 @@ namespace manager
 {
 namespace associations
 {
-using namespace phosphor::logging;
 namespace fs = std::filesystem;
 
 Manager::Manager(sdbusplus::bus::bus& bus, const std::string& jsonPath) :
@@ -71,10 +70,9 @@ bool Manager::loadConditions()
                     !conditionJSON.contains("property") ||
                     !conditionJSON.contains("values"))
                 {
-                    std::string msg =
-                        "Invalid JSON in associations condition entry in " +
-                        path.string() + ". Skipping file.";
-                    log<level::ERR>(msg.c_str());
+                    lg2::error(
+                        "Invalid JSON in associations condition entry in {PATH}. Skipping file.",
+                        "PATH", path);
                     continue;
                 }
 
@@ -125,7 +123,7 @@ bool Manager::loadConditions()
                         std::stringstream ss;
                         ss << "Invalid condition property value in " << c.file
                            << ": " << value;
-                        log<level::ERR>(ss.str().c_str());
+                        lg2::error("{MSG}", "MSG", ss.str());
                         throw std::runtime_error(ss.str());
                     }
                 }
