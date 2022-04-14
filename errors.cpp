@@ -15,7 +15,7 @@
  */
 #include "errors.hpp"
 
-#include <phosphor-logging/log.hpp>
+#include <phosphor-logging/lg2.hpp>
 
 namespace phosphor
 {
@@ -25,8 +25,7 @@ namespace manager
 {
 void InterfaceError::log() const
 {
-    logging::log<logging::level::ERR>(
-        what(), phosphor::logging::entry("INTERFACE=%s", interface.c_str()));
+    lg2::error("{INTF} unrecognized", "INTF", interface);
 }
 } // namespace manager
 } // namespace inventory
