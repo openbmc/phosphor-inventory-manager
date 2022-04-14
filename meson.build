@@ -112,3 +112,8 @@ executable(
     install: true,
     install_dir: get_option('bindir'),
 )
+
+build_tests = get_option('tests')
+if not build_tests.disabled()
+    subdir('test')
+endif
