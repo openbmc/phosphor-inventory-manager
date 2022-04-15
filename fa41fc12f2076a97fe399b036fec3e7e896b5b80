@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5eba9ff7_d8f21783",
+        "filename": "meson_options.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-04-15T12:56:09Z",
+      "side": 1,
+      "message": "Default enabled?",
+      "revId": "fa41fc12f2076a97fe399b036fec3e7e896b5b80",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2139170d_8a09c5ce",
+        "filename": "test/meson.build",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-04-15T12:56:09Z",
+      "side": 1,
+      "message": "Why is this needed as an explicit dependency?  I\u0027m surprised.\n\nI don\u0027t see anything in the code that calls for it.  I think this was left over in the autotools from a 4 year old bug in the sdbusplus packageconfig.",
+      "revId": "fa41fc12f2076a97fe399b036fec3e7e896b5b80",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f08929a7_8de01a8a",
+        "filename": "test/test.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-04-15T12:56:09Z",
+      "side": 1,
+      "message": "Is there some explanation for this change?",
+      "revId": "fa41fc12f2076a97fe399b036fec3e7e896b5b80",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "61d0ad48_a3a92ff5",
+        "filename": "test/test.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-04-15T12:56:09Z",
+      "side": 1,
+      "message": "This seems backwards from the previous logic.",
+      "revId": "fa41fc12f2076a97fe399b036fec3e7e896b5b80",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3d3be56f_6b5c7990",
+        "filename": "test/test.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 458,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-04-15T12:56:09Z",
+      "side": 1,
+      "message": "Why the change?",
+      "revId": "fa41fc12f2076a97fe399b036fec3e7e896b5b80",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}

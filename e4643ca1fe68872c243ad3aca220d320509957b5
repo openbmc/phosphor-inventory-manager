@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "63fe1687_516735de",
+        "filename": "test/test.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-04-15T12:56:09Z",
+      "side": 0,
+      "message": "Why are we removing test cases?",
+      "revId": "e4643ca1fe68872c243ad3aca220d320509957b5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
