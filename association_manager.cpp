@@ -50,6 +50,11 @@ bool Manager::loadConditions()
 {
     auto dir = _jsonFile.parent_path();
 
+    if (!fs::exists(fs::path(dir)))
+    {
+        return false;
+    }
+
     for (const auto& dirent : fs::recursive_directory_iterator(dir))
     {
         const auto& path = dirent.path();
