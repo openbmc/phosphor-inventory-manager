@@ -170,17 +170,6 @@ class AssocsTest : public ::testing::Test
     }
 };
 
-TEST_F(AssocsTest, TEST_NO_JSON)
-{
-    try
-    {
-        Manager m{bus};
-        EXPECT_TRUE(false);
-    }
-    catch (const std::exception& e)
-    {}
-}
-
 TEST_F(AssocsTest, TEST_GOOD_JSON)
 {
     auto path = writeFile(goodJson);
