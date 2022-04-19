@@ -1,0 +1,8 @@
+Verified+1: OpenBMC CI <openbmcbump-ci@yahoo.com>
+Code-Review+1: Matt Spinler <spinler@us.ibm.com>
+Code-Review+2: MARRI DEVENDER RAO <devenrao@in.ibm.com>
+Submitted-by: George Liu <liuxiwei@inspur.com>
+Submitted-at: Tue, 19 Apr 2022 09:27:43 +0000
+Reviewed-on: https://gerrit.openbmc-project.xyz/c/openbmc/phosphor-inventory-manager/+/52894
+Project: openbmc/phosphor-inventory-manager
+Branch: refs/heads/master
