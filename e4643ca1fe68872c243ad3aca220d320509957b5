@@ -35,6 +35,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bd34a49f_e5a5339a",
+        "filename": "meson.build",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1000397
+      },
+      "writtenOn": "2022-05-12T08:15:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ee4650dd_62035865",
+      "revId": "e4643ca1fe68872c243ad3aca220d320509957b5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c5489ada_e56b6887",
@@ -48,6 +66,30 @@
       "writtenOn": "2022-04-15T12:53:33Z",
       "side": 1,
       "message": "These are why I suggested you needed these specified in the wrapfile.",
+      "range": {
+        "startLine": 37,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 75
+      },
+      "revId": "e4643ca1fe68872c243ad3aca220d320509957b5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b1b06b22_531fae92",
+        "filename": "meson.build",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1000397
+      },
+      "writtenOn": "2022-05-12T08:15:49Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "c5489ada_e56b6887",
       "range": {
         "startLine": 37,
         "startChar": 0,
@@ -98,6 +140,30 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "87cb6fa8_a9c64482",
+        "filename": "meson.build",
+        "patchSetId": 2
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1000397
+      },
+      "writtenOn": "2022-05-12T08:15:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "76dd3396_7503b087",
+      "range": {
+        "startLine": 129,
+        "startChar": 0,
+        "endLine": 140,
+        "endChar": 9
+      },
+      "revId": "e4643ca1fe68872c243ad3aca220d320509957b5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9690cdea_1cf0b45e",
@@ -111,6 +177,24 @@
       "writtenOn": "2022-04-15T12:53:33Z",
       "side": 1,
       "message": "Don\u0027t you need a `libmanagercommon_dep +\u003d nlohmann_json_dep` here?  I don\u0027t see this dependency being used anywhere.",
+      "revId": "e4643ca1fe68872c243ad3aca220d320509957b5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b7c8068b_7a94f185",
+        "filename": "meson.build",
+        "patchSetId": 2
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1000397
+      },
+      "writtenOn": "2022-05-12T08:15:49Z",
+      "side": 1,
+      "message": "\u003e Don\u0027t you need a `libmanagercommon_dep +\u003d nlohmann_json_dep` here?  I don\u0027t see this dependency being used anywhere.\n\nYes, you are right, Added",
+      "parentUuid": "9690cdea_1cf0b45e",
       "revId": "e4643ca1fe68872c243ad3aca220d320509957b5",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
@@ -132,6 +216,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a74e8467_05d46ad4",
+        "filename": "meson_options.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1000397
+      },
+      "writtenOn": "2022-05-12T08:15:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3998c9fc_9db4972a",
+      "revId": "e4643ca1fe68872c243ad3aca220d320509957b5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8d0a2fc8_3de6cc3d",
@@ -145,6 +247,24 @@
       "writtenOn": "2022-04-15T12:53:33Z",
       "side": 1,
       "message": "Do we need a default path here for testing?",
+      "revId": "e4643ca1fe68872c243ad3aca220d320509957b5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0be0896f_19e54f7a",
+        "filename": "meson_options.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000397
+      },
+      "writtenOn": "2022-05-12T08:15:49Z",
+      "side": 1,
+      "message": "\u003e Do we need a default path here for testing?\n\nI referenced configure.ac, and didn\u0027t find any assignment to it",
+      "parentUuid": "8d0a2fc8_3de6cc3d",
       "revId": "e4643ca1fe68872c243ad3aca220d320509957b5",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
