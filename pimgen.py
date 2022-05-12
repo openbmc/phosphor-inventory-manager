@@ -602,7 +602,11 @@ class Everything(Renderer):
 
         for y in yaml_files:
             # parse only phosphor dbus related interface files
-            if not y.startswith("xyz"):
+            if not (
+                y.startswith('xyz')
+                or y.startswith('com/ibm/ipzvpd')
+                or y.startswith('com/ibm/Control/Host')
+            ):
                 continue
             with open(os.path.join(targetdir, y)) as fd:
                 i = y.replace(".interface.yaml", "").replace(os.sep, ".")
