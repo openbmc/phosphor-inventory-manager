@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "725205e9_76d3aac2",
+        "filename": "gen/regenerate-meson",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-05-12T11:54:20Z",
+      "side": 1,
+      "message": "I\u0027ll let @Matt weigh in, but this seems like a whole lot of overhead for an \"example\".  We supply the contents from P-D-I now, so why bother?  Can we just clean the example out?",
+      "parentUuid": "a4155d53_be1490bb",
+      "revId": "e4643ca1fe68872c243ad3aca220d320509957b5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "ee4650dd_62035865",
         "filename": "meson.build",
         "patchSetId": 2
