@@ -1,0 +1,84 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d5876dba_ada52b28",
+        "filename": "association_manager.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-05-12T11:56:55Z",
+      "side": 1,
+      "message": "It\u0027d be nice if we could improve this somehow.  The `lg2::error` call ends up being useless.",
+      "range": {
+        "startLine": 123,
+        "startChar": 0,
+        "endLine": 127,
+        "endChar": 59
+      },
+      "revId": "1bbe45754d7837818c279d9c28332a6e67bca76c",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "79759328_9cbb3984",
+        "filename": "errors.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-05-12T11:56:55Z",
+      "side": 1,
+      "message": "Can this be improved also?",
+      "revId": "1bbe45754d7837818c279d9c28332a6e67bca76c",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e79cd52d_de3b3a71",
+        "filename": "errors.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-05-12T11:56:55Z",
+      "side": 1,
+      "message": "*this?",
+      "range": {
+        "startLine": 28,
+        "startChar": 39,
+        "endLine": 28,
+        "endChar": 43
+      },
+      "revId": "1bbe45754d7837818c279d9c28332a6e67bca76c",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3e72d9b4_13c1189f",
+        "filename": "serialize.hpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-05-12T11:56:55Z",
+      "side": 1,
+      "message": "Need more info here.  Something like this?\n\nerror(\"Exception in serialization: {ERROR}\", \"ERROR\", e)",
+      "revId": "1bbe45754d7837818c279d9c28332a6e67bca76c",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
