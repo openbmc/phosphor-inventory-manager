@@ -105,6 +105,24 @@
       "parentUuid": "87e6b9dd_e8b3bca6",
       "revId": "b13c41df1ff51788877f25f03de290228cf7f22c",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f8ba37de_dadfc8e6",
+        "filename": "test/associations_test.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-05-13T02:18:44Z",
+      "side": 1,
+      "message": "I don\u0027t know... what were you trying to accomplish?  It seems like now the daemon silently starts up if there is missing JSON and that seems bad.",
+      "parentUuid": "869c718e_9a3c3726",
+      "revId": "b13c41df1ff51788877f25f03de290228cf7f22c",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
