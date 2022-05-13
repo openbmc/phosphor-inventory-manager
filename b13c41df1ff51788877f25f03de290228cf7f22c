@@ -18,6 +18,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "01266411_f5dc3e84",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000397
+      },
+      "writtenOn": "2022-05-13T01:45:20Z",
+      "side": 1,
+      "message": "\u003e You hit this in standalone testing?\n\nyes, I deleted this file by mistake, then restarted bmc, PIM core dump because was not found",
+      "parentUuid": "d2500efd_3fc17c67",
+      "revId": "b13c41df1ff51788877f25f03de290228cf7f22c",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "64a14a36_6373ab03",
@@ -31,6 +49,24 @@
       "writtenOn": "2022-05-12T11:46:46Z",
       "side": 1,
       "message": "It kind of seems like this test is no longer testing.  Previously it threw an exception due to missing file.",
+      "revId": "b13c41df1ff51788877f25f03de290228cf7f22c",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d5d7db88_846ee6bb",
+        "filename": "test/associations_test.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1000397
+      },
+      "writtenOn": "2022-05-13T01:45:20Z",
+      "side": 1,
+      "message": "\u003e It kind of seems like this test is no longer testing.  Previously it threw an exception due to missing file.\n\nYeah, I will remove there",
+      "parentUuid": "64a14a36_6373ab03",
       "revId": "b13c41df1ff51788877f25f03de290228cf7f22c",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
