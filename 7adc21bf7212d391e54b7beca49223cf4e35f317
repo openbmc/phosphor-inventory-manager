@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "912b97fb_02f50f43",
+        "filename": "meson.build",
+        "patchSetId": 9
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-05-13T14:23:17Z",
+      "side": 1,
+      "message": "nit: can you use consistent indentation in this commit?  I see the file was using 4 step but everything you\u0027ve added with this commit is 2 step.",
+      "revId": "7adc21bf7212d391e54b7beca49223cf4e35f317",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f342587b_e334f8e3",
+        "filename": "test/meson.build",
+        "patchSetId": 9
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-05-13T14:23:17Z",
+      "side": 1,
+      "message": "nit: 2 step here, 4 step on line 4.",
+      "revId": "7adc21bf7212d391e54b7beca49223cf4e35f317",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
