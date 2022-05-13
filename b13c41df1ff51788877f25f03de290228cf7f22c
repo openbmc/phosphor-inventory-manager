@@ -87,6 +87,24 @@
       "parentUuid": "d5d7db88_846ee6bb",
       "revId": "b13c41df1ff51788877f25f03de290228cf7f22c",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "869c718e_9a3c3726",
+        "filename": "test/associations_test.cpp",
+        "patchSetId": 2
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1000397
+      },
+      "writtenOn": "2022-05-13T02:11:19Z",
+      "side": 1,
+      "message": "\u003e But shouldn\u0027t there be some kind of test of the intended behavior when there is no JSON?  I don\u0027t think we should just delete test cases.\n\nso you mean that we should remove this patch?",
+      "parentUuid": "87e6b9dd_e8b3bca6",
+      "revId": "b13c41df1ff51788877f25f03de290228cf7f22c",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
