@@ -110,6 +110,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "149a14a3_6a51937a",
+        "filename": "gen/regenerate-meson",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-05-17T13:13:28Z",
+      "side": 1,
+      "message": "Is there anything from \u0027example\u0027 that should be removed now?  I can\u0027t tell if it is used just as documentation.  Maybe a follow up commit?",
+      "parentUuid": "690cd0c5_d1df3bf6",
+      "revId": "e4643ca1fe68872c243ad3aca220d320509957b5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "ee4650dd_62035865",
         "filename": "meson.build",
         "patchSetId": 2
@@ -373,6 +391,24 @@
       "side": 1,
       "message": "\u003e Do we need a default path here for testing?\n\nI referenced configure.ac, and didn\u0027t find any assignment to it",
       "parentUuid": "8d0a2fc8_3de6cc3d",
+      "revId": "e4643ca1fe68872c243ad3aca220d320509957b5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "25843460_f563eac9",
+        "filename": "meson_options.txt",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-05-17T13:13:28Z",
+      "side": 1,
+      "message": "We\u0027ve discussed these options elsewhere now.  I think you\u0027ve especially resolved this one as you\u0027re now using the pkgconfig variable from P-D-I as the default.",
+      "parentUuid": "0be0896f_19e54f7a",
       "revId": "e4643ca1fe68872c243ad3aca220d320509957b5",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
