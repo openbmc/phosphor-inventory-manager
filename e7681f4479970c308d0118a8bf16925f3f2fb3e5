@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0b76d7c2_b7fc6d94",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000089
+      },
+      "writtenOn": "2022-05-17T14:08:24Z",
+      "side": 1,
+      "message": "do we need to add cereal.wrap? as we are using cereal library",
+      "revId": "e7681f4479970c308d0118a8bf16925f3f2fb3e5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
