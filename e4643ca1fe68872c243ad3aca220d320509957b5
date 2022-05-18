@@ -128,6 +128,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "4244bb2d_2910d840",
+        "filename": "gen/regenerate-meson",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1000397
+      },
+      "writtenOn": "2022-05-18T06:05:55Z",
+      "side": 1,
+      "message": "\u003e Is there anything from \u0027example\u0027 that should be removed now?  I can\u0027t tell if it is used just as documentation.  Maybe a follow up commit?\n\nYes, I have pushed a new commit here:\nhttps://gerrit.openbmc-project.xyz/c/openbmc/phosphor-inventory-manager/+/53682",
+      "parentUuid": "149a14a3_6a51937a",
+      "revId": "e4643ca1fe68872c243ad3aca220d320509957b5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "ee4650dd_62035865",
         "filename": "meson.build",
         "patchSetId": 2
