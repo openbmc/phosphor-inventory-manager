@@ -16,6 +16,24 @@
       "message": "do we need to add cereal.wrap? as we are using cereal library",
       "revId": "e7681f4479970c308d0118a8bf16925f3f2fb3e5",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d0d08874_50eec447",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000397
+      },
+      "writtenOn": "2022-05-18T01:20:44Z",
+      "side": 1,
+      "message": "I don\u0027t think it\u0027s necessary, because phosphor-logging already depends on cereal, and snmp already depends on phosphor-logging.",
+      "parentUuid": "0b76d7c2_b7fc6d94",
+      "revId": "e7681f4479970c308d0118a8bf16925f3f2fb3e5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
