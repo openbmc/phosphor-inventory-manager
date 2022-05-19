@@ -52,6 +52,24 @@
       "parentUuid": "d0d08874_50eec447",
       "revId": "e7681f4479970c308d0118a8bf16925f3f2fb3e5",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1cea63f7_82223e93",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000397
+      },
+      "writtenOn": "2022-05-19T00:22:51Z",
+      "side": 1,
+      "message": "\u003e If there are direct dependencies on cereal in this repository, those should be expressed in the meson.build here.  We should not rely on implicit dependencies.\n\u003e \n\u003e ```\n\u003e $ git grep cereal\n\u003e gen_serialization.mako.hpp:#include \u003ccereal/types/string.hpp\u003e\n\u003e gen_serialization.mako.hpp:#include \u003ccereal/types/tuple.hpp\u003e\n\u003e gen_serialization.mako.hpp:#include \u003ccereal/types/vector.hpp\u003e\n\u003e gen_serialization.mako.hpp:#include \u003ccereal/types/map.hpp\u003e\n\u003e gen_serialization.mako.hpp:namespace cereal\n\u003e gen_serialization.mako.hpp:// The version we started using cereal NVP from\n\u003e gen_serialization.mako.hpp:\u003c% t \u003d \"cereal::make_nvp(\\\"\" + p.CamelCase + \"\\\", object.\" + p.camelCase + \"())\"\n\u003e gen_serialization.mako.hpp:\u003c% t \u003d \"cereal::make_nvp(\\\"\" + p.CamelCase + \"\\\", \" + p.CamelCase + \")\" %\u003e\\\n\u003e gen_serialization.mako.hpp:} // namespace cereal\n\u003e serialize.hpp:#include \u003ccereal/archives/json.hpp\u003e\n\u003e serialize.hpp:        cereal::JSONOutputArchive oarchive(os);\n\u003e serialize.hpp:                cereal::JSONInputArchive iarchive(is);\n\u003e serialize.hpp:        catch (const cereal::Exception\u0026 e)\n\u003e ```\n\nThanks @MARRI @Patrick\nDone",
+      "parentUuid": "2feeb3f1_fbeab725",
+      "revId": "e7681f4479970c308d0118a8bf16925f3f2fb3e5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
