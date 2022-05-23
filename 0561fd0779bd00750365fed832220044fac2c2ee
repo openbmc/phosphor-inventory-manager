@@ -36,6 +36,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "770d2eda_4a253715",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 13
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000397
+      },
+      "writtenOn": "2022-05-23T02:39:21Z",
+      "side": 1,
+      "message": "\u003e \u003e Have you tried this yet with bitbake to see if it processes the inventory-cleanup.yaml that meta-ibm uses?\n\u003e \n\u003e Oops, I tested it again and found that there is a problem with it processes the inventory-cleanup.yaml\n\u003e Let me check it agian and fix it\n\nI tested it again, this commit test works fine when the following patch is applied,  \nhttps://gerrit.openbmc.org/c/openbmc/openbmc/+/53902",
+      "parentUuid": "e5d5d23b_a0e9d060",
+      "revId": "0561fd0779bd00750365fed832220044fac2c2ee",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4140e51f_24f45845",
