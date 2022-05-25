@@ -16,6 +16,24 @@
       "message": "Since the code uses \n#ifdef CREATE_ASSOCIATIONS\n\nand not #if CREATE_ASSOCIATIONS\n\nwhat is CREATE_ASSOCIATIONS when it\u0027s off, \u00270\u0027?  That would still bring in the code right?",
       "revId": "a31da979d97bc79aef006d5e654cccbad943e7e5",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f1dbadf5_ec8e8e1d",
+        "filename": "meson.build",
+        "patchSetId": 14
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1000397
+      },
+      "writtenOn": "2022-05-25T00:41:02Z",
+      "side": 1,
+      "message": "\u003e Since the code uses \n\u003e #ifdef CREATE_ASSOCIATIONS\n\u003e \n\u003e and not #if CREATE_ASSOCIATIONS\n\u003e \n\u003e what is CREATE_ASSOCIATIONS when it\u0027s off, \u00270\u0027?  That would still bring in the code right?\n\nNo, associations defined in meson_options.txt is a feature\nif we change associations to `diabled`, it doesn\u0027t bring code",
+      "parentUuid": "7b5df385_e1b7c64d",
+      "revId": "a31da979d97bc79aef006d5e654cccbad943e7e5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
