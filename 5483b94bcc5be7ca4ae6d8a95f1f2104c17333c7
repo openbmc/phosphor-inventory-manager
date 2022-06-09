@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "990fe789_7c74bb1f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2022-06-09T19:38:03Z",
+      "side": 1,
+      "message": "Is this just an ordering problem?  Do we need to ensure that the strings all go to the end in variants?",
+      "revId": "5483b94bcc5be7ca4ae6d8a95f1f2104c17333c7",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
