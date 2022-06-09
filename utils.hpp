@@ -44,11 +44,17 @@ struct MakeVariantVisitor
     /** @struct Make
      *  @brief Return variant visitor.
      *
-     *  struct Make specialization if Arg is in T (int -> variant<int, char>).
+     *  struct Make specialization if Arg is in T (int -> variant<int, char>),
+     *  but not a string. Strings are used to represent enumerations by
+     *  sdbusplus, so they are attempted in the following specialization.
      */
     template <typename T, typename Arg>
-    struct Make<T, Arg,
-                typename std::enable_if_t<std::is_convertible_v<Arg, T>>>
+    struct Make<
+        T, Arg,
+        typename std::enable_if_t<
+            !std::is_same_v<std::string,
+                            std::remove_cv_t<std::remove_reference_t<Arg>>> &&
+            std::is_convertible_v<Arg, T>>>
     {
         static auto make(Arg&& arg)
         {
@@ -59,10 +65,11 @@ struct MakeVariantVisitor
     /** @struct Make
      *  @brief Return variant visitor.
      *
-     *  struct Make specialization if Arg is a string, but not otherwise
-     *  directly convertable by C++ conversion constructors.  Strings might
-     *  be convertable using underlying sdbusplus routines, so give them an
-     *  attempt.
+     *  struct Make specialization if Arg is a string.Strings might
+     *  be convertable (for ex. to enumerations) using underlying sdbusplus
+     *  routines, so give them an attempt. In case the string is not convertible
+     *  to an enumeration, sdbusplus::message::convert_from_string will return a
+     *  string back anyway.
      */
     template <typename T, typename Arg>
     struct Make<
