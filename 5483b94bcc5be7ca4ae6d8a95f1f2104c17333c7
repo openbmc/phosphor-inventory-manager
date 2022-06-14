@@ -52,6 +52,24 @@
       "parentUuid": "76015d24_f2574bf4",
       "revId": "5483b94bcc5be7ca4ae6d8a95f1f2104c17333c7",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3d41103f_cbffc679",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1000338
+      },
+      "writtenOn": "2022-06-14T11:30:55Z",
+      "side": 1,
+      "message": "\u003e Nothing can do this.  But why does it need to?\n\nLet\u0027s say we have a PDI with two properties, p1 and p2 - string and enum respectively. If one now does a `Notify` on the string property p1 with a value that is a valid enum string (\"xyz.openbmc_project.IF.p1.val1\"), the variant visitor would end up converting it to a std::variant\u003cenum type\u003e.\n\nWhen this is sent to the setPropertyByName sdbusplus binding, it promptly throws since the property is actually a string. Here\u0027s a snippet from a backtrace for this Notify call:\n\nbusctl call xyz.openbmc_project.Inventory.Manager /xyz/openbmc_project/inventory xyz.openbmc_project.Inventory.Manager Notify a{oa{sa{sv}}} 1 \"/xyz/openbmc_project/inventory/system/dev0\" 1 \"xyz.openbmc_project.Inventory.Item.PCIeDevice\" 1 \"DeviceType\" s \"xyz.openbmc_project.Inventory.Item.PCIeSlot.Generations.Unknown\"\n\n```\n(gdb) f 12\n#12 sdbusplus::xyz::openbmc_project::Inventory::Item::server::PCIeDevice::setPropertyByName (this\u003d0x73fa30, _name\u003d..., \n    val\u003dstd::variant\u003clong, std::string, sdbusplus::xyz::openbmc_project::Inventory::Item::server::PCIeSlot::Generations\u003e [index 2] \u003d {...}, skipSignal\u003d\u003coptimized out\u003e) at gen/xyz/openbmc_project/Inventory/Item/PCIeDevice/server.cpp:5502\n5502            auto\u0026 v \u003d std::get\u003cstd::string\u003e(val);\n(gdb) p val\n$1 \u003d std::variant\u003clong, std::string, sdbusplus::xyz::openbmc_project::Inventory::Item::server::PCIeSlot::Generations\u003e [index 2] \u003d {\n  sdbusplus::xyz::openbmc_project::Inventory::Item::server::PCIeSlot::Generations::Unknown}\n```\n\n\u003e Doesn\u0027t it know the underlying type of the property based on the PDI class?\n\nNo, it only knows the incoming type from the Notify call and a variant containing all possible properties for the *interface* as a whole (\u003cInterface\u003e::PropertiesVariant from server.hpp for the interface). It relies on this visitor to properly convert the incoming value fro the Notify call to the right type in sdbusplus.",
+      "parentUuid": "ef1d85a9_976d8299",
+      "revId": "5483b94bcc5be7ca4ae6d8a95f1f2104c17333c7",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
   ]
 }
