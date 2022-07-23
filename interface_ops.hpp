@@ -47,7 +47,7 @@ struct HasProperties
 template <typename T, typename Enable = void>
 struct MakeInterface
 {
-    static std::any op(sdbusplus::bus::bus& bus, const char* path,
+    static std::any op(sdbusplus::bus_t& bus, const char* path,
                        const Interface&, bool)
     {
         return std::any(std::make_shared<T>(bus, path));
@@ -57,7 +57,7 @@ struct MakeInterface
 template <typename T>
 struct MakeInterface<T, std::enable_if_t<HasProperties<T>::value>>
 {
-    static std::any op(sdbusplus::bus::bus& bus, const char* path,
+    static std::any op(sdbusplus::bus_t& bus, const char* path,
                        const Interface& props, bool deferSignal)
     {
         using InterfaceVariant =

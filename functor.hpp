@@ -208,7 +208,7 @@ struct PropertyChangedCondition
      * Extract the property from the PropertiesChanged
      * message and run the condition test.
      */
-    bool operator()(sdbusplus::bus::bus&, sdbusplus::message::message& msg,
+    bool operator()(sdbusplus::bus_t&, sdbusplus::message_t& msg,
                     Manager&) const
     {
         std::map<std::string, std::variant<T>> properties;
@@ -272,7 +272,7 @@ struct PropertyConditionBase
     {}
 
     /** @brief Forward comparison to type specific implementation. */
-    virtual bool eval(sdbusplus::message::message&) const = 0;
+    virtual bool eval(sdbusplus::message_t&) const = 0;
 
     /** @brief Forward comparison to type specific implementation. */
     virtual bool eval(Manager&) const = 0;
@@ -281,14 +281,13 @@ struct PropertyConditionBase
      *
      * Make a DBus call and test the value of any property.
      */
-    bool operator()(sdbusplus::bus::bus&, sdbusplus::message::message&,
-                    Manager&) const;
+    bool operator()(sdbusplus::bus_t&, sdbusplus::message_t&, Manager&) const;
 
     /** @brief Test a property value.
      *
      * Make a DBus call and test the value of any property.
      */
-    bool operator()(const std::string&, sdbusplus::bus::bus&, Manager&) const;
+    bool operator()(const std::string&, sdbusplus::bus_t&, Manager&) const;
 
   private:
     std::string _path;
@@ -347,7 +346,7 @@ struct PropertyCondition final : public PropertyConditionBase
      *
      * Make a DBus call and test the value of any property.
      */
-    bool eval(sdbusplus::message::message& msg) const override
+    bool eval(sdbusplus::message_t& msg) const override
     {
         std::variant<T> value;
         msg.read(value);

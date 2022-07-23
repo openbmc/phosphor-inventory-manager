@@ -40,7 +40,7 @@ auto _signal(sd_bus_message* m, void* data, sd_bus_error* /* e */) noexcept
 {
     try
     {
-        auto msg = sdbusplus::message::message(m);
+        auto msg = sdbusplus::message_t(m);
         auto& args = *static_cast<Manager::SigArg*>(data);
         sd_bus_message_ref(m);
         auto& mgr = *std::get<0>(args);
@@ -55,7 +55,7 @@ auto _signal(sd_bus_message* m, void* data, sd_bus_error* /* e */) noexcept
     return 0;
 }
 
-Manager::Manager(sdbusplus::bus::bus&& bus, const char* root) :
+Manager::Manager(sdbusplus::bus_t&& bus, const char* root) :
     ServerObject<ManagerIface>(bus, root), _root(root), _bus(std::move(bus)),
     _manager(_bus, root),
 #ifdef CREATE_ASSOCIATIONS
@@ -100,7 +100,7 @@ void Manager::shutdown() noexcept
 
 void Manager::run(const char* busname)
 {
-    sdbusplus::message::message unusedMsg{nullptr};
+    sdbusplus::message_t unusedMsg{nullptr};
 
     // Run startup events.
     for (auto& group : _events)
@@ -275,7 +275,7 @@ void Manager::notify(std::map<sdbusplus::message::object_path, Object> objs)
     updateObjects(objs);
 }
 
-void Manager::handleEvent(sdbusplus::message::message& msg, const Event& event,
+void Manager::handleEvent(sdbusplus::message_t& msg, const Event& event,
                           const EventInfo& info)
 {
     auto& actions = std::get<1>(info);

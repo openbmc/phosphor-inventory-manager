@@ -145,7 +145,7 @@ class AssocsTest : public ::testing::Test
     {}
 
     fs::path jsonDir;
-    sdbusplus::bus::bus bus;
+    sdbusplus::bus_t bus;
 
     virtual void SetUp()
     {
