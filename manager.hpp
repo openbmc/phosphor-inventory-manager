@@ -60,7 +60,7 @@ class Manager final : public ServerObject<ManagerIface>
      *  @param[in] root - The DBus path on which to implement
      *      an inventory manager.
      */
-    Manager(sdbusplus::bus::bus&&, const char*);
+    Manager(sdbusplus::bus_t&&, const char*);
 
     using EventInfo =
         std::tuple<std::vector<EventBasePtr>, std::vector<Action>>;
@@ -79,7 +79,7 @@ class Manager final : public ServerObject<ManagerIface>
         notify(std::map<sdbusplus::message::object_path, Object> objs) override;
 
     /** @brief Event processing entry point. */
-    void handleEvent(sdbusplus::message::message&, const Event& event,
+    void handleEvent(sdbusplus::message_t&, const Event& event,
                      const EventInfo& info);
 
     /** @brief Drop one or more objects from DBus. */
@@ -201,10 +201,10 @@ class Manager final : public ServerObject<ManagerIface>
     std::vector<sdbusplus::bus::match_t> _matches;
 
     /** @brief Persistent sdbusplus DBus bus connection. */
-    sdbusplus::bus::bus _bus;
+    sdbusplus::bus_t _bus;
 
     /** @brief sdbusplus org.freedesktop.DBus.ObjectManager reference. */
-    sdbusplus::server::manager::manager _manager;
+    sdbusplus::server::manager_t _manager;
 
     /** @brief A container of pimgen generated events and responses.  */
     static const Events _events;

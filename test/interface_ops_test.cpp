@@ -52,7 +52,7 @@ struct MockInterface
 
 struct DummyInterfaceWithoutProperties
 {
-    DummyInterfaceWithoutProperties(sdbusplus::bus::bus&, const char* name)
+    DummyInterfaceWithoutProperties(sdbusplus::bus_t&, const char* name)
     {
         g_currentMock->constructWithoutProperties(name);
     }
@@ -62,7 +62,7 @@ struct DummyInterfaceWithProperties
 {
     using PropertiesVariant = FakeVariantType;
 
-    DummyInterfaceWithProperties(sdbusplus::bus::bus&, const char* name,
+    DummyInterfaceWithProperties(sdbusplus::bus_t&, const char* name,
                                  const InterfaceVariant& i, bool skipSignal)
     {
         g_currentMock->constructWithProperties(name, i, skipSignal);

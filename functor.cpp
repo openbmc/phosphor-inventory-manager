@@ -30,8 +30,8 @@ namespace manager
 {
 namespace functor
 {
-bool PropertyConditionBase::operator()(sdbusplus::bus::bus& bus,
-                                       sdbusplus::message::message&,
+bool PropertyConditionBase::operator()(sdbusplus::bus_t& bus,
+                                       sdbusplus::message_t&,
                                        Manager& mgr) const
 {
     std::string path(_path);
@@ -39,7 +39,7 @@ bool PropertyConditionBase::operator()(sdbusplus::bus::bus& bus,
 }
 
 bool PropertyConditionBase::operator()(const std::string& path,
-                                       sdbusplus::bus::bus& bus,
+                                       sdbusplus::bus_t& bus,
                                        Manager& mgr) const
 {
     std::string host;

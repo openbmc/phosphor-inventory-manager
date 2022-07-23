@@ -41,11 +41,11 @@ using ObjectType = std::map<std::string, InterfaceType<T>>;
 using Interface = InterfaceType<InterfaceVariantType>;
 using Object = ObjectType<InterfaceVariantType>;
 
-using Action = std::function<void(sdbusplus::bus::bus&, Manager&)>;
-using Filter = std::function<bool(sdbusplus::bus::bus&,
-                                  sdbusplus::message::message&, Manager&)>;
+using Action = std::function<void(sdbusplus::bus_t&, Manager&)>;
+using Filter =
+    std::function<bool(sdbusplus::bus_t&, sdbusplus::message_t&, Manager&)>;
 using PathCondition =
-    std::function<bool(const std::string&, sdbusplus::bus::bus&, Manager&)>;
+    std::function<bool(const std::string&, sdbusplus::bus_t&, Manager&)>;
 template <typename T>
 using GetProperty = std::function<T(Manager&)>;
 } // namespace manager
