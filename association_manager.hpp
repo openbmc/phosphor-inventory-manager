@@ -30,7 +30,7 @@ using EndpointsEntry = std::vector<std::tuple<Types, Paths>>;
 
 using AssociationMap = std::map<std::string, EndpointsEntry>;
 
-using AssociationObject = sdbusplus::server::object::object<
+using AssociationObject = sdbusplus::server::object_t<
     sdbusplus::xyz::openbmc_project::Association::server::Definitions>;
 
 using AssociationIfaceMap =
@@ -76,14 +76,14 @@ class Manager
      * @param[in] bus - sdbusplus object
      * @param[in] jsonPath - path to the JSON File that contains associations
      */
-    Manager(sdbusplus::bus::bus& bus, const std::string& jsonPath);
+    Manager(sdbusplus::bus_t& bus, const std::string& jsonPath);
 
     /**
      * @brief Constructor
      *
      * @param[in] bus - sdbusplus object
      */
-    explicit Manager(sdbusplus::bus::bus& bus) :
+    explicit Manager(sdbusplus::bus_t& bus) :
         Manager(bus, ASSOCIATIONS_FILE_PATH)
     {}
 
@@ -214,7 +214,7 @@ class Manager
     /**
      * @brief The sdbusplus bus object.
      */
-    sdbusplus::bus::bus& _bus;
+    sdbusplus::bus_t& _bus;
 
     /**
      * @brief The path to the associations JSON File.

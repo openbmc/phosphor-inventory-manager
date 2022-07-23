@@ -15,7 +15,7 @@ namespace associations
 {
 namespace fs = std::filesystem;
 
-Manager::Manager(sdbusplus::bus::bus& bus, const std::string& jsonPath) :
+Manager::Manager(sdbusplus::bus_t& bus, const std::string& jsonPath) :
     _bus(bus), _jsonFile(jsonPath)
 {
     // If there aren't any conditional associations files, look for
