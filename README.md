@@ -1,8 +1,10 @@
+# Phosphor Inventory Manager (PIM)
+
 Phosphor Inventory Manager (PIM) is an implementation of the
-xyz.openbmc_project.Inventory.Manager DBus interface, and supporting tools. PIM
-uses a combination of build-time YAML files, run-time calls to the Notify method
-of the Manager interface, and association definition JSON files to provide a
-generalized inventory state management solution.
+`xyz.openbmc_project.Inventory.Manager` DBus interface, and supporting tools.
+PIM uses a combination of build-time YAML files, run-time calls to the Notify
+method of the Manager interface, and association definition JSON files to
+provide a generalized inventory state management solution.
 
 ## YAML
 
@@ -15,9 +17,7 @@ The following top level YAML tags are supported:
 - description - An optional description of the file.
 - events - One or more events that PIM should monitor.
 
----
-
-**events**
+### events
 
 Supported event tags are:
 
@@ -28,26 +28,20 @@ Supported event tags are:
 
 Subsequent tags are defined by the event type.
 
----
-
-**match**
+### match
 
 Supported match tags are:
 
 - signatures - A DBus match specification.
 - filters - Filters to apply when a match occurs.
 
----
-
-**startup**
+### startup
 
 Supported startup tags are:
 
 - filters - Filters to apply at startup.
 
----
-
-**filters**
+### filters
 
 Supported filter tags are:
 
@@ -62,9 +56,7 @@ The available filters provided by PIM are:
 - propertyIs - Only match events when the specified property has the specified
   value.
 
----
-
-**propertyChangedTo**
+### propertyChangedTo
 
 The property under test is obtained from an sdbus message generated from an
 org.freedesktop.DBus.Properties.PropertiesChanged signal payload.
@@ -75,9 +67,7 @@ Supported arguments for the propertyChangedTo filter are:
 - property - The property to check.
 - value - The value to check.
 
----
-
-**propertyIs**
+### propertyIs
 
 The property under test is obtained by invoking org.freedesktop.Properties.Get
 on the specified interface.
@@ -92,14 +82,12 @@ Supported arguments for the propertyIs filter are:
 
 The service argument is optional. If provided that service will be called
 explicitly. If omitted, the service will be obtained with an
-xyz.openbmc_project.ObjectMapper lookup.
+`xyz.openbmc_project.ObjectMapper` lookup.
 
 propertyIs can be used in an action condition context when the action operates
 on a dbus object path.
 
----
-
-**actions**
+### actions
 
 Supported action tags are:
 
@@ -112,9 +100,7 @@ The available actions provided by PIM are:
 - destroyObject - Destroy the specified DBus object.
 - setProperty - Set the specified property on the specified DBus object.
 
----
-
-**destroyObject**
+### destroyObject
 
 Supported arguments for the destroyObject action are:
 
@@ -125,9 +111,7 @@ Conditions are tested and logically ANDed. If the conditions do not pass, the
 object is not destroyed. Any condition that accepts a path parameter is
 supported.
 
----
-
-**setProperty**
+### setProperty
 
 Supported arguments for the setProperty action are:
 
@@ -140,15 +124,11 @@ Supported arguments for the setProperty action are:
 Conditions are tested and logically ANDed. If the conditions do not pass, the
 property is not set. Any condition that accepts a path parameter is supported.
 
----
-
-**createObjects**
+### createObjects
 
 Supported arguments for the createObjects action are:
 
 - objs - A dictionary of objects to create.
-
----
 
 ## Creating Associations
 
@@ -165,25 +145,20 @@ processed at runtime.
 
 An example of this JSON is:
 
-```
+```json
 [
-    {
-        "path": "system/chassis/motherboard/cpu0/core1",
-        "endpoints":
-        [
-            {
-                "types":
-                {
-                    "fType": "sensors",
-                    "rType": "inventory"
-                },
-                "paths":
-                [
-                    "/xyz/openbmc_project/sensors/temperature/p0_core0_temp"
-                ]
-            }
-        ]
-    }
+  {
+    "path": "system/chassis/motherboard/cpu0/core1",
+    "endpoints": [
+      {
+        "types": {
+          "fType": "sensors",
+          "rType": "inventory"
+        },
+        "paths": ["/xyz/openbmc_project/sensors/temperature/p0_core0_temp"]
+      }
+    ]
+  }
 ]
 ```
 
@@ -192,7 +167,7 @@ Then, when/if PIM creates the
 will add an `xyz.openbmc_project.Association.Definitions` interface on it such
 that the object mapper creates the 2 association objects:
 
-```
+```text
     /xyz/openbmc_project/inventory/system/chassis/motherboard/cpu0/core1/sensors
        endpoints property:
        ['/xyz/openbmc_project/sensors/temperature/p0_core0_temp']
@@ -204,7 +179,7 @@ that the object mapper creates the 2 association objects:
 
 The JSON description is:
 
-```
+```json
 [
     {
         "path": "The relative path of the inventory object to create the
@@ -226,7 +201,6 @@ The JSON description is:
         ]
     }
 ]
-
 ```
 
 In the case where different systems that require different associations reside
@@ -244,62 +218,47 @@ or the first file that had a condition that matched.
 
 An example is:
 
-```
+```json
 {
-    "condition":
+  "condition": {
+    "path": "system/chassis/motherboard",
+    "interface": "xyz.openbmc_project.Inventory.Decorator.Asset",
+    "property": "Model",
+    "values": ["ModelA", "ModelB"]
+  },
+  "associations": [
     {
-        "path": "system/chassis/motherboard",
-        "interface": "xyz.openbmc_project.Inventory.Decorator.Asset",
-        "property": "Model",
-        "values": [
-            "ModelA",
-            "ModelB"
-        ]
-    },
-    "associations":
-    [
+      "path": "system/chassis/motherboard/cpu0/core1",
+      "endpoints": [
         {
-            "path": "system/chassis/motherboard/cpu0/core1",
-            "endpoints":
-            [
-                {
-                    "types":
-                    {
-                        "fType": "sensors",
-                        "rType": "inventory"
-                    },
-                    "paths":
-                    [
-                        "/xyz/openbmc_project/sensors/temperature/p0_core0_temp"
-                    ]
-                }
-            ]
+          "types": { "fType": "sensors", "rType": "inventory" },
+          "paths": ["/xyz/openbmc_project/sensors/temperature/p0_core0_temp"]
         }
-    ]
+      ]
+    }
+  ]
 }
 ```
 
 This states that these associations are valid if the system/chassis/motherboard
 inventory object has a Model property with a value of either ModelA or ModelB.
 
-The values field supports the same types as in the inventory, so either a 'bool'
-(true/false), 'int64_t,' 'string', or 'std::vector<uint8_t>'([1, 2]).
-
----
+The values field supports the same types as in the inventory, so either a `bool`
+(true/false), `int64_t`, `std::string`, or `std::vector<uint8_t>`([1, 2]).
 
 ## Building
 
 After running pimgen.py, build PIM using the following steps:
 
-```
-    ./bootstrap.sh
-    ./configure ${CONFIGURE_FLAGS}
-    make
+```sh
+./bootstrap.sh
+./configure ${CONFIGURE_FLAGS}
+make
 ```
 
 To clean the repository run:
 
-```
+```sh
  ./bootstrap.sh clean
 ```
 
