@@ -83,7 +83,7 @@ generated_cpp = custom_target(
         '-i', ifacesdir,
         '-d', get_option('YAML_PATH'),
         '-o', meson.current_build_dir(),
-        '-b', '$BUSNAME',
+        '-b', conf_data.get_unquoted('BUSNAME'),
         'generate-cpp'
     ],
     output : 'generated.cpp')
@@ -96,7 +96,7 @@ gen_serialization_hpp = custom_target(
         '-i', ifacesdir,
         '-d', get_option('YAML_PATH'),
         '-o', meson.current_build_dir(),
-        '-b', '$BUSNAME',
+        '-b', conf_data.get_unquoted('BUSNAME'),
         'generate-serialization'
     ],
     output : 'gen_serialization.hpp')
