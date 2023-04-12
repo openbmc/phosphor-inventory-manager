@@ -72,7 +72,7 @@ endif
 
 ifacesdir = get_option('IFACES_PATH')
 if ifacesdir == ''
-    ifacesdir = phosphor_dbus_interfaces_dep.get_variable(pkgconfig: 'yamldir', internal: 'yamldir')
+    ifacesdir = phosphor_dbus_interfaces_dep.get_variable('yamldir')
 endif
 
 generated_cpp = custom_target(
