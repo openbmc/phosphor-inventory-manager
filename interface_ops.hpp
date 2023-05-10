@@ -99,8 +99,7 @@ struct GetPropertyValue<T, std::enable_if_t<HasProperties<T>::value>>
 template <typename T, typename Enable = void>
 struct AssignInterface
 {
-    static void op(const Interface&, std::any&, bool)
-    {}
+    static void op(const Interface&, std::any&, bool) {}
 };
 
 template <typename T>

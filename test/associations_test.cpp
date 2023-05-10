@@ -141,8 +141,7 @@ static const auto badJson3 = R"(
 class AssocsTest : public ::testing::Test
 {
   protected:
-    AssocsTest() : ::testing::Test(), bus(sdbusplus::bus::new_default())
-    {}
+    AssocsTest() : ::testing::Test(), bus(sdbusplus::bus::new_default()) {}
 
     fs::path jsonDir;
     sdbusplus::bus_t bus;

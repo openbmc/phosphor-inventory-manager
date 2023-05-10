@@ -343,8 +343,8 @@ void Manager::restore()
         return;
     }
 
-    static const std::string remove =
-        std::string(PIM_PERSIST_PATH) + INVENTORY_ROOT;
+    static const std::string remove = std::string(PIM_PERSIST_PATH) +
+                                      INVENTORY_ROOT;
 
     std::map<sdbusplus::message::object_path, Object> objects;
     for (const auto& dirent :
@@ -405,8 +405,8 @@ void Manager::restore()
                         auto& getProperty =
                             std::get<GetPropertyValueType>(maker->second);
 
-                        condition.actualValue =
-                            getProperty(condition.property, ifaceIt->second);
+                        condition.actualValue = getProperty(condition.property,
+                                                            ifaceIt->second);
                     }
                 }
             }
@@ -416,11 +416,11 @@ void Manager::restore()
             // associations file is valid so create its associations.
             if (_associations.conditionMatch())
             {
-                std::for_each(
-                    _refs.begin(), _refs.end(), [this](const auto& ref) {
-                        _associations.createAssociations(
-                            ref.first, _status != ManagerStatus::RUNNING);
-                    });
+                std::for_each(_refs.begin(), _refs.end(),
+                              [this](const auto& ref) {
+                    _associations.createAssociations(
+                        ref.first, _status != ManagerStatus::RUNNING);
+                });
             }
         }
 #endif

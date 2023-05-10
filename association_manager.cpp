@@ -144,18 +144,18 @@ bool Manager::conditionMatch(const sdbusplus::message::object_path& objectPath,
 
         auto interface = std::find_if(object.begin(), object.end(),
                                       [&condition](const auto& i) {
-                                          return i.first == condition.interface;
-                                      });
+            return i.first == condition.interface;
+        });
         if (interface == object.end())
         {
             continue;
         }
 
-        auto property =
-            std::find_if(interface->second.begin(), interface->second.end(),
-                         [&condition](const auto& p) {
-                             return condition.property == p.first;
-                         });
+        auto property = std::find_if(interface->second.begin(),
+                                     interface->second.end(),
+                                     [&condition](const auto& p) {
+            return condition.property == p.first;
+        });
         if (property == interface->second.end())
         {
             continue;
