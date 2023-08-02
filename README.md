@@ -251,15 +251,8 @@ The values field supports the same types as in the inventory, so either a `bool`
 After running pimgen.py, build PIM using the following steps:
 
 ```sh
-./bootstrap.sh
-./configure ${CONFIGURE_FLAGS}
-make
-```
-
-To clean the repository run:
-
-```sh
- ./bootstrap.sh clean
+meson setup builddir
+ninja -C builddir
 ```
 
 [1]:
