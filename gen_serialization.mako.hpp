@@ -2,11 +2,13 @@
 ## into the rendered file; feel free to edit this file.
 // This file was auto generated.  Do not edit.
 
+#include "config.h"
+
+#include <cereal/types/map.hpp>
+#include <cereal/types/set.hpp>
 #include <cereal/types/string.hpp>
 #include <cereal/types/tuple.hpp>
 #include <cereal/types/vector.hpp>
-#include <cereal/types/map.hpp>
-#include "config.h"
 % for iface in interfaces:
 #include <${iface.header()}>
 % endfor
