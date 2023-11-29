@@ -17,7 +17,7 @@ conf_data.set_quoted('IFACE', 'xyz.openbmc_project.Inventory.Manager')
 conf_data.set_quoted('PIM_PERSIST_PATH', '/var/lib/phosphor-inventory-manager')
 conf_data.set_quoted('ASSOCIATIONS_FILE_PATH', '/usr/share/phosphor-inventory-manager/associations.json')
 conf_data.set('CLASS_VERSION', 2)
-conf_data.set('CREATE_ASSOCIATIONS', get_option('associations').enabled())
+conf_data.set('CREATE_ASSOCIATIONS', get_option('associations').allowed())
 configure_file(output: 'config.h',
     configuration: conf_data
 )
@@ -49,7 +49,7 @@ prog_python = find_program('python3', required: true)
 
 sources = []
 deps = []
-if get_option('associations').enabled()
+if get_option('associations').allowed()
     cpp = meson.get_compiler('cpp')
     if cpp.has_header('nlohmann/json.hpp')
         nlohmann_json_dep = declare_dependency()
