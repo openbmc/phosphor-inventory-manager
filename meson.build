@@ -50,23 +50,11 @@ prog_python = find_program('python3', required: true)
 sources = []
 deps = []
 if get_option('associations').allowed()
-    cpp = meson.get_compiler('cpp')
-    if cpp.has_header('nlohmann/json.hpp')
-        nlohmann_json_dep = declare_dependency()
-    else
-        subproject('nlohmann', required: false)
-        nlohmann_json_dep = declare_dependency(
-            include_directories: [
-                'subprojects/nlohmann/single_include',
-                'subprojects/nlohmann/single_include/nlohmann',
-            ]
-        )
-    endif
     sources += [
         'association_manager.cpp',
     ]
     deps += [
-        nlohmann_json_dep,
+        dependency('nlohmann_json', include_type: 'system'),
     ]
 endif
 
