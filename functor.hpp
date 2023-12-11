@@ -1,5 +1,6 @@
 #pragma once
 
+#include "remove_association.hpp"
 #include "types.hpp"
 #include "utils.hpp"
 
@@ -152,6 +153,13 @@ auto setProperty(std::vector<const char*>&& paths,
             {
                 m.template invokeMethod<T>(p, iface, member, value);
             }
+            bool* newValue =
+                std::get_if<bool>(getProperty(p, iface, member, "Functional"));
+            if (*newValue)
+            {
+                auto service = getService(p, iface);
+                removeCriticalAssociation(m._bus, p, service);
+            }
         }
     };
 }
@@ -208,7 +216,7 @@ struct PropertyChangedCondition
      * Extract the property from the PropertiesChanged
      * message and run the condition test.
      */
-    bool operator()(sdbusplus::bus_t&, sdbusplus::message_t& msg,
+    bool operator()(sdbusplus::bus_t& bus, sdbusplus::message_t& msg,
                     Manager&) const
     {
         std::map<std::string, std::variant<T>> properties;
@@ -226,7 +234,16 @@ struct PropertyChangedCondition
         {
             return false;
         }
-
+        if (!strcmp(_property, "Functional"))
+        {
+            const bool* value = std::get_if<bool>(&it->second);
+            if (*value)
+            {
+                std::string invObjectPath = msg.get_path();
+                const std::string service = getService(invObjectPath, iface);
+                removeCriticalAssociation(bus, invObjectPath, service);
+            }
+        }
         return _condition(std::forward<T>(std::get<T>(it->second)));
     }
 
