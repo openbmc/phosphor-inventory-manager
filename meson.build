@@ -94,6 +94,7 @@ sources += [
     gen_serialization_hpp,
     'app.cpp',
     'errors.cpp',
+    'remove_association.cpp',
     'functor.cpp',
     'manager.cpp',
 ]
