@@ -16,6 +16,7 @@
 #include "manager.hpp"
 
 #include "errors.hpp"
+#include "remove_association.hpp"
 
 #include <algorithm>
 #include <chrono>
@@ -41,6 +42,23 @@ auto _signal(sd_bus_message* m, void* data, sd_bus_error* /* e */) noexcept
     try
     {
         auto msg = sdbusplus::message_t(m);
+        std::string interfaceName{};
+        std::map<std::string, std::variant<bool>> properties;
+        msg.read(interfaceName, properties);
+        const auto it = properties.find("Functional");
+        std::string invObjectPath = msg.get_path();
+        if (it != properties.end())
+        {
+            static auto bus = sdbusplus::bus::new_default();
+            bus = msg.get_bus();
+            const std::string service = getService(invObjectPath,
+                                                   interfaceName);
+            const bool* value = std::get_if<bool>(&it->second);
+            if (*value)
+            {
+                removeCriticalAssociation(bus, invObjectPath, service);
+            }
+        }
         auto& args = *static_cast<Manager::SigArg*>(data);
         sd_bus_message_ref(m);
         auto& mgr = *std::get<0>(args);
@@ -82,6 +100,8 @@ Manager::Manager(sdbusplus::bus_t&& bus, const char* root) :
             _sigargs.emplace_back(
                 std::make_unique<SigArg>(this, dbusEvent, &group));
 
+            // check if functional
+
             // Register our callback and the context for
             // each signal event.
             _matches.emplace_back(_bus, dbusEvent->signature, _signal,
@@ -111,6 +131,24 @@ void Manager::run(const char* busname)
             {
                 handleEvent(unusedMsg, *pEvent, group);
             }
+        }
+    }
+    DBusSubtree objTree =
+        getInventoryAssociations(_bus, "/xyz/openbmc_project/inventory", 0);
+    for (const auto& object : objTree)
+    {
+        std::string interface{
+            "xyz.openbmc_project.State.Decorator.OperationalStatus"};
+        std::string prop{"Functional"};
+
+        const auto& objPath = object.first;
+        const auto& service = object.second.begin()->first;
+        DBusValue dbusValue;
+        getProperty(_bus, service, objPath, interface, prop, dbusValue);
+        bool value = std::get<bool>(dbusValue);
+        if (value)
+        {
+            removeCriticalAssociation(_bus, objPath, service);
         }
     }
 
@@ -266,6 +304,22 @@ void Manager::updateObjects(
             });
         }
 #endif
+        for (auto interface = (objit->second).begin();
+             interface != (objit->second).end(); interface++)
+        {
+            const auto it = (interface->second).find("Functional");
+            if (it != (interface->second).end())
+            {
+                const std::string service = getService(absPath,
+                                                       interface->first);
+                const bool* value = std::get_if<bool>(&(it->second));
+                if (*value)
+                {
+                    removeCriticalAssociation(_bus, absPath, service);
+                }
+            }
+        }
+
         ++objit;
     }
 }
@@ -287,6 +341,21 @@ void Manager::handleEvent(sdbusplus::message_t& msg, const Event& event,
             return;
         }
     }
+    std::string interfaceName{};
+    std::map<std::string, std::variant<bool>> properties;
+    msg.read(interfaceName, properties);
+    const auto it = properties.find("Functional");
+    std::string invObjectPath = msg.get_path();
+    if (it != properties.end())
+    {
+        const std::string service = getService(invObjectPath, interfaceName);
+        const bool* value = std::get_if<bool>(&it->second);
+        if (*value)
+        {
+            removeCriticalAssociation(_bus, invObjectPath, service);
+        }
+    }
+
     for (auto& action : actions)
     {
         action(_bus, *this);

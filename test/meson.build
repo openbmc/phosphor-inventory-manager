@@ -24,6 +24,7 @@ test_sources = [
     gen_serialization_hpp,
     '../association_manager.cpp',
     '../manager.cpp',
+    '../remove_association.cpp',
     '../functor.cpp',
     '../errors.cpp',
 ]
