@@ -114,6 +114,16 @@ executable(
     install_dir: get_option('bindir'),
 )
 
+executable(
+    'remove-association',
+    'remove_association.cpp',
+    'remove_association_main.cpp',
+    implicit_include_directories: true,
+    dependencies: sdbusplus_dep,
+    install: true,
+    install_dir: get_option('bindir'),
+)
+
 build_tests = get_option('tests')
 if not build_tests.disabled()
     subdir('test')
