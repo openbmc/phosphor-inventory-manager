@@ -1,6 +1,69 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "46387da3_d47209aa",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2024-01-30T22:25:56Z",
+      "side": 1,
+      "message": "You don\u0027t need the name of the repo you\u0027re making the change in in the commit message.\n\nalso, remove \u0027changes for\u0027 since that\u0027s implied anyway.\n\nMaybe like:  Remove critical assoc on functional",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 5
+      },
+      "revId": "faaac78d2f8739610f3249d758d67da6d22c72f9",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a6ee717a_7c9af903",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2024-01-30T22:25:56Z",
+      "side": 1,
+      "message": "Can you explain who would set these in the first place, and when?",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 68
+      },
+      "revId": "faaac78d2f8739610f3249d758d67da6d22c72f9",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f07f3b38_cc467a1a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2024-01-30T22:25:56Z",
+      "side": 1,
+      "message": "Can you list what the forward and reverse associations are here?",
+      "revId": "faaac78d2f8739610f3249d758d67da6d22c72f9",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "c93129b8_7896e8b3",
@@ -14,6 +77,80 @@
       "writtenOn": "2024-01-30T17:04:42Z",
       "side": 1,
       "message": "Hi,\nCan you please review the code? Thanks.",
+      "revId": "faaac78d2f8739610f3249d758d67da6d22c72f9",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "be0d66a5_c4d16e1f",
+        "filename": "remove_association.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2024-01-30T22:25:56Z",
+      "side": 1,
+      "message": "I don\u0027t see how this even works... this is the wrong bus name.  You do have it right on line 30.  Also, if any of these end up remaining, please use camelCase.",
+      "revId": "faaac78d2f8739610f3249d758d67da6d22c72f9",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3276809f_8195536a",
+        "filename": "remove_association.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2024-01-30T22:25:56Z",
+      "side": 1,
+      "message": "incorrect",
+      "range": {
+        "startLine": 85,
+        "startChar": 55,
+        "endLine": 85,
+        "endChar": 67
+      },
+      "revId": "faaac78d2f8739610f3249d758d67da6d22c72f9",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "81ba5d8f_ed2dd48b",
+        "filename": "remove_association.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2024-01-30T22:25:56Z",
+      "side": 1,
+      "message": "Isn\u0027t a Get Object on the inventory path just always going to return Inventory.Manager anyway?\n\nI don\u0027t think anyone should be making D-Bus calls back to themselves, and I\u0027m kinda surprised it even works.  PIM does have data structures for all of its paths and properties to back D-Bus, so ideally there would be a way to modify those directly.\n\nOtherwise, putting this in a separate daemon may be more appropriate.",
+      "revId": "faaac78d2f8739610f3249d758d67da6d22c72f9",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b94074f1_c2323a41",
+        "filename": "remove_association.hpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2024-01-30T22:25:56Z",
+      "side": 1,
+      "message": "If any of these functions aren\u0027t called outside of remove_association.cpp, they aren\u0027t needed in the header.",
       "revId": "faaac78d2f8739610f3249d758d67da6d22c72f9",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
