@@ -211,6 +211,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ca00e143_bfdbdc86",
+        "filename": "remove_association.cpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1000386
+      },
+      "writtenOn": "2024-02-06T21:18:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "666a1ab3_b95256e5",
+      "revId": "faaac78d2f8739610f3249d758d67da6d22c72f9",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3276809f_8195536a",
@@ -324,6 +342,24 @@
       "side": 1,
       "message": "I\u0027ll be putting with association then than having separate files.",
       "parentUuid": "b94074f1_c2323a41",
+      "revId": "faaac78d2f8739610f3249d758d67da6d22c72f9",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "03a8c853_4c8aa5a4",
+        "filename": "remove_association.hpp",
+        "patchSetId": 5
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1000386
+      },
+      "writtenOn": "2024-02-06T21:18:17Z",
+      "side": 1,
+      "message": "It didn\u0027t work as expected, so having similar format. Removed functions.",
+      "parentUuid": "45633fef_b8ee87d3",
       "revId": "faaac78d2f8739610f3249d758d67da6d22c72f9",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
