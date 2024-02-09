@@ -1,0 +1,262 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fbfc799f_c600845f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2024-02-09T22:50:56Z",
+      "side": 1,
+      "message": "Let\u0027s not mention PELs here, because that is an IBM only term.  Instead, you can just say there  is some other code that will set the critical association?\n\n\nThough now I wonder if this code should be the one also be watching for functional\u003dfalse and setting the critical association in the first place.",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 4
+      },
+      "revId": "023b2d046ac58e1af056f5aa52cee3149f530bf0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "889fa42a_cf964c71",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2024-02-09T22:50:56Z",
+      "side": 1,
+      "message": "\u0027health_rollup\u0027 and \u0027critical\u0027 are the relevant associations here.",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 6
+      },
+      "revId": "023b2d046ac58e1af056f5aa52cee3149f530bf0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ecdf9d15_bbbc5724",
+        "filename": "meson.build",
+        "patchSetId": 6
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2024-02-09T22:50:56Z",
+      "side": 1,
+      "message": "i\u0027m on the fence about if this needs a compile flag or not",
+      "revId": "023b2d046ac58e1af056f5aa52cee3149f530bf0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2fa765a4_a1894c89",
+        "filename": "meson.build",
+        "patchSetId": 6
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2024-02-09T22:50:56Z",
+      "side": 1,
+      "message": "Maybe give it a more specific name, like \u0027remove-critical-associations\u0027.",
+      "range": {
+        "startLine": 118,
+        "startChar": 5,
+        "endLine": 118,
+        "endChar": 23
+      },
+      "revId": "023b2d046ac58e1af056f5aa52cee3149f530bf0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "66921d47_fe9087d0",
+        "filename": "remove_association.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2024-02-09T22:50:56Z",
+      "side": 1,
+      "message": "can update this to 2024",
+      "range": {
+        "startLine": 2,
+        "startChar": 16,
+        "endLine": 2,
+        "endChar": 19
+      },
+      "revId": "023b2d046ac58e1af056f5aa52cee3149f530bf0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "db3306c2_5dfe17c0",
+        "filename": "remove_association.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2024-02-09T22:50:56Z",
+      "side": 1,
+      "message": "is this needed?",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 19
+      },
+      "revId": "023b2d046ac58e1af056f5aa52cee3149f530bf0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f906e9ac_b07ebfe8",
+        "filename": "remove_association.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2024-02-09T22:50:56Z",
+      "side": 1,
+      "message": "are either of these needed?",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 19
+      },
+      "revId": "023b2d046ac58e1af056f5aa52cee3149f530bf0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e99d32f6_c9308869",
+        "filename": "remove_association.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2024-02-09T22:50:56Z",
+      "side": 1,
+      "message": "you may as well just hardcode these values in this function instead of passing them in.",
+      "range": {
+        "startLine": 39,
+        "startChar": 37,
+        "endLine": 40,
+        "endChar": 51
+      },
+      "revId": "023b2d046ac58e1af056f5aa52cee3149f530bf0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5d903ece_71799ea1",
+        "filename": "remove_association.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2024-02-09T22:50:56Z",
+      "side": 1,
+      "message": "since this is a new application, lets use lg2",
+      "range": {
+        "startLine": 57,
+        "startChar": 8,
+        "endLine": 57,
+        "endChar": 23
+      },
+      "revId": "023b2d046ac58e1af056f5aa52cee3149f530bf0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "728d7467_94ab0b93",
+        "filename": "remove_association.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2024-02-09T22:50:56Z",
+      "side": 1,
+      "message": "it would be nice to initialize these 3 strings the same way, and make them all const.\n\nAlso no need to drop vowels on assocIntrface.\n\nAlso, you have a constant for the Function property, but not for the Associations property a few lines down.",
+      "range": {
+        "startLine": 92,
+        "startChar": 1,
+        "endLine": 96,
+        "endChar": 54
+      },
+      "revId": "023b2d046ac58e1af056f5aa52cee3149f530bf0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d4027bce_da856205",
+        "filename": "remove_association.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2024-02-09T22:50:56Z",
+      "side": 1,
+      "message": "You have a getProperty wrapper for the property get, but not the property set.  I\u0027d recommend doing it the same way for both, either having a wrapper function or not.",
+      "revId": "023b2d046ac58e1af056f5aa52cee3149f530bf0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "004a29d2_bcde27cc",
+        "filename": "remove_association_main.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2024-02-09T22:50:56Z",
+      "side": 1,
+      "message": "Maybe put the license prologue in here too to be consistent.",
+      "revId": "023b2d046ac58e1af056f5aa52cee3149f530bf0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
