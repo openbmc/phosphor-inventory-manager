@@ -244,6 +244,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c554c7b7_a926dddb",
+        "filename": "remove_association.hpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1000522
+      },
+      "writtenOn": "2024-02-12T15:13:09Z",
+      "side": 1,
+      "message": "These typedef are actually required? I see them being used only at one place.",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 32
+      },
+      "revId": "023b2d046ac58e1af056f5aa52cee3149f530bf0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "004a29d2_bcde27cc",
         "filename": "remove_association_main.cpp",
         "patchSetId": 6
@@ -255,6 +278,29 @@
       "writtenOn": "2024-02-09T22:50:56Z",
       "side": 1,
       "message": "Maybe put the license prologue in here too to be consistent.",
+      "revId": "023b2d046ac58e1af056f5aa52cee3149f530bf0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1050316a_1e186253",
+        "filename": "remove_association_main.cpp",
+        "patchSetId": 6
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1000522
+      },
+      "writtenOn": "2024-02-12T15:13:09Z",
+      "side": 1,
+      "message": "Why do we need a new main here? Could you please explain?",
+      "range": {
+        "startLine": 3,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 22
+      },
       "revId": "023b2d046ac58e1af056f5aa52cee3149f530bf0",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
