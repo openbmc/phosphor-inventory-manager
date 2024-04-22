@@ -41,6 +41,8 @@ test_deps = [
     sdbusplus_dep,
     phosphor_dbus_interfaces_dep,
     phosphor_logging_dep,
+    nlohmann_json_dep,
+    cereal_dep
 ]
 
 foreach t : tests

@@ -53,8 +53,9 @@ if get_option('associations').allowed()
     sources += [
         'association_manager.cpp',
     ]
+    nlohmann_json_dep = dependency('nlohmann_json', include_type: 'system')
     deps += [
-        dependency('nlohmann_json', include_type: 'system'),
+        nlohmann_json_dep,
     ]
 endif
 
