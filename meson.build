@@ -41,7 +41,7 @@ if not has_cereal
     cereal_dep = cereal_proj.dependency('cereal')
 endif
 
-sdbusplus_dep = dependency('sdbusplus')
+sdbusplus_dep = dependency('sdbusplus', required : false)
 phosphor_dbus_interfaces_dep = dependency('phosphor-dbus-interfaces')
 phosphor_logging_dep = dependency('phosphor-logging')
 
@@ -63,6 +63,13 @@ if ifacesdir == ''
     ifacesdir = phosphor_dbus_interfaces_dep.get_variable('yamldir')
 endif
 
+sdbusplus_python_env = {}
+if not sdbusplus_dep.found()
+    sdbusplus_proj = subproject('sdbusplus')
+    sdbusplus_dep = sdbusplus_proj.get_variable('sdbusplus_dep')
+    sdbusplus_python_env = {'PYTHONPATH': meson.current_source_dir() / 'subprojects' / 'sdbusplus' / 'tools'}
+endif
+
 generated_cpp = custom_target(
     'generated.cpp',
     command : [
@@ -74,6 +81,7 @@ generated_cpp = custom_target(
         '-b', conf_data.get_unquoted('BUSNAME'),
         'generate-cpp'
     ],
+    env: sdbusplus_python_env,
     output : 'generated.cpp')
 
 gen_serialization_hpp = custom_target(
@@ -87,6 +95,7 @@ gen_serialization_hpp = custom_target(
         '-b', conf_data.get_unquoted('BUSNAME'),
         'generate-serialization'
     ],
+    env: sdbusplus_python_env,
     output : 'gen_serialization.hpp')
 
 sources += [
