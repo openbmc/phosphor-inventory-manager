@@ -15,7 +15,7 @@ conf_data.set_quoted('BUSNAME', 'xyz.openbmc_project.Inventory.Manager')
 conf_data.set_quoted('INVENTORY_ROOT', '/xyz/openbmc_project/inventory')
 conf_data.set_quoted('IFACE', 'xyz.openbmc_project.Inventory.Manager')
 conf_data.set_quoted('PIM_PERSIST_PATH', '/var/lib/phosphor-inventory-manager')
-conf_data.set_quoted('ASSOCIATIONS_FILE_PATH', '/usr/share/phosphor-inventory-manager/associations.json')
+conf_data.set_quoted('ASSOCIATIONS_FILE_PATH', '/var/lib/phosphor-inventory-manager/associations.json')
 conf_data.set('CLASS_VERSION', 2)
 conf_data.set('CREATE_ASSOCIATIONS', get_option('associations').allowed())
 configure_file(output: 'config.h',
