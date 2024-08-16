@@ -131,10 +131,9 @@ void Manager::run(const char* busname)
     }
 }
 
-void Manager::updateInterfaces(const sdbusplus::message::object_path& path,
-                               const Object& interfaces,
-                               ObjectReferences::iterator pos, bool newObject,
-                               bool restoreFromCache)
+void Manager::updateInterfaces(
+    const sdbusplus::message::object_path& path, const Object& interfaces,
+    ObjectReferences::iterator pos, bool newObject, bool restoreFromCache)
 {
     auto& refaces = pos->second;
     auto ifaceit = interfaces.cbegin();
@@ -318,8 +317,8 @@ std::any& Manager::getInterfaceHolder(const char* path, const char* interface)
         const_cast<const Manager*>(this)->getInterfaceHolder(path, interface));
 }
 
-const std::any& Manager::getInterfaceHolder(const char* path,
-                                            const char* interface) const
+const std::any&
+    Manager::getInterfaceHolder(const char* path, const char* interface) const
 {
     std::string p{path};
     auto oit = _refs.find(_root + p);
@@ -343,8 +342,8 @@ void Manager::restore()
         return;
     }
 
-    static const std::string remove = std::string(PIM_PERSIST_PATH) +
-                                      INVENTORY_ROOT;
+    static const std::string remove =
+        std::string(PIM_PERSIST_PATH) + INVENTORY_ROOT;
 
     std::map<sdbusplus::message::object_path, Object> objects;
     for (const auto& dirent :
@@ -405,8 +404,8 @@ void Manager::restore()
                         auto& getProperty =
                             std::get<GetPropertyValueType>(maker->second);
 
-                        condition.actualValue = getProperty(condition.property,
-                                                            ifaceIt->second);
+                        condition.actualValue =
+                            getProperty(condition.property, ifaceIt->second);
                     }
                 }
             }
@@ -416,11 +415,11 @@ void Manager::restore()
             // associations file is valid so create its associations.
             if (_associations.conditionMatch())
             {
-                std::for_each(_refs.begin(), _refs.end(),
-                              [this](const auto& ref) {
-                    _associations.createAssociations(
-                        ref.first, _status != ManagerStatus::RUNNING);
-                });
+                std::for_each(
+                    _refs.begin(), _refs.end(), [this](const auto& ref) {
+                        _associations.createAssociations(
+                            ref.first, _status != ManagerStatus::RUNNING);
+                    });
             }
         }
 #endif

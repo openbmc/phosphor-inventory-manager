@@ -142,20 +142,20 @@ bool Manager::conditionMatch(const sdbusplus::message::object_path& objectPath,
             continue;
         }
 
-        auto interface = std::find_if(object.begin(), object.end(),
-                                      [&condition](const auto& i) {
-            return i.first == condition.interface;
-        });
+        auto interface = std::find_if(
+            object.begin(), object.end(), [&condition](const auto& i) {
+                return i.first == condition.interface;
+            });
         if (interface == object.end())
         {
             continue;
         }
 
-        auto property = std::find_if(interface->second.begin(),
-                                     interface->second.end(),
-                                     [&condition](const auto& p) {
-            return condition.property == p.first;
-        });
+        auto property =
+            std::find_if(interface->second.begin(), interface->second.end(),
+                         [&condition](const auto& p) {
+                             return condition.property == p.first;
+                         });
         if (property == interface->second.end())
         {
             continue;
@@ -279,11 +279,10 @@ void Manager::createAssociations(const std::string& objectPath,
     }
 }
 
-void Manager::createAssociation(const std::string& forwardPath,
-                                const std::string& forwardType,
-                                const std::string& reversePath,
-                                const std::string& reverseType,
-                                bool deferSignal)
+void Manager::createAssociation(
+    const std::string& forwardPath, const std::string& forwardType,
+    const std::string& reversePath, const std::string& reverseType,
+    bool deferSignal)
 {
     auto object = _associationIfaces.find(forwardPath);
     if (object == _associationIfaces.end())

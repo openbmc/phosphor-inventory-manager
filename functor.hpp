@@ -199,8 +199,8 @@ struct PropertyChangedCondition
     PropertyChangedCondition& operator=(PropertyChangedCondition&&) = default;
     PropertyChangedCondition(const char* iface, const char* property,
                              U&& condition) :
-        _iface(iface),
-        _property(property), _condition(std::forward<U>(condition))
+        _iface(iface), _property(property),
+        _condition(std::forward<U>(condition))
     {}
 
     /** @brief Test a property value.
@@ -267,8 +267,8 @@ struct PropertyConditionBase
      */
     PropertyConditionBase(const char* path, const char* iface,
                           const char* property, const char* service) :
-        _path(path ? path : std::string()),
-        _iface(iface), _property(property), _service(service)
+        _path(path ? path : std::string()), _iface(iface), _property(property),
+        _service(service)
     {}
 
     /** @brief Forward comparison to type specific implementation. */
