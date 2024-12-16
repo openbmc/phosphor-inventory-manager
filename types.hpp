@@ -42,5 +42,3 @@ using GetProperty = std::function<T(Manager&)>;
 } // namespace manager
 } // namespace inventory
 } // namespace phosphor
-
-// vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

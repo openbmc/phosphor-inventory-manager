@@ -723,6 +723,3 @@ if __name__ == "__main__":
 
     function = getattr(Everything.load(args), valid_commands[args.command])
     function(lookup)
-
-
-# vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

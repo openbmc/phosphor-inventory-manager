@@ -44,5 +44,3 @@ class InterfaceError final : public std::invalid_argument
 } // namespace manager
 } // namespace inventory
 } // namespace phosphor
-
-// vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

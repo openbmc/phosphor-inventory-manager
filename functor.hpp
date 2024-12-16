@@ -405,5 +405,3 @@ auto propertyIs(const char* path, const char* iface, const char* property,
 } // namespace manager
 } // namespace inventory
 } // namespace phosphor
-
-// vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

@@ -224,5 +224,3 @@ class Manager final : public ServerObject<ManagerIface>
 } // namespace manager
 } // namespace inventory
 } // namespace phosphor
-
-// vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
