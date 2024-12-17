@@ -606,6 +606,7 @@ class Everything(Renderer):
                 y.startswith("xyz")
                 or y.startswith("com/ibm/ipzvpd")
                 or y.startswith("com/ibm/Control/Host")
+                or y.startswith("com/ibm/VPD")
             ):
                 continue
             with open(os.path.join(targetdir, y)) as fd:
