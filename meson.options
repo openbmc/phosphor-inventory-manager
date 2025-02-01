@@ -1,22 +1,21 @@
+option('tests', type: 'feature', value: 'enabled', description: 'Build tests')
+
 option(
-    'tests', type : 'feature',
+    'associations',
+    type: 'feature',
     value: 'enabled',
-    description : 'Build tests'
+    description: 'Enable creating D-Bus associations from a JSON definition',
 )
 
 option(
-    'associations', type : 'feature',
-    value: 'enabled',
-    description : 'Enable creating D-Bus associations from a JSON definition'
-)
-
-option(
-    'YAML_PATH', type: 'string',
+    'YAML_PATH',
+    type: 'string',
     value: '/usr/share/phosphor-inventory-manager',
-    description: 'The path to the yaml config files.'
+    description: 'The path to the yaml config files.',
 )
 
 option(
-    'IFACES_PATH', type: 'string',
-    description: 'The path to the interfaces PIM can create.'
+    'IFACES_PATH',
+    type: 'string',
+    description: 'The path to the interfaces PIM can create.',
 )

@@ -8,13 +8,13 @@ if not gtest_dep.found() or not gmock_dep.found()
                 dependency('threads'),
                 gtest_proj.dependency('gtest'),
                 gtest_proj.dependency('gtest_main'),
-            ]
+            ],
         )
         gmock_dep = gtest_proj.dependency('gmock')
     else
         assert(
             not get_option('tests').enabled(),
-            'Googletest is required if tests are enabled'
+            'Googletest is required if tests are enabled',
         )
     endif
 endif
@@ -42,17 +42,19 @@ test_deps = [
     phosphor_dbus_interfaces_dep,
     phosphor_logging_dep,
     nlohmann_json_dep,
-    cereal_dep
+    cereal_dep,
 ]
 
 foreach t : tests
-    test(t, executable(t.underscorify(), t,
-                     test_sources,
-                     include_directories: ['..'],
-                     dependencies: [
-                         gtest_dep,
-                         gmock_dep,
-                         test_deps,
-                         ]),
-        workdir: meson.current_source_dir())
+    test(
+        t,
+        executable(
+            t.underscorify(),
+            t,
+            test_sources,
+            include_directories: ['..'],
+            dependencies: [gtest_dep, gmock_dep, test_deps],
+        ),
+        workdir: meson.current_source_dir(),
+    )
 endforeach

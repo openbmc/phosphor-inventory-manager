@@ -1,13 +1,14 @@
 project(
-    'phosphor-inventory-manager', 'cpp',
-    version : '1.0.0',
+    'phosphor-inventory-manager',
+    'cpp',
+    version: '1.0.0',
     meson_version: '>=1.1.1',
     default_options: [
         'warning_level=3',
         'werror=true',
         'cpp_std=c++23',
         'buildtype=debugoptimized',
-    ]
+    ],
 )
 
 conf_data = configuration_data()
@@ -15,12 +16,13 @@ conf_data.set_quoted('BUSNAME', 'xyz.openbmc_project.Inventory.Manager')
 conf_data.set_quoted('INVENTORY_ROOT', '/xyz/openbmc_project/inventory')
 conf_data.set_quoted('IFACE', 'xyz.openbmc_project.Inventory.Manager')
 conf_data.set_quoted('PIM_PERSIST_PATH', '/var/lib/phosphor-inventory-manager')
-conf_data.set_quoted('ASSOCIATIONS_FILE_PATH', '/usr/share/phosphor-inventory-manager/associations.json')
+conf_data.set_quoted(
+    'ASSOCIATIONS_FILE_PATH',
+    '/usr/share/phosphor-inventory-manager/associations.json',
+)
 conf_data.set('CLASS_VERSION', 2)
 conf_data.set('CREATE_ASSOCIATIONS', get_option('associations').allowed())
-configure_file(output: 'config.h',
-    configuration: conf_data
-)
+configure_file(output: 'config.h', configuration: conf_data)
 
 cpp = meson.get_compiler('cpp')
 # Get Cereal dependency.
@@ -29,19 +31,23 @@ has_cereal = cpp.has_header_symbol(
     'cereal/cereal.hpp',
     'cereal::specialize',
     dependencies: cereal_dep,
-    required: false)
+    required: false,
+)
 if not has_cereal
     cereal_opts = import('cmake').subproject_options()
-    cereal_opts.add_cmake_defines({'BUILD_TESTS': 'OFF', 'SKIP_PERFORMANCE_COMPARISON': 'ON'})
+    cereal_opts.add_cmake_defines(
+        {'BUILD_TESTS': 'OFF', 'SKIP_PERFORMANCE_COMPARISON': 'ON'},
+    )
     cereal_proj = import('cmake').subproject(
         'cereal',
         options: cereal_opts,
-        required: false)
+        required: false,
+    )
     assert(cereal_proj.found(), 'cereal is required')
     cereal_dep = cereal_proj.dependency('cereal')
 endif
 
-sdbusplus_dep = dependency('sdbusplus', required : false)
+sdbusplus_dep = dependency('sdbusplus', required: false)
 phosphor_dbus_interfaces_dep = dependency('phosphor-dbus-interfaces')
 phosphor_logging_dep = dependency('phosphor-logging')
 
@@ -50,13 +56,9 @@ prog_python = find_program('python3', required: true)
 sources = []
 deps = []
 if get_option('associations').allowed()
-    sources += [
-        'association_manager.cpp',
-    ]
+    sources += ['association_manager.cpp']
     nlohmann_json_dep = dependency('nlohmann_json', include_type: 'system')
-    deps += [
-        nlohmann_json_dep,
-    ]
+    deps += [nlohmann_json_dep]
 endif
 
 ifacesdir = get_option('IFACES_PATH')
@@ -68,36 +70,48 @@ sdbusplus_python_env = {}
 if not sdbusplus_dep.found()
     sdbusplus_proj = subproject('sdbusplus')
     sdbusplus_dep = sdbusplus_proj.get_variable('sdbusplus_dep')
-    sdbusplus_python_env = {'PYTHONPATH': meson.current_source_dir() / 'subprojects' / 'sdbusplus' / 'tools'}
+    sdbusplus_python_env = {
+        'PYTHONPATH': meson.current_source_dir() / 'subprojects' / 'sdbusplus' / 'tools',
+    }
 endif
 
 generated_cpp = custom_target(
     'generated.cpp',
-    command : [
+    command: [
         prog_python,
         meson.project_source_root() + '/pimgen.py',
-        '-i', ifacesdir,
-        '-d', get_option('YAML_PATH'),
-        '-o', meson.current_build_dir(),
-        '-b', conf_data.get_unquoted('BUSNAME'),
-        'generate-cpp'
+        '-i',
+        ifacesdir,
+        '-d',
+        get_option('YAML_PATH'),
+        '-o',
+        meson.current_build_dir(),
+        '-b',
+        conf_data.get_unquoted('BUSNAME'),
+        'generate-cpp',
     ],
     env: sdbusplus_python_env,
-    output : 'generated.cpp')
+    output: 'generated.cpp',
+)
 
 gen_serialization_hpp = custom_target(
     'gen_serialization.hpp',
-    command : [
+    command: [
         prog_python,
         meson.project_source_root() + '/pimgen.py',
-        '-i', ifacesdir,
-        '-d', get_option('YAML_PATH'),
-        '-o', meson.current_build_dir(),
-        '-b', conf_data.get_unquoted('BUSNAME'),
-        'generate-serialization'
+        '-i',
+        ifacesdir,
+        '-d',
+        get_option('YAML_PATH'),
+        '-o',
+        meson.current_build_dir(),
+        '-b',
+        conf_data.get_unquoted('BUSNAME'),
+        'generate-serialization',
     ],
     env: sdbusplus_python_env,
-    output : 'gen_serialization.hpp')
+    output: 'gen_serialization.hpp',
+)
 
 sources += [
     generated_cpp,
