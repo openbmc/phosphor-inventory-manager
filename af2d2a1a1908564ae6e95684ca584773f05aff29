@@ -1,0 +1,7 @@
+Code-Review+2: Matt Spinler <spinler@us.ibm.com>
+Verified+1: OpenBMC CI <openbmcbump-ci@yahoo.com>
+Submitted-by: Matt Spinler <spinler@us.ibm.com>
+Submitted-at: Mon, 03 Feb 2025 19:04:40 +0000
+Reviewed-on: https://gerrit.openbmc.org/c/openbmc/phosphor-inventory-manager/+/77758
+Project: openbmc/phosphor-inventory-manager
+Branch: refs/heads/master
