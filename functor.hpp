@@ -110,8 +110,8 @@ inline auto destroyObjects(std::vector<const char*>&& paths,
 }
 
 /** @brief Create objects action.  */
-inline auto
-    createObjects(std::map<sdbusplus::message::object_path, Object>&& objs)
+inline auto createObjects(
+    std::map<sdbusplus::message::object_path, Object>&& objs)
 {
     return [=](auto&, auto& m) { m.createObjects(objs); };
 }
@@ -193,8 +193,8 @@ struct PropertyChangedCondition
     PropertyChangedCondition() = delete;
     ~PropertyChangedCondition() = default;
     PropertyChangedCondition(const PropertyChangedCondition&) = default;
-    PropertyChangedCondition&
-        operator=(const PropertyChangedCondition&) = default;
+    PropertyChangedCondition& operator=(const PropertyChangedCondition&) =
+        default;
     PropertyChangedCondition(PropertyChangedCondition&&) = default;
     PropertyChangedCondition& operator=(PropertyChangedCondition&&) = default;
     PropertyChangedCondition(const char* iface, const char* property,
