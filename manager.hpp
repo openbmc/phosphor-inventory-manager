@@ -75,8 +75,8 @@ class Manager final : public ServerObject<ManagerIface>
     void shutdown() noexcept;
 
     /** @brief sd_bus Notify method implementation callback. */
-    void
-        notify(std::map<sdbusplus::message::object_path, Object> objs) override;
+    void notify(
+        std::map<sdbusplus::message::object_path, Object> objs) override;
 
     /** @brief Event processing entry point. */
     void handleEvent(sdbusplus::message_t&, const Event& event,
