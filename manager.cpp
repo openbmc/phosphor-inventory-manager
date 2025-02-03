@@ -317,8 +317,8 @@ std::any& Manager::getInterfaceHolder(const char* path, const char* interface)
         const_cast<const Manager*>(this)->getInterfaceHolder(path, interface));
 }
 
-const std::any&
-    Manager::getInterfaceHolder(const char* path, const char* interface) const
+const std::any& Manager::getInterfaceHolder(const char* path,
+                                            const char* interface) const
 {
     std::string p{path};
     auto oit = _refs.find(_root + p);
