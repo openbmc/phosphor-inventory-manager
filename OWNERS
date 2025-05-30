@@ -37,7 +37,7 @@ owners:
 - spinler@us.ibm.com
 
 reviewers:
-
+- sunnsr25@in.ibm.com
 matchers:
 
 openbmc:
@@ -50,3 +50,6 @@ openbmc:
 - name: Matt Spinler
   email: spinler@us.ibm.com
   discord: mspinler
+- name: Sunny Srivastava
+  email: sunnsr25@in.ibm.com
+  discord: sunnysr
