@@ -37,7 +37,7 @@ owners:
 - spinler@us.ibm.com
 
 reviewers:
-
+- sunnsr25@in.ibm.com
 matchers:
 
 openbmc:
