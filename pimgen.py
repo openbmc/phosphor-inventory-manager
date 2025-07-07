@@ -603,7 +603,9 @@ class Everything(Renderer):
         for y in yaml_files:
             # parse only phosphor dbus related interface files
             if not (
-                y.startswith("xyz")
+                y.startswith("xyz.openbmc_project.Common")
+                or y.startswith("xyz.openbmc_project.Inventory")
+                or y.startswith("xyz.openbmc_project.State")
                 or y.startswith("com/ibm/ipzvpd")
                 or y.startswith("com/ibm/Control/Host")
                 or y.startswith("com/ibm/VPD")
