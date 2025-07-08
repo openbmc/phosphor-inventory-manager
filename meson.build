@@ -77,9 +77,10 @@ endif
 
 generated_cpp = custom_target(
     'generated.cpp',
+    input: [meson.project_source_root() / 'pimgen.py'],
     command: [
         prog_python,
-        meson.project_source_root() + '/pimgen.py',
+        '@INPUT0@',
         '-i',
         ifacesdir,
         '-d',
@@ -96,9 +97,10 @@ generated_cpp = custom_target(
 
 gen_serialization_hpp = custom_target(
     'gen_serialization.hpp',
+    input: [meson.project_source_root() / 'pimgen.py'],
     command: [
         prog_python,
-        meson.project_source_root() + '/pimgen.py',
+        '@INPUT0@',
         '-i',
         ifacesdir,
         '-d',
