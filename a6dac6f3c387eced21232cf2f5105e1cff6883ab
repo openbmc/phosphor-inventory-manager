@@ -18,6 +18,24 @@
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8e4924b1_1701db98",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2025-07-08T10:02:15Z",
+      "side": 1,
+      "message": "Can you please enumerate them for me?  We need to make a change like this in order to fit the next Yocto bump on Palmetto/Romulus. I want to make sure I have it right.",
+      "parentUuid": "bcd013f9_b7dee44b",
+      "revId": "a6dac6f3c387eced21232cf2f5105e1cff6883ab",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b3751d41_01796683",
@@ -31,6 +49,24 @@
       "writtenOn": "2025-07-08T04:49:41Z",
       "side": 1,
       "message": "Even \"xyz.openbmc_project.Association.Definitions\" is being used to host associations and \"xyz.openbmc_project.Object.Enable\" for guards.\nWe will need support for that.",
+      "revId": "a6dac6f3c387eced21232cf2f5105e1cff6883ab",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "331398d3_dc6a6225",
+        "filename": "pimgen.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 606,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2025-07-08T10:02:15Z",
+      "side": 1,
+      "message": "Got it. Will add those also. \n\nWhere did you find these?  I looked in all the YAML files both in this repo and in openbmc/openbmc.",
+      "parentUuid": "b3751d41_01796683",
       "revId": "a6dac6f3c387eced21232cf2f5105e1cff6883ab",
       "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
     }
