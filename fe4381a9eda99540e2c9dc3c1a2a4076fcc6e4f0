@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aa5d45a1_77c57913",
+        "filename": "OWNERS",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2025-07-08T13:38:00Z",
+      "side": 1,
+      "message": "Can you also remove this?",
+      "revId": "fe4381a9eda99540e2c9dc3c1a2a4076fcc6e4f0",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
