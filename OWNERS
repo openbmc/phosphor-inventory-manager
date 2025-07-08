@@ -44,9 +44,6 @@ openbmc:
 - name: Jinu Joy Thomas
   email: jinu.joy.thomas@in.ibm.com
   discord: Jinu Joy
-- name: Marri Devender Rao
-  email: devenrao@in.ibm.com
-  discord: devender
 - name: Matt Spinler
   email: spinler@us.ibm.com
   discord: mspinler
