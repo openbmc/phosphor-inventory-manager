@@ -34,9 +34,10 @@
 owners:
 - jinu.joy.thomas@in.ibm.com
 - spinler@us.ibm.com
+- sunnsr25@in.ibm.com
 
 reviewers:
-- sunnsr25@in.ibm.com
+
 matchers:
 
 openbmc:
