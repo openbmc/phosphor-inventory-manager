@@ -348,8 +348,8 @@ struct PropertyCondition final : public PropertyConditionBase
      */
     bool eval(sdbusplus::message_t& msg) const override
     {
-        std::variant<T> value;
-        msg.read(value);
+        auto value = msg.unpack<std::variant<T>>();
+
         return _condition(std::forward<T>(std::get<T>(value)));
     }
 
