@@ -50,8 +50,8 @@ class Manager final : public ServerObject<ManagerIface>
     Manager() = delete;
     Manager(const Manager&) = delete;
     Manager& operator=(const Manager&) = delete;
-    Manager(Manager&&) = default;
-    Manager& operator=(Manager&&) = default;
+    Manager(Manager&&) = delete;
+    Manager& operator=(Manager&&) = delete;
     ~Manager() = default;
 
     /** @brief Construct an inventory manager.
