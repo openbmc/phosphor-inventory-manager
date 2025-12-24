@@ -30,8 +30,8 @@ static constexpr size_t CLASS_VERSION_WITH_NVP = 2;
 % for iface in interfaces:
 <% properties = interface_composite.names(str(iface)) %>\
 template<class Archive>
-void save(Archive& a,
-          const ${iface.namespace()}& object,
+void save([[maybe_unused]] Archive& a,
+          [[maybe_unused]] const ${iface.namespace()}& object,
           const std::uint32_t /* version */)
 {
 % for p in properties:
@@ -43,7 +43,7 @@ void save(Archive& a,
 
 template<class Archive>
 void load(Archive& a,
-          ${iface.namespace()}& object,
+          [[maybe_unused]] ${iface.namespace()}& object,
           const std::uint32_t version)
 {
 % for p in properties:
