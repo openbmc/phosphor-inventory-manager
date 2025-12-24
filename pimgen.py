@@ -195,7 +195,7 @@ class InitializerList(Argument):
 
     def argument(self, loader, indent):
         return self.render(
-            loader, "argument.mako.cpp", arg=self, indent=indent
+            loader, "argument.cpp.mako", arg=self, indent=indent
         )
 
 
@@ -209,7 +209,7 @@ class DbusSignature(Argument):
 
     def argument(self, loader, indent):
         return self.render(
-            loader, "signature.mako.cpp", signature=self, indent=indent
+            loader, "signature.cpp.mako", signature=self, indent=indent
         )
 
 
@@ -224,7 +224,7 @@ class MethodCall(Argument):
 
     def call(self, loader, indent):
         return self.render(
-            loader, "method.mako.cpp", method=self, indent=indent
+            loader, "method.cpp.mako", method=self, indent=indent
         )
 
     def argument(self, loader, indent):
@@ -650,7 +650,7 @@ class Everything(Renderer):
             fd.write(
                 self.render(
                     loader,
-                    "generated.mako.cpp",
+                    "generated.cpp.mako",
                     events=self.events,
                     interfaces=self.interfaces,
                     indent=Indent(),
@@ -664,7 +664,7 @@ class Everything(Renderer):
             fd.write(
                 self.render(
                     loader,
-                    "gen_serialization.mako.hpp",
+                    "gen_serialization.hpp.mako",
                     interfaces=self.interfaces,
                     interface_composite=self.interface_composite,
                 )
