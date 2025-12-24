@@ -11,6 +11,9 @@ project(
     ],
 )
 
+# Do not turn off the warning globally, only stop -Werror from failing builds
+add_project_arguments('-Wno-error=unused-parameter', language: ['cpp'])
+
 conf_data = configuration_data()
 conf_data.set_quoted('BUSNAME', 'xyz.openbmc_project.Inventory.Manager')
 conf_data.set_quoted('INVENTORY_ROOT', '/xyz/openbmc_project/inventory')
