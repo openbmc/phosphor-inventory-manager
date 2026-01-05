@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "27a3016d_8da0df15",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2026-01-05T22:31:31Z",
+      "side": 1,
+      "message": "Is it all in the generated save() function?  If so, what about just adding [[maybe_unused]] to the args at https://github.com/openbmc/phosphor-inventory-manager/blob/master/gen_serialization.mako.hpp#L33?\n\nThat way it\u0027ll still catch this in other places.",
+      "revId": "6693662c6662a7b4f7e6e1da81c07e96fc546bd9",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
