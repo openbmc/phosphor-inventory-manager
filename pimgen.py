@@ -155,7 +155,7 @@ class Literal(object):
 
 
 class Argument(NamedElement, Renderer):
-    """Define argument type inteface."""
+    """Define argument type interface."""
 
     def __init__(self, **kw):
         self.type = kw.pop("type", None)
@@ -570,7 +570,7 @@ class Everything(Renderer):
         )
         interface_composite.update(extra_interface_composite)
         interface_composite = InterfaceComposite(interface_composite)
-        # Update busname if configured differenly than the default
+        # Update busname if configured differently than the default
         global busname
         busname = args.busname
 

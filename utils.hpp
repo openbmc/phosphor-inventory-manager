@@ -66,7 +66,7 @@ struct MakeVariantVisitor
      *  @brief Return variant visitor.
      *
      *  struct Make specialization if Arg is a string.Strings might
-     *  be convertable (for ex. to enumerations) using underlying sdbusplus
+     *  be convertible (for ex. to enumerations) using underlying sdbusplus
      *  routines, so give them an attempt. In case the string is not convertible
      *  to an enumeration, sdbusplus::message::convert_from_string will return a
      *  string back anyway.
@@ -192,7 +192,7 @@ struct CompareFirst
     Compare compare;
 };
 
-/* @brief Implicit template instantation wrapper for CompareFirst. */
+/* @brief Implicit template instantiation wrapper for CompareFirst. */
 template <typename Compare>
 CompareFirst<Compare> compareFirst(Compare&& c)
 {
