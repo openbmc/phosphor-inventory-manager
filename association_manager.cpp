@@ -131,7 +131,7 @@ bool Manager::loadConditions()
     return !_conditions.empty();
 }
 
-bool Manager::conditionMatch(const sdbusplus::message::object_path& objectPath,
+bool Manager::conditionMatch(const sdbusplus::object_path& objectPath,
                              const Object& object)
 {
     fs::path foundPath;

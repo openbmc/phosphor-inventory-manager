@@ -110,8 +110,7 @@ inline auto destroyObjects(std::vector<const char*>&& paths,
 }
 
 /** @brief Create objects action.  */
-inline auto createObjects(
-    std::map<sdbusplus::message::object_path, Object>&& objs)
+inline auto createObjects(std::map<sdbusplus::object_path, Object>&& objs)
 {
     return [=](auto&, auto& m) { m.createObjects(objs); };
 }

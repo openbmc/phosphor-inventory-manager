@@ -132,7 +132,7 @@ void Manager::run(const char* busname)
 }
 
 void Manager::updateInterfaces(
-    const sdbusplus::message::object_path& path, const Object& interfaces,
+    const sdbusplus::object_path& path, const Object& interfaces,
     ObjectReferences::iterator pos, bool newObject, bool restoreFromCache)
 {
     auto& refaces = pos->second;
@@ -219,8 +219,7 @@ void Manager::updateInterfaces(
 }
 
 void Manager::updateObjects(
-    const std::map<sdbusplus::message::object_path, Object>& objs,
-    bool restoreFromCache)
+    const std::map<sdbusplus::object_path, Object>& objs, bool restoreFromCache)
 {
     auto objit = objs.cbegin();
     auto refit = _refs.begin();
@@ -269,7 +268,7 @@ void Manager::updateObjects(
     }
 }
 
-void Manager::notify(std::map<sdbusplus::message::object_path, Object> objs)
+void Manager::notify(std::map<sdbusplus::object_path, Object> objs)
 {
     updateObjects(objs);
 }
@@ -306,7 +305,7 @@ void Manager::destroyObjects(const std::vector<const char*>& paths)
 }
 
 void Manager::createObjects(
-    const std::map<sdbusplus::message::object_path, Object>& objs)
+    const std::map<sdbusplus::object_path, Object>& objs)
 {
     updateObjects(objs);
 }
@@ -345,7 +344,7 @@ void Manager::restore()
     static const std::string remove =
         std::string(PIM_PERSIST_PATH) + INVENTORY_ROOT;
 
-    std::map<sdbusplus::message::object_path, Object> objects;
+    std::map<sdbusplus::object_path, Object> objects;
     for (const auto& dirent :
          fs::recursive_directory_iterator(PIM_PERSIST_PATH))
     {

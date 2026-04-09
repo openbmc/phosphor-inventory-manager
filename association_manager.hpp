@@ -146,7 +146,7 @@ class Manager
      *
      * @return bool - If the object matched a condition
      */
-    bool conditionMatch(const sdbusplus::message::object_path& objectPath,
+    bool conditionMatch(const sdbusplus::object_path& objectPath,
                         const Object& object);
 
     /**

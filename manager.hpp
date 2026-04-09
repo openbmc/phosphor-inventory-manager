@@ -75,8 +75,7 @@ class Manager final : public ServerObject<ManagerIface>
     void shutdown() noexcept;
 
     /** @brief sd_bus Notify method implementation callback. */
-    void notify(
-        std::map<sdbusplus::message::object_path, Object> objs) override;
+    void notify(std::map<sdbusplus::object_path, Object> objs) override;
 
     /** @brief Event processing entry point. */
     void handleEvent(sdbusplus::message_t&, const Event& event,
@@ -86,13 +85,11 @@ class Manager final : public ServerObject<ManagerIface>
     void destroyObjects(const std::vector<const char*>& paths);
 
     /** @brief Add objects to DBus. */
-    void createObjects(
-        const std::map<sdbusplus::message::object_path, Object>& objs);
+    void createObjects(const std::map<sdbusplus::object_path, Object>& objs);
 
     /** @brief Add or update objects on DBus. */
-    void updateObjects(
-        const std::map<sdbusplus::message::object_path, Object>& objs,
-        bool restoreFromCache = false);
+    void updateObjects(const std::map<sdbusplus::object_path, Object>& objs,
+                       bool restoreFromCache = false);
 
     /** @brief Restore persistent inventory items */
     void restore();
@@ -183,7 +180,7 @@ class Manager final : public ServerObject<ManagerIface>
     }
 
     /** @brief Add or update interfaces on DBus. */
-    void updateInterfaces(const sdbusplus::message::object_path& path,
+    void updateInterfaces(const sdbusplus::object_path& path,
                           const Object& interfaces,
                           ObjectReferences::iterator pos, bool emitSignals,
                           bool restoreFromCache);
