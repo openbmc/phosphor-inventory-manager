@@ -10,14 +10,6 @@
 #include <type_traits>
 #include <utility>
 
-namespace sdbusplus
-{
-namespace bus
-{
-class bus;
-}
-} // namespace sdbusplus
-
 namespace phosphor
 {
 namespace inventory

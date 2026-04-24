@@ -18,13 +18,6 @@
 #include <string>
 #include <vector>
 
-namespace sdbusplus
-{
-namespace bus
-{
-class bus;
-}
-} // namespace sdbusplus
 namespace phosphor
 {
 namespace inventory
