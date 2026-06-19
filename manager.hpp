@@ -188,7 +188,7 @@ class Manager final : public ServerObject<ManagerIface>
     SigArgs _sigargs;
 
     /** @brief A container of sdbusplus signal matches.  */
-    std::vector<sdbusplus::bus::match_t> _matches;
+    std::vector<sdbusplus::match> _matches;
 
     /** @brief Persistent sdbusplus DBus bus connection. */
     sdbusplus::bus_t _bus;
