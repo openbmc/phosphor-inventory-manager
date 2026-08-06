@@ -31,7 +31,7 @@ namespace inventory
 {
 namespace manager
 {
-/** @brief Fowrarding signal callback.
+/** @brief Fowarding signal callback.
  *
  *  Extracts per-signal specific context and forwards the call to the manager
  *  instance.
