@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6f2ae2d7_2e9de10d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1000008
+      },
+      "writtenOn": "2026-09-17T13:31:05Z",
+      "side": 1,
+      "message": "sorry: this \u0027fix\u0027...  this isn\u0027t a standard we use, and also I\u0027d say this isn\u0027t really a functional fix.  can you just remove everything before and including the colon?",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 3
+      },
+      "revId": "9b2a598c03b6c1af3726f6b6b187fa4980b84ff5",
+      "serverId": "adbd0a64-1f21-4d83-b585-671fe73cb6e4"
+    }
+  ]
+}
