@@ -208,7 +208,12 @@ class Manager final : public ServerObject<ManagerIface>
 #endif
 
     /** @brief Manager status indicator */
-    volatile enum class ManagerStatus { STARTING, RUNNING, STOPPING } _status;
+    volatile enum class ManagerStatus
+    {
+        STARTING,
+        RUNNING,
+        STOPPING
+    } _status;
 };
 
 } // namespace manager
