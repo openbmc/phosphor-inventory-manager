@@ -608,6 +608,7 @@ class Everything(Renderer):
                 or y.startswith("xyz/openbmc_project/Common")
                 or y.startswith("xyz/openbmc_project/Inventory")
                 or y.startswith("xyz/openbmc_project/Object")
+                or y.startswith("xyz/openbmc_project/Software")
                 or y.startswith("xyz/openbmc_project/State")
                 or y.startswith("com/ibm/ipzvpd")
                 or y.startswith("com/ibm/Control/Host")
