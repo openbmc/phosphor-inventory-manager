@@ -32,7 +32,7 @@ struct MockInterface
     MockInterface(MockInterface&&) = delete;
     MockInterface& operator=(MockInterface&&) = delete;
 
-    // We'll be getting calls proxyed through other objects.
+    // We'll be getting calls proxied through other objects.
     MOCK_METHOD3(constructWithProperties,
                  void(const char*, const InterfaceVariant& i, bool));
     MOCK_METHOD1(constructWithoutProperties, void(const char*));

@@ -214,7 +214,7 @@ class DbusSignature(Argument):
 
 
 class MethodCall(Argument):
-    """Render syntatically correct c++ method calls."""
+    """Render syntactically correct c++ method calls."""
 
     def __init__(self, **kw):
         self.namespace = kw.pop("namespace", [])
